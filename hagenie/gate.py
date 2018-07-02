@@ -207,28 +207,29 @@ def guessPropertyAndAction(entity_id, attributes, state):
     # http://doc-bot.tmall.com/docs/doc.htm?treeId=393&articleId=108264&docType=1
     # http://doc-bot.tmall.com/docs/doc.htm?treeId=393&articleId=108268&docType=1
     # Support On/Off/Query only at this time
-    unit = attributes['unit_of_measurement'] if 'unit_of_measurement' in attributes else ''
     if 'hagenie_propertyName' in attributes:
         name = attributes['hagenie_propertyName']
 
-    elif state == 'on' or state == 'off':
-        name = 'PowerState'
-
-    elif unit == u'°C' or unit == u'℃':
-        name = 'Temperature'
-    elif unit == 'lx' or unit == 'lm':
-        name = 'Brightness'
-    elif ('hcho' in entity_id):
-        name = 'Fog'
-    elif ('humidity' in entity_id):
-        name = 'Humidity'
-    elif ('pm25' in entity_id):
-        name = 'PM2.5'
-    elif ('co2' in entity_id):
-        name = 'Angle'
+    elif entity_id.startswith('sensor.'):
+        unit = attributes['unit_of_measurement'] if 'unit_of_measurement' in attributes else ''
+        if unit == u'°C' or unit == u'℃':
+            name = 'Temperature'
+        elif unit == 'lx' or unit == 'lm':
+            name = 'Brightness'
+        elif ('hcho' in entity_id):
+            name = 'Fog'
+        elif ('humidity' in entity_id):
+            name = 'Humidity'
+        elif ('pm25' in entity_id):
+            name = 'PM2.5'
+        elif ('co2' in entity_id):
+            name = 'WindSpeed'
+        else:
+            return (None, None)
     else:
-        return (None, None)
-
+        name = 'PowerState'
+        if state != 'off':
+            state = 'on'
     return ({'name': name.lower(), 'value': state}, 'Query' + name)
 
 #
@@ -284,11 +285,14 @@ def discoveryDevice():
                         sensor['properties'].append(prop)
                         sensor['actions'].append(action)
                         sensor['model'] += ' ' + friendly_name
-                        sensor['deviceId'] += '_' + entity_id
+                        # SHIT, length limition in deviceId: sensor['deviceId'] += '_' + entity_id
+                    else:
+                        log('SKIP: ' + entity_id)
                     break
             if deviceType is None:
                 continue
             deviceName = '传感器'
+            entity_id = zone
 
         devices.append({
             'deviceId': entity_id,
@@ -337,19 +341,24 @@ def queryDevice(name, payload):
 
     if payload['deviceType'] == 'sensor':
         items = haCall('states')
-        entity_ids = deviceId.split('_')
-        #log(''.join(entity_ids))
-        properties = [{'name':'powerstate', 'value':'on'}]
+
+        entity_ids = None
         for item in items:
-            entity_id = item['entity_id']
-            if entity_id in entity_ids:
-                #log('entity_id:' + entity_id)
+            if item['entity_id'].startswith('group.') and item['attributes']['friendly_name'] == deviceId:
+                entity_ids = item['attributes'].get('entity_id')
+                break
+
+        if entity_ids:
+            properties = [{'name':'powerstate', 'value':'on'}]
+            for item in items:
+                entity_id = item['entity_id']
                 attributes = item['attributes']
-                prop,action = guessPropertyAndAction(entity_id, attributes, item['state'])
-                if prop is None:
-                    continue
-                properties.append(prop)
-        return properties
+                if entity_id.startswith('sensor.') and (entity_id in entity_ids or attributes['friendly_name'].startswith(deviceId)):
+                    prop,action = guessPropertyAndAction(entity_id, attributes, item['state'])
+                    if prop is None:
+                        continue
+                    properties.append(prop)
+            return properties
     else:
         item = haCall('states/' + deviceId)
         if type(item) is dict:
