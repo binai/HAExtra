@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import BaseHTTPServer, CGIHTTPServer
+
+try:
+    from BaseHTTPServer import HTTPServer
+    from CGIHTTPServer import CGIHTTPRequestHandler
+except ImportError:
+    from http.server import HTTPServer, CGIHTTPRequestHandler
+
 import os, sys, ssl
 import cgi, json
 from stat import *
@@ -30,7 +36,7 @@ def _url_collapse_path_split(path):
         tail_part = ''
     return ('/' + '/'.join(head_parts), tail_part)
 
-class ServerHandler(CGIHTTPServer.CGIHTTPRequestHandler):
+class ServerHandler(CGIHTTPRequestHandler):
 
     def do_POST(self):
         if self.is_cgi():
@@ -44,13 +50,13 @@ class ServerHandler(CGIHTTPServer.CGIHTTPRequestHandler):
     def is_cgi(self):
         self.cgi_info = _url_collapse_path_split(self.path)
         return True
-        #is_cgi = CGIHTTPServer.CGIHTTPRequestHandler.is_cgi(self)
+        #is_cgi = CGIHTTPRequestHandler.is_cgi(self)
         #if is_cgi == True:
         #    pathname = '.' + self.path.split("?")[0]
         #    is_cgi = os.path.isfile(pathname) and self.is_executable(pathname)
         #return is_cgi
 
-server = BaseHTTPServer.HTTPServer(('', 8122), ServerHandler)
+server = HTTPServer(('', 8122), ServerHandler)
 certfile = os.path.dirname(sys.argv[0]) + '/server.pem'
 if os.path.isfile(certfile):
     server.socket = ssl.wrap_socket (server.socket, certfile=certfile, server_side=True)
