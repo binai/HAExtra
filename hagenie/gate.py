@@ -13,8 +13,8 @@ except ImportError:
 
 #
 def log(message):
-    #pass
-    sys.stderr.write(message + '\n')
+    pass
+    #sys.stderr.write(message + '\n')
 
 
 # Log HTTP payload
