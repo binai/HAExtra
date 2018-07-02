@@ -354,7 +354,7 @@ def queryDevice(name, payload):
             for item in items:
                 entity_id = item['entity_id']
                 attributes = item['attributes']
-                if entity_id.startswith('sensor.') and (entity_id in entity_ids or attributes['friendly_name'].startswith(deviceId)):
+                if entity_id.startswith('sensor.') and (entity_id in entity_ids or attributes['friendly_name'].startswith(deviceId) or attributes.get('hagenie_zone') == deviceId):
                     prop,action = guessPropertyAndAction(entity_id, attributes, item['state'])
                     if prop is None:
                         continue
