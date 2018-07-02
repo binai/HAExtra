@@ -344,8 +344,9 @@ def queryDevice(name, payload):
 
         entity_ids = None
         for item in items:
-            if item['entity_id'].startswith('group.') and item['attributes']['friendly_name'] == deviceId:
-                entity_ids = item['attributes'].get('entity_id')
+            attributes = item['attributes']
+            if item['entity_id'].startswith('group.') and (attributes['friendly_name'] == deviceId or attributes.get('hagenie_zone') == deviceId):
+                entity_ids = attributes.get('entity_id')
                 break
 
         if entity_ids:
