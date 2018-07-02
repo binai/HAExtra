@@ -6,9 +6,10 @@
 import os, sys, json
 try:
     from urllib2 import urlopen
+    reload(sys)
+    sys.setdefaultencoding('utf8')
 except ImportError:
     from urllib.request import urlopen
-
 
 #
 def log(message):
@@ -53,9 +54,9 @@ def haCall(cmd, data=None):
         log(data)
     if url.startswith('https'): # We need extra requests lib for HTTPS POST
         import requests
-        result = requests.request(method, url, data=data, verify=False, timeout=10).text
+        result = requests.request(method, url, data=data, verify=False, timeout=3).text
     else:
-        result = urlopen(url, data=data, timeout=10).read()
+        result = urlopen(url, data=data, timeout=3).read()
 
     #log('HA RESPONSE: ' + result)
     return json.loads(result)
@@ -122,7 +123,6 @@ EXCLUDE_DOMAINS = [
     'binary_sensor',
     'device_tracker',
     'group',
-    'sensor',
     'zone',
     ]
 
@@ -160,10 +160,11 @@ def guessDeviceName(entity_id, attributes, places, aliases):
     if aliases is None:
         return name
 
+
     # Name validation
     for alias in aliases:
         if name == alias['key'] or name in alias['value']:
-        	return name
+            return name
 
     return None
 
@@ -173,7 +174,7 @@ def groupsAttributes(items):
     groups_attributes = []
     for item in items:
         group_entity_id = item['entity_id']
-        if group_entity_id.startswith('group.') and not group_entity_id.startswith('group.all_'):
+        if group_entity_id.startswith('group.') and not group_entity_id.startswith('group.all_') and group_entity_id != 'group.default_view':
             group_attributes = item['attributes']
             if 'entity_id' in group_attributes:
                 groups_attributes.append(group_attributes)
@@ -201,101 +202,34 @@ def guessZone(entity_id, attributes, places, groups_attributes):
 
     return None
 
-
 #
-def guessProperties(entity_id, attributes, state):
+def guessPropertyAndAction(entity_id, attributes, state):
+    # http://doc-bot.tmall.com/docs/doc.htm?treeId=393&articleId=108264&docType=1
+    # http://doc-bot.tmall.com/docs/doc.htm?treeId=393&articleId=108268&docType=1
+    # Support On/Off/Query only at this time
     unit = attributes['unit_of_measurement'] if 'unit_of_measurement' in attributes else ''
     if 'hagenie_propertyName' in attributes:
-        name = attributes['attributes']
+        name = attributes['hagenie_propertyName']
+
     elif state == 'on' or state == 'off':
-        name = 'powerstate'
-    #elif :
-    #    name = 'color'
+        name = 'PowerState'
+
     elif unit == u'°C' or unit == u'℃':
-        name = 'temperature'
-    #elif :
-    #    name = 'windspeed'
-    #elif :
-    #    name = 'brightness'
-    #elif :
-    #    name = 'fog'
-    elif ('hum' in entity_id) and (unit == '%'):
-        name = 'humidity'
-    elif ('pm25' in entity_id) and (unit == 'ug/m3'):
-        name = 'pm2.5'
-    #elif :
-    #    name = 'channel'
-    #elif :
-    #    name = 'number'
-    #elif :
-    #    name = 'direction'
-    #elif :
-    #    name = 'angle'
-    #elif :
-    #    name = 'anion'
-    #elif :
-    #    name = 'effluent'
-    #elif :
-    #    name = 'mode'
-    #elif :
-    #    name = 'lefttime'
-    #elif :
-    #    name = 'remotestatus'
+        name = 'Temperature'
+    elif unit == 'lx' or unit == 'lm':
+        name = 'Brightness'
+    elif ('hcho' in entity_id):
+        name = 'Fog'
+    elif ('humidity' in entity_id):
+        name = 'Humidity'
+    elif ('pm25' in entity_id):
+        name = 'PM2.5'
+    elif ('co2' in entity_id):
+        name = 'Angle'
     else:
-        return []
-    return [{'name': name, 'value': state}]
+        return (None, None)
 
-
-#
-def guessActions(entity_id, services=None):
-    '''type = entity_id[:entity_id.find('.')]
-    gactions = [
-        'TurnOn',
-        'TurnOff',
-        'SelectChannel',
-        'AdjustUpChannel',
-        'AdjustDownChannel',
-        'AdjustUpVolume',
-        'AdjustDownVolume',
-        'SetVolume',
-        'SetMute',
-        'CancelMute',
-        'Play',
-        'Pause',
-        'Continue',
-        'Next',
-        'Previous',
-        'SetBrightness',
-        'AdjustUpBrightness',
-        'AdjustDownBrightness',
-        'SetTemperature',
-        'AdjustUpTemperature',
-        'AdjustDownTemperature',
-        'SetWindSpeed',
-        'AdjustUpWindSpeed',
-        'AdjustDownWindSpeed',
-        'SetMode',
-        'SetColor',
-        'OpenFunction',
-        'CloseFunction',
-        'Query',
-        'QueryColor',
-        'QueryPowerState',
-        'QueryTemperature',
-        'QueryHumidity',
-        'QueryWindSpeed',
-        'QueryBrightness',
-        'QueryFog',
-        'QueryMode',
-        'QueryPM25',
-        'QueryDirection',
-        'QueryAngle'
-    ]'''
-    #for service in services:
-    #    if type == service['domain']:
-    #        for action in service['services']:
-    return ['TurnOn', 'TurnOff']#TODO
-
+    return ({'name': name.lower(), 'value': state}, 'Query' + name)
 
 #
 def discoveryDevice():
@@ -336,6 +270,26 @@ def discoveryDevice():
         if zone is None:
             continue
 
+        prop,action = guessPropertyAndAction(entity_id, attributes, item['state'])
+        if prop is None:
+            continue
+
+        # Merge all sensors into one for a zone
+        # https://bbs.hassbian.com/thread-2982-1-1.html
+        if deviceType == 'sensor':
+            for sensor in devices:
+                if sensor['deviceType'] == 'sensor' and zone == sensor['zone']:
+                    deviceType = None
+                    if not action in sensor['actions']:
+                        sensor['properties'].append(prop)
+                        sensor['actions'].append(action)
+                        sensor['model'] += ' ' + friendly_name
+                        sensor['deviceId'] += '_' + entity_id
+                    break
+            if deviceType is None:
+                continue
+            deviceName = '传感器'
+
         devices.append({
             'deviceId': entity_id,
             'deviceName': deviceName,
@@ -344,8 +298,8 @@ def discoveryDevice():
             'model': friendly_name,
             'brand': 'HomeAssistant',
             'icon': 'https://home-assistant.io/demo/favicon-192x192.png',
-            'properties': guessProperties(entity_id, attributes, item['state']),
-            'actions': guessActions(entity_id)#, services)
+            'properties': [prop],
+            'actions': ['TurnOn', 'TurnOff', 'Query', action] if action == 'QueryPowerState' else ['Query', action]
             })
 
         if not REQUEST_METHOD:
@@ -379,10 +333,27 @@ def controlDevice(name, payload):
 
 #
 def queryDevice(name, payload):
-    entity_id = payload['deviceId']
-    item = haCall('states/' + entity_id)
-    if type(item) is dict:
-        return {'powerstate': item['state']} #TODO
+    deviceId = payload['deviceId']
+
+    if payload['deviceType'] == 'sensor':
+        items = haCall('states')
+        entity_ids = deviceId.split('_')
+        #log(''.join(entity_ids))
+        properties = [{'name':'powerstate', 'value':'on'}]
+        for item in items:
+            entity_id = item['entity_id']
+            if entity_id in entity_ids:
+                #log('entity_id:' + entity_id)
+                attributes = item['attributes']
+                prop,action = guessPropertyAndAction(entity_id, attributes, item['state'])
+                if prop is None:
+                    continue
+                properties.append(prop)
+        return properties
+    else:
+        item = haCall('states/' + deviceId)
+        if type(item) is dict:
+            return {'name':'powerstate', 'value':item['state']}
     return errorResult('IOT_DEVICE_OFFLINE')
 
 
@@ -441,9 +412,9 @@ except:
     _response = {'header': {'name': 'errorResult'}, 'payload': errorResult('SERVICE_ERROR', 'service exception')}
 
 # Process final result
-_result = json.dumps(_response, indent=2)
+_result = json.dumps(_response, indent=2, ensure_ascii=False)
 if REQUEST_METHOD:
     log('RESPONSE ' + _result)
 
-    print('Content-Type: text/json\r\n')
+    print('Content-Type: application/json\r\n')
     print(_result)
