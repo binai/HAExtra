@@ -1,0 +1,460 @@
+# 入户门开启
+# - alias: Entrance Door Opened
+#   initial_state: true
+#   trigger:
+#     platform: state
+#     entity_id: binary_sensor.door_window_sensor_158d0001f3e5be
+#     from: 'off'
+#     to: 'on'
+#   action:
+#     service: hello_miai.send
+#     data:
+#       message: 欢迎光临
+
+# 阳台移门开合
+- alias: Balcony Door Toggled
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.door_window_sensor_158d000228a52b
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.door_window_sensor_158d000228a52b
+      from: 'on'
+      to: 'off'
+  condition:
+    condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  action:
+    service_template: "{% if is_state('binary_sensor.door_window_sensor_158d000228a52b', 'on') %}light.turn_on{% else %}light.turn_off{% endif %}"
+    entity_id: light.hassmart4b
+
+# 阳台移门打开
+#- alias: Balcony Door Opened
+#  initial_state: true
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.door_window_sensor_158d000228a52b
+#    from: 'off'
+#    to: 'on'
+#  action:
+#    service: light.turn_on
+#    data_template:
+#      entity_id: "{% if is_state('sun.sun', 'below_horizon') %}light.hassmart4b{% else %}light.gateway_light_34ce0090901a{% endif %}"
+#      rgb_color: [255,255,255]
+#
+# 阳台移门关闭
+#- alias: Balcony Door Closed
+#  initial_state: true
+#  trigger:
+#    platform: state
+#    entity_id: binary_sensor.door_window_sensor_158d000228a52b
+#    from: 'on'
+#    to: 'off'
+#  action:
+#    service: light.turn_off
+#    data_template:
+#      entity_id: "{% if is_state('sun.sun', 'below_horizon') %}light.hassmart4b{% else %}light.gateway_light_34ce0090901a{% endif %}"
+
+# 空气质量警告
+- alias: Air Quality Warning
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.phicomm_pm25
+      above: 40
+    - platform: numeric_state
+      entity_id: sensor.co2
+      above: 900
+    - platform: numeric_state
+      entity_id: sensor.phicomm_hcho
+      above: 0.08
+  action:
+    service: light.turn_on
+    data_template:
+      entity_id: light.gateway_light_34ce0090901a
+      rgb_color: ["{% if states('sensor.co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.phicomm_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.phicomm_pm25') | int > 40 %}255{% else %}0{% endif %}"]
+      brightness: 10
+
+# 空气质量达标
+- alias: Air Quality Restored
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.phicomm_pm25
+      below: 40
+    - platform: numeric_state
+      entity_id: sensor.co2
+      below: 900
+    - platform: numeric_state
+      entity_id: sensor.phicomm_hcho
+      below: 0.08
+  condition:
+    condition: and
+    conditions:
+      - condition: numeric_state
+        entity_id: sensor.phicomm_pm25
+        below: 40
+      - condition: numeric_state
+        entity_id: sensor.co2
+        below: 900
+      - condition: numeric_state
+        entity_id: sensor.phicomm_hcho
+        below: 0.08
+  action:
+    service: light.turn_off
+    entity_id: light.gateway_light_34ce0090901a
+
+# 二氧化碳混浊
+- alias: CO2 Staled
+  initial_state: false
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.co2
+    above: 580
+    for:
+      minutes: 10
+  action:
+    - service: fan.turn_on
+      entity_id: fan.purifier
+    #- service: fan.set_speed
+    #  data:
+    #    entity_id: fan.purifier
+    #    speed: favorite
+    #- service: fan.xiaomi_miio_set_favorite_level
+    #  data:
+    #    entity_id: fan.purifier
+    #    level: 7
+
+# 二氧化碳清新
+- alias: CO2 Freshed
+  initial_state: false
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.co2
+    below: 540
+    for:
+      minutes: 10
+  action:
+    service: fan.turn_off
+    entity_id: fan.purifier
+
+# 湿度超标
+- alias: Humidity Overflow
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.humidity
+    above: 66
+    for:
+      minutes: 10
+  action:
+    service: switch.turn_on
+    entity_id: switch.outlet
+
+# 湿度恢复
+- alias: Humidity Restored
+  initial_state: true
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.humidity
+    below: 64
+    for:
+      minutes: 10
+  action:
+    service: switch.turn_off
+    entity_id: switch.outlet
+
+# 洗手间灯感应开关
+- alias: Washroom Light Reaction
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.motion_sensor_158d0001f4a238
+    to: 'on'
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: light.hassmart6a
+        state: 'off'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+  action:
+    - service: light.turn_on
+      entity_id: light.hassmart6a
+    #- wait_template: "{{ is_state('binary_sensor.motion_sensor_158d0001f4a238', 'off') }}"
+    #- service: light.turn_off
+    #  entity_id: light.hassmart6a
+
+# 过道灯白天感应开
+- alias: Passage Light On Day
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      to: 'on'
+    - platform: state
+      entity_id: device_tracker.yphone
+      to: 'home'
+    - platform: state
+      entity_id: device_tracker.zphone
+      to: 'home'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: '06:00'
+        before: '18:00'
+      - condition: numeric_state
+        entity_id: sensor.illumination_34ce0090901a
+        below: 300
+  action:
+    service: light.turn_on
+    entity_id: light.hassmart5a
+
+# 过道灯白天感应关
+- alias: Passage Light Off Day
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      to: 'off'
+    - platform: state
+      entity_id: device_tracker.yphone
+      to: 'not_home'
+    - platform: state
+      entity_id: device_tracker.zphone
+      to: 'not_home'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: '06:00'
+        before: '18:00'
+      - condition: state
+        entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.motion_sensor_158d0001f4a238
+        state: 'off'
+      - condition: state
+        entity_id: device_tracker.yphone
+        state: 'not_home'
+      - condition: state
+        entity_id: device_tracker.zphone
+        state: 'not_home'
+      - condition: state
+        entity_id: media_player.x9400e
+        state: 'off'
+  action:
+    service: light.turn_off
+    entity_id: light.hassmart5a
+
+# 过道灯白天变亮关
+- alias: Passage Light Off Brighten
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.illumination_34ce0090901a
+      above: 400
+      for:
+        minutes: 10
+  condition:
+    - condition: time
+      after: '06:00'
+      before: '18:00'
+  action:
+    service: light.turn_off
+    entity_id: light.hassmart5a
+
+# 过道灯晚上感应开
+- alias: Passage Light On Night
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.door_window_sensor_158d0001f3e5be
+      from: 'off'
+      to: 'on'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: '18:00'
+        before: '21:30'
+  action:
+    - service: light.turn_on
+      entity_id: light.hassmart5a
+
+# 过道灯晚上感应关
+- alias: Passage Light Off Night
+  initial_state: true
+  trigger:
+    - platform: time
+      at: '21:30:00'
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      to: 'off'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: '21:29'
+        before: '23:59'
+      - condition: state
+        entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.motion_sensor_158d0001f4a238
+        state: 'off'
+      - condition: state
+        entity_id: media_player.x9400e
+        state: 'off'
+  action:
+    - service: light.turn_off
+      entity_id: light.hassmart5a
+
+# 过道背景灯感应开关
+- alias: Passage Backlight Reaction
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      from: 'off'
+      to: 'on'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: '21:30'
+        before: '06:00'
+      - condition: state
+        entity_id: light.hassmart5a
+        state: 'off'
+      # - condition: state
+      #   entity_id: light.sonoff1
+      #   state: 'off'
+  action:
+    - service: light.turn_on
+      entity_id: light.sonoff1
+    - wait_template: "{{ is_state('binary_sensor.motion_sensor_158d0001d66ce9', 'off') }}"
+    - service: light.turn_off
+      entity_id: light.sonoff1
+
+
+# 餐厅灯开关同步
+- alias: Diningroom Light Sync
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: light.hassmart1c, light.hassmart2a
+  action:
+    service_template: >
+      {% if trigger.to_state.state == 'on' %}
+        light.turn_on
+      {% else %}
+        light.turn_off
+      {% endif %}
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'light.hassmart1c' %}
+          light.hassmart2a
+        {% else %}
+          light.hassmart1c
+        {% endif %}
+
+# 客厅灯开关同步
+- alias: Parlor Light Sync
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: light.hassmart4a, light.hassmart3a
+  action:
+    service_template: >
+      {% if trigger.to_state.state == 'on' %}
+        light.turn_on
+      {% else %}
+        light.turn_off
+      {% endif %}
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'light.hassmart4a' %}
+          light.hassmart3a
+        {% else %}
+          light.hassmart4a
+        {% endif %}
+
+# 过道灯开关同步
+- alias: Passage Light Sync
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: light.sonoff1b, light.hassmart5a
+  action:
+    service_template: >
+      {% if trigger.to_state.state == 'on' %}
+        light.turn_on
+      {% else %}
+        light.turn_off
+      {% endif %}
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'light.sonoff1b' %}
+          light.hassmart5a
+        {% else %}
+          light.sonoff1b
+        {% endif %}
+
+# 书房灯开关同步
+- alias: Study Light Sync
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: light.hassmart5b, light.hassmart5c
+  action:
+    service_template: >
+      {% if trigger.to_state.state == 'on' %}
+        light.turn_on
+      {% else %}
+        light.turn_off
+      {% endif %}
+    data_template:
+      entity_id: >
+        {% if trigger.entity_id == 'light.hassmart5b' %}
+          light.hassmart5c
+        {% else %}
+          light.hassmart5b
+        {% endif %}
+
+#  小爱音箱文本朗读
+- alias: MiAI Text To Speech
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: input_text.miai
+  action:
+    - condition: template
+      value_template: "{{ states('input_text.miai') != 'unknown' and states('input_text.miai') != '' }}"
+    - service: hello_miai.send
+      data_template:
+        message: "{{ states('input_text.miai') }}"
+
+#
+- alias: Xiaomi Switch Pressed
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.switch_158d000201a73f
+    to: 'on'
+  action:
+    service: hello_miai.send
+    data:
+      message: !secret magic_text
+

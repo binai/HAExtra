@@ -1,0 +1,611 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: 智能家庭
+  # Location required to calculate the time the sun rises and sets
+  latitude: 30.23927
+  longitude: 120.05633
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 32
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Asia/Shanghai
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+#introduction:
+
+# Enables the frontend
+frontend:
+  javascript_version: latest
+
+# Enables configuration UI
+config:
+
+http:
+  api_password: !secret http_password
+  trusted_networks:
+    - 127.0.0.1
+    - 192.168.1.0/24
+    - 101.132.66.191
+  base_url: !secret http_base_url
+  ssl_certificate: /root/.homeassistant/fullchain.cer
+  ssl_key: /root/.homeassistant/yonsm.net.key
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+#updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+#discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+#conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+#logger:
+  #default: warning
+  #logs:
+    #homeassistant.components.homekit: debug
+    #custom_components.climate.modbus: debug
+
+# Enables a map showing the location of tracked devices
+#map:
+
+# Track the sun
+sun:
+
+# HomeKit
+homekit:
+  filter:
+    exclude_domains:
+      - automation
+      - input_boolean
+    exclude_entities:
+      - light.hassmart5b
+      - light.hassmart4a
+      - light.hassmart1c
+      - light.sonoff1b
+      - binary_sensor.switch_158d0001e59b33
+      - binary_sensor.switch_158d000201a73f
+  entity_config:
+    switch.outlet:
+      type: outlet
+    media_player.x9300d:
+      feature_list:
+        - feature: on_off
+    media_player.x9400e:
+      feature_list:
+        - feature: on_off
+# Text to speech
+#tts:
+#  - platform: google
+#    language: zh-cn
+#   - platform: baidu
+#     app_id: !secret baidu_app_id
+#     api_key: !secret baidu_api_key
+#     secret_key: !secret baidu_secret_key
+
+# Cloud
+#cloud:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+
+#
+mqtt:
+  broker: Hassbian
+
+#
+modbus:
+  type: rtuovertcp
+  host: ModBus
+  port: 8899
+
+#
+device_tracker:
+  - platform: asuswrt
+    host: Router
+    username: admin
+    password: !secret http_password
+    new_device_defaults:
+      track_new_devices: false
+      hide_if_away: true
+
+#
+binary_sensor:
+  - platform: mqtt
+    device_class: light
+    state_topic: NodeMCU3/digital
+    payload_on: 1
+    payload_off: 0
+    name: Lightness
+    availability_topic: NodeMCU3/status
+
+#
+sensor:
+  #- platform: yr
+  #  forecast: 2
+  #  monitored_conditions:
+  #    - symbol
+  #    - temperature
+  #    - humidity
+  - platform: mqtt
+    state_topic: NodeMCU2/temperature
+    name: Balcony Temperature
+    unit_of_measurement: °C
+    availability_topic: NodeMCU2/status
+  - platform: mqtt
+    state_topic: NodeMCU2/humidity
+    name: Balcony Humidity
+    unit_of_measurement: '%'
+    availability_topic: NodeMCU2/status
+  - platform: mqtt
+    state_topic: NodeMCU2/pm2dot5
+    name: Balcony PM2.5
+    unit_of_measurement: μg/m³
+    availability_topic: NodeMCU2/status
+  - platform: mqtt
+    state_topic: NodeMCU3/relay/0
+    name: Speaker Status
+    availability_topic: NodeMCU3/status
+    value_template: "{% if value == '0' %}关闭{% elif value == '3' %}辅助{% elif value == '4' %}蓝牙{% elif value == '5' %}光纤{% elif value == '6' %}同轴{% elif value == '7' %}优盘{% else %}未知{% endif %}"
+  - platform: mqtt
+    state_topic: NodeMCU4/co2
+    name: Kids CO2
+    unit_of_measurement: ppm
+    availability_topic: NodeMCU4/status
+  - platform: mqtt
+    state_topic: NodeMCU6/co2
+    name: Parents CO2
+    unit_of_measurement: ppm
+    availability_topic: NodeMCU6/status
+  - platform: mqtt
+    state_topic: NodeMCU7/temperature
+    name: Temperature
+    unit_of_measurement: °C
+    availability_topic: NodeMCU7/status
+  - platform: mqtt
+    state_topic: NodeMCU7/humidity
+    name: Humidity
+    unit_of_measurement: '%'
+    availability_topic: NodeMCU7/status
+  - platform: mqtt
+    state_topic: NodeMCU7/pm2dot5
+    name: PM2.5
+    unit_of_measurement: μg/m³
+    availability_topic: NodeMCU7/status
+  - platform: mqtt
+    state_topic: NodeMCU7/hcho
+    name: HCHO
+    unit_of_measurement: mg/m³
+    availability_topic: NodeMCU7/status
+  - platform: mqtt
+    state_topic: NodeMCU7/co2
+    name: CO2
+    unit_of_measurement: ppm
+    availability_topic: NodeMCU7/status
+  - platform: caiyun
+  - platform: phicomm
+    username: !secret phicomm_username
+    password: !secret phicomm_password
+  - platform: template
+    sensors:
+      purifier_temperature:
+        friendly_name: Purifier Temperature
+        value_template: "{{ states.fan.purifier.attributes.temperature }}"
+        unit_of_measurement: °C
+      purifier_humidity:
+        friendly_name: Purifier Humidity
+        value_template: "{{ states.fan.purifier.attributes.humidity }}"
+        unit_of_measurement: '%'
+      purifier_pm25:
+        friendly_name: Purifier PM2.5
+        value_template: "{{ states.fan.purifier.attributes.aqi }}"
+        unit_of_measurement: 'μg/m³'
+      fresher_temperature:
+        friendly_name: Fresher Temperature
+        value_template: "{{ states.fan.fresher.attributes.temperature }}"
+        unit_of_measurement: °C
+      fresher_humidity:
+        friendly_name: Fresher Humidity
+        value_template: "{{ states.fan.fresher.attributes.humidity }}"
+        unit_of_measurement: '%'
+      fresher_pm25:
+        friendly_name: Fresher PM2.5
+        value_template: "{{ states.fan.fresher.attributes.aqi }}"
+        unit_of_measurement: 'μg/m³'
+      fresher_co2:
+        friendly_name: Fresher CO2
+        value_template: "{{ states.fan.fresher.attributes.co2 }}"
+        unit_of_measurement: 'ppm'
+
+#
+switch:
+  - platform: wake_on_lan
+    mac_address: 00-11-32-6B-75-F7
+    host: Storage
+    name: Storage
+    turn_off:
+      service: shell_command.turn_off_storage
+  - platform: mqtt
+    name: Hassmart6B
+    state_topic: Hassmart6/relay/1
+    command_topic: Hassmart6/relay/1/set
+    availability_topic: Hassmart6/status
+  - name: Speaker
+    platform: mqtt
+    state_topic: NodeMCU3/relay/0
+    payload_on: 1
+    payload_off: toggle
+    command_topic: NodeMCU3/relay/0/set
+    availability_topic: NodeMCU3/status
+    value_template: "{% if value == '0' %}toggle{% else %}1{% endif %}"
+#  - platform: broadlink
+#    host: Outlet
+#    mac: 34:EA:34:B8:36:AC
+#    friendly_name: Outlet
+#    type: spmini2
+  - platform: broadlink
+    host: RemotePro
+    mac: 34:EA:34:58:73:5D
+    friendly_name: Remote Pro
+    type: rm2_pro_plus
+    #switches:
+    #  fan:
+    #    friendly_name: Fan
+    #    command_on: 'JgCSACsMKw0PKCsMKwwQKA8oDygQJxAnECcr5ysMKwwQKCsMKwwQKA8oDygPKBAnECcr5ysMLAwPKCsMKwwQKA8oECcQJxAnECcr5ysMLAwPKCsMKw0PKA8oECcQJxAnECgr6SsMKw0PKCsMKwwQKA8oDygQJxAnECcr6isNKwwQJysMLAwQJxAnECcQKA8oDygrAA0FAAAAAAAA'
+    #    command_off: 'JgCSACsMKw0PKCsMKwwQKA8oDygQJxAnECcr5ysMKwwQKCsMKwwQKA8oDygPKBAnECcr5ysMLAwPKCsMKwwQKA8oECcQJxAnECcr5ysMLAwPKCsMKw0PKA8oECcQJxAnECgr6SsMKw0PKCsMKwwQKA8oDygQJxAnECcr6isNKwwQJysMLAwQJxAnECcQKA8oDygrAA0FAAAAAAAA'
+  - platform: broadlink
+    host: RemoteMini
+    mac: 78:0F:77:47:AA:8F
+    friendly_name: Remote Mini
+    type: rm_mini
+    switches:
+      mitsubishi:
+        friendly_name: Mitsubishi
+        command_on: 'JgBMAnE2DykPKQ8NDg4ODg4qDw0ODg8pDykPDQ0rDwwODg4qDyoODg4qDykODg4ODSsODg0ODioPDQ4ODg4ODg4ODg4ODg4ODg4ODg4ODQ8NDg4ODg4ODg4ODg4ODg4ODioODg4ODg4ODg0PDSoOKg4ODioPDQ4ODg4ODg4qDg4ODg4ODg4ODg0rDioODg4ODQ4OKw0ODioOKg4ODg4ODg4qDioODg4qDioOKg4qDg4ODg4ODioODg4ODg4ODg4ODg4ODg0PDQ4ODg4ODg4ODg4ODg4PDQ4ODg4PDQ8NDQ8PDBAMDg4QDA4OEAwQDBAoDg4ODg4ODw0ODg8NDQ8PDA4ODg4QDA4OEAwODhAMDg4PDQ8NDw0PKQ4ODygOKg4qDg4OKg4qDgACA284DSoOKg4ODg4ODg4qDg4ODg4qDioODg4qDg4ODg4qDioODg4qDioODg4ODioODg4ODioODg4ODg4ODg0ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODQ8NDg4ODisNDg4ODg4ODg4ODioOKg4ODioODg4ODg4ODg0rDQ4ODg4ODg4ODg4qDioODg4ODg4OKg4ODioOKg4ODg4PDQ0qDykPDQ8pDykPKQ8pDw0ODg4ODisPDQ0OEAwODg8NDg4PDQ4ODw0ODg8NDg4PDQ0PDwwODg4OEA0ODQ4ODw0ODg4ODw0ODhAMDQ8PDQ0qEQsODhAMDg4QDA4ODw0ODg8NDg4PDQ4ODw0NDhAMDg4PDQ8NDg4PKQ8NDioPKRAoEAwOKhAoEAANBQAAAAAAAAAAAAAAAA=='
+        command_off: 'JgBMAnI1EScQKBEKEA0QCxEoEAsRCxEnEScRCxAoEQsRCxEnEScSCg8qECcSChELEScRCxELECgRCxELEQsQCxELEQsRDBAMEAsRCxELEQsRCxELEQsRCxAMEAsRDBAMEAsRCxEMEAsRCxELEScRJxIJESgRCxELEAwQCw4rEAsQDRALEQsRCxAoEScRCxELEQsRJxELDykRJxAMEAwQDBAoECgQCxApECgQCxELDg4RCxELEQsRCxELEQsQDBAMEAsRDBALEQsRCxELEQsRCxELEQsQDBAMEAwQCxELEQsRCxELEQsRCxELEQsRCxAoEQsQDBAMEAwODhALEA0QCw4ODg4RCw4ODw0QDA4OEAwODg4ODg4QKBAMEAwNDhEnECgQDA4ODgACBXA3DykPKQ8NDQ4ODg4qDg4ODg4qDioPDQ4qDg4ODg4qDioODg4qDioODg4ODioODg4ODioODg4ODg4ODg0PDQ4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4NDw0PDQ4ODg4ODg4ODg4ODioOKg4ODioODg4ODg4ODg0rDg4NDg4ODg4ODg4qDioODg4ODg4OKg4ODioOKg4ODg4NDw0rDioODg0qDioODg4ODg4ODg4ODg4ODg8NDg4ODg4ODQ8NDw0ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg0PDQ4ODg4ODg4ODg4ODg4ODg4qDg4ODg4ODg4NDw0PDQ4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODQ8NKw4NDg4ODg4qDioODg4ODQANBQAAAAAAAAAAAAAAAA=='
+  - platform: template
+    switches:
+      projector:
+        friendly_name: Projector
+        value_template: "{{ is_state('device_tracker.himedia', 'home') }}"
+        turn_on:
+          - service: switch.turn_on
+            entity_id: switch.storage
+          - service: switch.broadlink_send_packet_remotemini
+            data:
+              packet:
+                - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+                - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
+        turn_off:
+          - service: switch.broadlink_send_packet_remotemini
+            data:
+              packet:
+                - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
+                - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+                - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
+
+#
+light:
+  - platform: yeelight
+    devices:
+      Lamp:
+        name: Lamp
+        transition: 1000
+
+  - platform: mqtt
+    name: Hassmart1A
+    state_topic: Hassmart1/relay/0
+    command_topic: Hassmart1/relay/0/set
+    availability_topic: Hassmart1/status
+  - platform: mqtt
+    name: Hassmart1B
+    state_topic: Hassmart1/relay/1
+    command_topic: Hassmart1/relay/1/set
+    availability_topic: Hassmart1/status
+  - platform: mqtt
+    name: Hassmart1C
+    state_topic: Hassmart1/relay/2
+    command_topic: Hassmart1/relay/2/set
+    availability_topic: Hassmart1/status
+
+  - platform: mqtt
+    name: Hassmart2A
+    state_topic: Hassmart2/relay/0
+    command_topic: Hassmart2/relay/0/set
+    availability_topic: Hassmart2/status
+  - platform: mqtt
+    name: Hassmart2B
+    state_topic: Hassmart2/relay/1
+    command_topic: Hassmart2/relay/1/set
+    availability_topic: Hassmart2/status
+
+  - platform: mqtt
+    name: Hassmart3A
+    state_topic: Hassmart3/relay/0
+    command_topic: Hassmart3/relay/0/set
+    availability_topic: Hassmart3/status
+  - platform: mqtt
+    name: Hassmart3B
+    state_topic: Hassmart3/relay/1
+    command_topic: Hassmart3/relay/1/set
+    availability_topic: Hassmart3/status
+  - platform: mqtt
+    name: Hassmart3C
+    state_topic: Hassmart3/relay/2
+    command_topic: Hassmart3/relay/2/set
+    availability_topic: Hassmart3/status
+
+  - platform: mqtt
+    name: Hassmart4A
+    state_topic: Hassmart4/relay/0
+    command_topic: Hassmart4/relay/0/set
+    availability_topic: Hassmart4/status
+  - platform: mqtt
+    name: Hassmart4B
+    state_topic: Hassmart4/relay/1
+    command_topic: Hassmart4/relay/1/set
+    availability_topic: Hassmart4/status
+
+  - platform: mqtt
+    name: Hassmart5A
+    state_topic: Hassmart5/relay/0
+    command_topic: Hassmart5/relay/0/set
+    availability_topic: Hassmart5/status
+  - platform: mqtt
+    name: Hassmart5B
+    state_topic: Hassmart5/relay/1
+    command_topic: Hassmart5/relay/1/set
+    availability_topic: Hassmart5/status
+  - platform: mqtt
+    name: Hassmart5C
+    state_topic: Hassmart5/relay/2
+    command_topic: Hassmart5/relay/2/set
+    availability_topic: Hassmart5/status
+
+  - platform: mqtt
+    name: Hassmart6A
+    state_topic: Hassmart6/relay/0
+    command_topic: Hassmart6/relay/0/set
+    availability_topic: Hassmart6/status
+
+  - platform: mqtt
+    name: Sonoff1
+    state_topic: Sonoff1/relay/0
+    command_topic: Sonoff1/relay/0/set
+    availability_topic: Sonoff1/status
+  - platform: mqtt
+    name: Sonoff1B
+    state_topic: Sonoff1/relay/1
+    command_topic: Sonoff1/relay/1/set
+    availability_topic: Sonoff1/status
+  - platform: mqtt
+    name: Sonoff2
+    state_topic: Sonoff2/relay/0
+    command_topic: Sonoff2/relay/0/set
+    availability_topic: Sonoff2/status
+
+#
+shell_command:
+  turn_off_storage: 'ssh root@Storage shutdown -h now'
+
+#
+xiaomi_aqara:
+  gateways:
+      - mac: 34CE0090901A
+        key: 3ECB50168D7F4AEB
+
+#
+vacuum:
+   - platform: xiaomi_miio
+     name: Vacuum
+     host: Vacuum
+     token: 697331504a6d63563564674e32384252
+
+#
+fan:
+  - platform: xiaomi_miio
+    name: Purifier
+    host: Purifier
+    model: zhimi.airpurifier.m1
+    token: 7a1b88555eae07ae5eb3ee26b3354dd4
+  - platform: xiaomi_miio_fan
+    name: Fan
+    host: Fan
+    model: zhimi.fan.v3
+    token: 62df0c2f98752f87aa3c6258bf862c9b
+  - platform: xiaomi_miio_airfresh
+    name: Fresher
+    host: Fresher
+    model: zhimi.airfresh.va2
+    token: bb1ee8999ee6bc7ce075a424bca664c3
+  - platform: mqtt
+    name: Kids Purifier
+    state_topic: NodeMCU4/relay/0
+    command_topic: NodeMCU4/relay/0/set
+    availability_topic: NodeMCU4/status
+    oscillation_state_topic: NodeMCU4/relay/1
+    oscillation_command_topic: NodeMCU4/relay/1/set
+    speed_state_topic: NodeMCU4/relay/2
+    speed_command_topic: NodeMCU4/relay/2/set
+    payload_low_speed: 'OFF'
+    payload_high_speed: 'ON'
+    speeds:
+      - low
+      - high
+  - platform: mqtt
+    name: Diningroom Purifier
+    state_topic: NodeMCU5/relay/0
+    command_topic: NodeMCU5/relay/0/set
+    availability_topic: NodeMCU5/status
+    oscillation_state_topic: NodeMCU5/relay/1
+    oscillation_command_topic: NodeMCU5/relay/1/set
+    speed_state_topic: NodeMCU5/relay/0
+    speed_command_topic: NodeMCU5/relay/0/set
+    state_value_template: "{% if value == '0' %}OFF{% else %}ON{% endif %}"
+    payload_low_speed: '1'
+    payload_medium_speed: '5'
+    payload_high_speed: '4'
+    speeds:
+      - low
+      - medium
+      - high
+  - platform: mqtt
+    name: Parents Purifier
+    state_topic: NodeMCU6/relay/0
+    command_topic: NodeMCU6/relay/0/set
+    availability_topic: NodeMCU6/status
+    oscillation_state_topic: NodeMCU6/relay/1
+    oscillation_command_topic: NodeMCU6/relay/1/set
+    speed_state_topic: NodeMCU6/relay/0
+    speed_command_topic: NodeMCU6/relay/0/set
+    state_value_template: "{% if value == '0' %}OFF{% else %}ON{% endif %}"
+    payload_low_speed: '1'
+    payload_medium_speed: '5'
+    payload_high_speed: '6'
+    speeds:
+      - low
+      - medium
+      - high
+  - platform: mqtt
+    name: Bedroom Purifier
+    state_topic: NodeMCU7/relay/0
+    command_topic: NodeMCU7/relay/0/set
+    availability_topic: NodeMCU7/status
+    oscillation_state_topic: NodeMCU7/relay/1
+    oscillation_command_topic: NodeMCU7/relay/1/set
+    speed_state_topic: NodeMCU7/relay/0
+    speed_command_topic: NodeMCU7/relay/0/set
+    state_value_template: "{% if value == '0' %}OFF{% else %}ON{% endif %}"
+    payload_low_speed: '1'
+    payload_medium_speed: '5'
+    payload_high_speed: '6'
+    speeds:
+      - low
+      - medium
+      - high
+  - platform: template
+    fans:
+      wall_fan:
+        friendly_name: "Wall Fan"
+        value_template: "{{ states('input_boolean.wall_fan_state') }}"
+        speed_template: "{{ states('input_select.wall_fan_speed') }}"
+        direction_template: "{% if is_state('input_boolean.wall_fan_direction', 'on') %}forward{% else %}reverse{% endif %}"
+        oscillating_template: "{% if is_state('input_boolean.wall_fan_osc', 'on') %}True{% else %}False{% endif %}"
+        turn_on:
+          - condition: template
+            value_template: "{{ is_state('input_boolean.wall_fan_state', 'off') }}"
+          - service: switch.broadlink_send_packet_remotectrl
+            data:
+              packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
+          - service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.wall_fan_state
+        turn_off:
+          - condition: template
+            value_template: "{{ is_state('input_boolean.wall_fan_state', 'on') }}"
+          - service: switch.broadlink_send_packet_remotectrl
+            data:
+              packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
+          - service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.wall_fan_state
+        set_speed:
+          - condition: template
+            value_template: "{{ not is_state('input_select.wall_fan_speed', speed) }}"
+          - service: switch.broadlink_send_packet_remotectrl
+            data:
+              packet: 'JgDCACkOKg4OKSoNKg4qDg4pDikOKQ4qKQ4q6SoOKQ4OKSoOKg4pDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6yoOKQ4OKSoOKg0qDg4pDioNKg4pKg4p7CkOKg0PKSkOKg4pDg4pDioOKQ4pKg4p6yoNKg4OKSkOKg4pDg4pDioOKQ4pKQ4q6yoNKg4OKSkOKg4pDg4pDikOKg4pKQ4qAA0FAAAAAAAA'
+          - service: input_select.select_next
+            data:
+              entity_id: input_select.wall_fan_speed
+        set_oscillating:
+          - service: switch.broadlink_send_packet_remotectrl
+            data:
+              packet: 'JgDqACkOKg0PKSkOKQ4OKQ4qKQ4OKQ4pDikPAAEDKg4pDg4pKQ4qDg4pDikpDg8pDikOKQ4AAQQpDioODikpDikODykOKSkODikOKQ4qDgABBCkOKQ4OKSoNKg4OKQ4pKg4OKQ4pDikOAAEHKg0qDg4pKQ4pDg4pDykpDg4pDikOKQ4AAQgqDSoODikpDioODikOKSkODikPKQ4pDgABByoNKg4OKSkOKg4OKQ4pKg0OKQ4qDikOAAEHKQ4qDQ8oKg4pDg4pDykpDg4pDikOKQ4AAQcqDikODikpDioODikOKSkODykOKQ4pDgANBQAAAAAAAAAAAAAAAAAA'
+          - service: input_boolean.toggle
+            data:
+              entity_id: input_boolean.wall_fan_osc
+        set_direction:
+          - service: switch.broadlink_send_packet_remotectrl
+            data_template:
+              packet: "{% if direction == 'forward' %}'JgDyACwLLAwQJywLLAwsCxApDigQJw8oLAwr5ywMLAsQJywMLAssDBAnECcQKA8oKQ4s5ywMKwwQJyoOLAssDBAnDykQJw8oLAwr6CsMLAwQJywLLAwsCxEnECcPKA8pKwws6SwMLAsRJysMLAwrDBAoECcQJxAnLAws6SwLLAwQJywMKwwsDBAnECcQJxAoKQ4s6SsMLAsRJysMLAwrDBAnECcRJxAnKQ4s6SsMLAsQJywMKwwsDBAnDygQJxAoKwwr6isMLAsQKCsMKwwsDBAnECcQJxAnLAwr6iwLLAwQKCoMLAwrDBAnECcQKA4pKQ4sAA0FAAAAAAAA'{% else %}'JgDqACkOKQ8NKikPKQ4qDg0qDSoOKigPKQ8NAAEGKA8pDw0qKQ8oDykPDSoNKw0qKQ8oDw0AAQcoDykPDSoqDigPKQ8NKg8pECcrDSgPDQABBisNKQ8NKikOKQ8pDw8oECcQKCsMKw0PAAEFLAwqDQ8pKwwrDSoNDykQJxAnKw0qDQ8AAQYrDCsNECcrDCsNKg0PKRAnECcsDCoNDwABBSwMKA8NKiwMKA8pDw0qECcQJywMKA8NAAEIKg0pDg4qKg0pDygPDSoQJxAoKwwpDg8AAQYsDCoNDygsDCoNKg0PKRAnECcrDCsNDwANBQAAAAAAAAAAAAAAAAAA'{% endif %}"
+          - service: input_boolean.toggle
+            data:
+              entity_id: input_boolean.wall_fan_direction
+
+#
+climate:
+  - platform: saswell
+    username: !secret saswell_username
+    password: !secret saswell_password
+  - platform: modbus
+    name: Daikin
+    temperature: {registers: [3,6,9,12], register_type: input, scale: 0.1}
+    target_temperature: {registers: [4,8,12,16]}
+    operation: {registers: [5,9,13,17]}
+    fan: {registers: [6,10,14,18]}
+    is_on: {registers: [1,2,3,4], register_type: coil}
+    operation_list: ['off', cool, heat, dehum, blow]
+    fan_list: [自动, 一级, 二级, 三级, 四级, 五级]
+
+#
+media_player:
+  - platform: braviatv
+    host: X9300d
+    name: X9300d
+  - platform: braviatv
+    host: X9400e
+    name: X9400e
+
+# apple_tv:
+#   - host: AppleTV
+#     login_id: '00000000-3c08-4dfe-85e9-307cddc945b6'
+
+#
+panel_iframe:
+  nodemcu:
+    title: 室内
+    icon: mdi:chart-line
+    url: !secret nodemcu_url
+  nodemcu2:
+    title: 阳台
+    icon: mdi:chart-areaspline
+    url: !secret nodemcu2_url
+  appdaemon:
+    title: 面板
+    icon: mdi:microsoft
+    url: !secret appdaemon_url
+
+#
+hello_miai:
+  miid: !secret miai_miid
+  password: !secret miai_password
+
+input_text:
+  miai:
+    name: MiAI
+    initial: 我是小爱
+
+input_boolean:
+  wall_fan_state:
+  wall_fan_osc:
+  wall_fan_direction:
+
+input_select:
+  wall_fan_speed:
+    options: [low, medium, high]

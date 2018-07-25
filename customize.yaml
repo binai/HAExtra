@@ -1,0 +1,406 @@
+automation.air_quality_restored:
+  friendly_name: 空气质量达标
+automation.air_quality_warning:
+  friendly_name: 空气质量警告
+automation.balcony_door_toggled:
+  friendly_name: 阳台移门开合
+automation.co2_freshed:
+  friendly_name: 二氧化碳清新
+automation.co2_staled:
+  friendly_name: 二氧化碳混浊
+automation.diningroom_light_sync:
+  friendly_name: 餐厅灯开关同步
+automation.humidity_overflow:
+  friendly_name: 空气湿度超标
+automation.humidity_restored:
+  friendly_name: 空气湿度恢复
+automation.miai_text_to_speech:
+  friendly_name: 小爱音箱文本朗读
+automation.parlor_light_sync:
+  friendly_name: 客厅灯开关同步
+automation.passage_backlight_reaction:
+  friendly_name: 过道背景灯感应开关
+automation.passage_light_off_brighten:
+  friendly_name: 过道灯白天变亮关
+automation.passage_light_off_day:
+  friendly_name: 过道灯白天感应关
+automation.passage_light_off_night:
+  friendly_name: 过道灯晚上感应关
+automation.passage_light_on_day:
+  friendly_name: 过道灯白天感应开
+automation.passage_light_on_night:
+  friendly_name: 过道灯晚上感应开
+automation.passage_light_sync:
+  friendly_name: 过道灯开关同步
+automation.study_light_sync:
+  friendly_name: 书房灯开关同步
+automation.washroom_light_reaction:
+  friendly_name: 洗手间灯感应开关
+automation.xiaomi_switch_pressed:
+  friendly_name: 无线开关长按
+binary_sensor.door_window_sensor_158d0001f3e5be:
+  friendly_name: 入户门
+binary_sensor.door_window_sensor_158d000228a52b:
+  friendly_name: 阳台移门
+binary_sensor.lightness:
+  friendly_name: 高亮光照
+binary_sensor.motion_sensor_158d0001d66ce9:
+  friendly_name: 过道人体感应
+binary_sensor.motion_sensor_158d0001f4a238:
+  friendly_name: 洗手间人体感应
+binary_sensor.switch_158d0001e59b33:
+  friendly_name: 无线开关
+binary_sensor.switch_158d000201a73f:
+  friendly_name: 门铃开关
+climate.daikin1:
+  friendly_name: 餐厅空调
+climate.daikin2:
+  friendly_name: 客厅空调
+climate.daikin3:
+  friendly_name: 主卧空调
+climate.daikin4:
+  friendly_name: 儿童房空调
+climate.saswell:
+  friendly_name: 客厅地暖
+  hagenie_deviceName: 取暖器
+  hagenie_deviceType: heater
+climate.saswell2:
+  friendly_name: 餐厅地暖
+  hagenie_deviceName: 取暖器
+  hagenie_deviceType: heater
+fan.fan:
+  friendly_name: 落地扇
+fan.fresher:
+  friendly_name: 新风系统
+  hagenie_deviceType: VMC
+  hagenie_deviceName: 新风机
+  icon: mdi:leaf
+fan.diningroom_purifier:
+  friendly_name: 餐厅净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.purifier:
+  friendly_name: 书房净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.kids_purifier:
+  friendly_name: 儿童房净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.bedroom_purifier:
+  friendly_name: 主卧净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.parents_purifier:
+  friendly_name: 次卧净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.wall_fan:
+  friendly_name: 壁扇
+  icon: mdi:fan
+group.all_automations:
+  friendly_name: 自动化
+  hidden: false
+group.all_devices:
+  friendly_name: 设备
+group.all_fans:
+  friendly_name: 风扇
+  hidden: false
+group.all_lights:
+  friendly_name: 灯光
+  hidden: false
+group.all_remotes:
+  friendly_name: 遥控器
+  hidden: false
+group.all_switches:
+  friendly_name: 开关
+  hidden: false
+group.all_vacuum_cleaners:
+  friendly_name: 扫地机
+  hidden: false
+group.automations:
+  friendly_name: 智能
+group.balcony:
+  friendly_name: 阳台
+group.bedroom:
+  friendly_name: 卧室
+group.controls:
+  friendly_name: 控制
+group.default_view:
+  friendly_name: 总览
+group.diningroom:
+  friendly_name: 餐厅
+group.hallway:
+  friendly_name: 玄关
+group.kitchen:
+  friendly_name: 厨房
+group.office:
+  friendly_name: 工位
+  hagenie_zone: 工作间
+group.outside:
+  friendly_name: 室外
+  hagenie_zone: 门口
+group.parlor:
+  friendly_name: 客厅
+group.passage:
+  friendly_name: 过道
+group.study:
+  friendly_name: 书房
+group.washroom:
+  friendly_name: 洗手间
+input_boolean.wall_fan_direction:
+  friendly_name: 壁扇方向
+input_boolean.wall_fan_osc:
+  friendly_name: 壁扇摇头
+input_boolean.wall_fan_state:
+  friendly_name: 壁扇状态
+input_select.purify2_speed:
+  friendly_name: 儿童房净化器风速
+input_select.wall_fan_speed:
+  friendly_name: 壁扇风速
+input_text.miai:
+  friendly_name: 小爱音箱
+  icon: mdi:speaker-wireless
+light.gateway_light_34ce0090901a:
+  friendly_name: 壁灯
+light.hassmart1a:
+  friendly_name: 玄关筒灯
+  icon: mdi:spotlight
+light.hassmart1b:
+  friendly_name: 玄关灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.hassmart1c:
+  friendly_name: 餐厅灯2
+  hidden: true
+  icon: mdi:ceiling-light
+light.hassmart2a:
+  friendly_name: 餐厅灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.hassmart2b:
+  friendly_name: 过道筒灯
+  icon: mdi:spotlight
+light.hassmart3a:
+  friendly_name: 客厅灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.hassmart3b:
+  friendly_name: 客厅筒灯
+  icon: mdi:spotlight
+light.hassmart3c:
+  friendly_name: 餐厅筒灯
+  icon: mdi:spotlight
+light.hassmart4a:
+  friendly_name: 客厅灯2
+  hidden: true
+  icon: mdi:ceiling-light
+light.hassmart4b:
+  friendly_name: 阳台灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.hassmart5a:
+  friendly_name: 过道灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.hassmart5b:
+  friendly_name: 书房灯2
+  hidden: true
+  icon: mdi:ceiling-light
+light.hassmart5c:
+  friendly_name: 书房灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.hassmart6a:
+  friendly_name: 洗手间灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.lamp:
+  friendly_name: 台灯
+  icon: mdi:lamp
+light.sonoff1:
+  friendly_name: 过道背景灯
+  icon: mdi:spotlight-beam
+light.sonoff1b:
+  friendly_name: 过道灯2
+  hidden: true
+  icon: mdi:ceiling-light
+light.sonoff2:
+  friendly_name: 天花灯
+  icon: mdi:ceiling-light
+media_player.apple_tv:
+  friendly_name: 苹果电视
+media_player.x9300d:
+  friendly_name: 主卧电视
+media_player.x9400e:
+  friendly_name: 客厅电视
+remote.apple_tv:
+  friendly_name: 苹果遥控
+sensor.balcony_humidity:
+  device_class: humidity
+  friendly_name: 阳台湿度
+  icon: mdi:water-percent
+sensor.balcony_pm25:
+  friendly_name: 阳台颗粒物
+  hagenie_zone: 阳台
+  icon: mdi:blur
+sensor.balcony_temperature:
+  friendly_name: 阳台温度
+sensor.caiyun_aqi:
+  friendly_name: 空气指数
+sensor.caiyun_cloud_rate:
+  friendly_name: 云量
+sensor.caiyun_co:
+  friendly_name: 室外一氧化碳
+sensor.caiyun_humidity:
+  device_class: humidity
+  friendly_name: 室外湿度
+sensor.caiyun_local_precipitation:
+  friendly_name: 降水强度
+sensor.caiyun_nearest_precipitation:
+  friendly_name: 附近降水强度
+sensor.caiyun_no2:
+  friendly_name: 室外二氧化氮
+sensor.caiyun_o3:
+  friendly_name: 室外臭氧
+sensor.caiyun_pm10:
+  friendly_name: 室外大颗粒物
+sensor.caiyun_pm25:
+  friendly_name: 室外颗粒物
+sensor.caiyun_precipitation_distance:
+  friendly_name: 附近降水距离
+sensor.caiyun_pressure:
+  friendly_name: 气压
+sensor.caiyun_so2:
+  friendly_name: 室外二氧化硫
+sensor.caiyun_temperature:
+  friendly_name: 室外气温
+sensor.caiyun_weather:
+  friendly_name: 天气
+sensor.caiyun_wind_direction:
+  friendly_name: 风向
+sensor.caiyun_wind_speed:
+  friendly_name: 风速
+sensor.co2:
+  friendly_name: 二氧化碳
+  hagenie_zone: 主卧
+  icon: mdi:periodic-table-co2
+sensor.fresher_co2:
+  friendly_name: 新风二氧化碳
+sensor.fresher_humidity:
+  device_class: humidity
+  friendly_name: 新风湿度
+  icon: mdi:water-percent
+sensor.fresher_pm25:
+  friendly_name: 新风颗粒物
+  icon: mdi:blur
+sensor.fresher_temperature:
+  friendly_name: 新风温度
+sensor.hcho:
+  friendly_name: 甲醛
+  hagenie_zone: 主卧
+  icon: mdi:biohazard
+sensor.humidity:
+  device_class: humidity
+  friendly_name: 湿度
+  hagenie_zone: 主卧
+  icon: mdi:water-percent
+sensor.illumination_34ce0090901a:
+  friendly_name: 亮度
+  icon: mdi:lightbulb-on-outline
+sensor.phicomm2_hcho:
+  friendly_name: 工位甲醛
+sensor.phicomm2_humidity:
+  device_class: humidity
+  friendly_name: 工位湿度
+sensor.phicomm2_pm25:
+  friendly_name: 工位颗粒物
+sensor.phicomm2_temperature:
+  friendly_name: 工位温度
+sensor.phicomm3_hcho:
+  friendly_name: 卧室甲醛
+sensor.phicomm3_humidity:
+  device_class: humidity
+  friendly_name: 卧室湿度
+sensor.phicomm3_pm25:
+  friendly_name: 卧室颗粒物
+sensor.phicomm3_temperature:
+  friendly_name: 卧室温度
+sensor.phicomm_hcho:
+  friendly_name: 餐厅甲醛
+sensor.phicomm_humidity:
+  device_class: humidity
+  friendly_name: 餐厅湿度
+sensor.phicomm_pm25:
+  friendly_name: 餐厅颗粒物
+sensor.phicomm_temperature:
+  friendly_name: 餐厅温度
+sensor.pm25:
+  friendly_name: 颗粒物
+  hagenie_zone: 主卧
+  icon: mdi:blur
+sensor.purifier_humidity:
+  device_class: humidity
+  friendly_name: 书房湿度
+  icon: mdi:water-percent
+sensor.purifier_pm25:
+  friendly_name: 书房颗粒物
+  icon: mdi:blur
+sensor.purifier_temperature:
+  friendly_name: 书房温度
+sensor.speaker_status:
+  friendly_name: 音箱状态
+  icon: mdi:speaker
+sensor.parents_co2:
+  friendly_name: 次卧二氧化碳
+  hagenie_zone: 次卧
+  icon: mdi:periodic-table-co2
+sensor.kids_co2:
+  friendly_name: 儿童房二氧化碳
+  hagenie_zone: 儿童房
+  icon: mdi:periodic-table-co2
+sensor.temperature:
+  friendly_name: 温度
+  hagenie_zone: 主卧
+sun.sun:
+  friendly_name: 日照
+switch.hassmart6b:
+  friendly_name: 洗手间排气扇
+  hagenie_deviceName: 顶扇
+  hagenie_deviceType: fan
+  icon: mdi:fan
+switch.mitsubishi:
+  friendly_name: 书房空调
+  hagenie_deviceType: aircondition
+  icon: mdi:air-conditioner
+switch.nodemcu3a:
+  friendly_name: 儿童房净化器开关
+switch.nodemcu3b:
+  friendly_name: 儿童房净化器离子
+switch.nodemcu3c:
+  friendly_name: 儿童房净化器风速
+switch.outlet:
+  friendly_name: 除湿机
+  hagenie_deviceType: dehumidifier
+  icon: mdi:power-socket-uk
+switch.projector:
+  friendly_name: 投影仪
+  hagenie_deviceType: television
+  hagenie_deviceName: 电视
+  icon: mdi:projector
+switch.speaker:
+  friendly_name: 音箱
+  icon: mdi:speaker
+  hagenie_deviceName: 机顶盒
+  hagenie_deviceType: STB
+switch.storage:
+  friendly_name: 网络存储
+  hagenie_deviceName: 网关
+  hagenie_deviceType: gateway
+  icon: mdi:harddisk
+updater.updater:
+  friendly_name: 有更新
+vacuum.vacuum:
+  friendly_name: 扫地机
+zone.home:
+  friendly_name: 我家

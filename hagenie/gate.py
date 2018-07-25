@@ -14,7 +14,7 @@ except ImportError:
 #
 def log(message):
     pass
-    #sys.stderr.write(message + '\n')
+    sys.stderr.write(message + '\n')
 
 
 # Log HTTP payload
@@ -26,35 +26,33 @@ if REQUEST_METHOD:
 
 
 _accessToken = None
-_ignoreAlias = False
+_checkAlias = False
 def validateToken(payload):
     #return 'accessToken' in payload and payload['accessToken'] == '25ec6cb46565638b1d3f58c3230ce99742a23622'
     if 'accessToken' in payload:
         global _accessToken
-        global _ignoreAlias
+        global _checkAlias
         _accessToken = payload['accessToken']
         if _accessToken.startswith('http') and (not 'xx.' in _accessToken):
-            parts = _accessToken.split(':')
-            _ignoreAlias = parts[1][-1:].isupper()   # Trick
-            if not parts[1].startswith('//'):
-                _accessToken = parts[0] + '://' + parts[1] + ':' + parts[2]
-                #log('Rebuild accessToken: ' + _accessToken)
+            parts = _accessToken.split('_')
+            _checkAlias = parts[1][-1:].isupper()   # Trick
+            _accessToken = parts[0] + '://' + parts[1] + ':' + parts[2] + '/api/%s'
+            if parts[3]:
+                _accessToken += '?api_password=' + parts[3]
+            #log('Rebuild accessToken: ' + _accessToken)
             return True
     return False
 
 
 def haCall(cmd, data=None):
-    index = _accessToken.index('?')
-    client_id = _accessToken[:index]
-    client_scret = _accessToken[index+1:]
-    url = client_id + '/api/' + cmd + '?api_password=' + client_scret
+    url = _accessToken % cmd
     method = 'POST' if data else 'GET'
-    log('HA ' + method + ' ' + url)# + (('?api_password=' + client_scret) if client_scret else ''))
+    log('HA ' + method + ' ' + url)
     if data:
         log(data)
     if url.startswith('https'): # We need extra requests lib for HTTPS POST
         import requests
-        result = requests.request(method, url, data=data, verify=False, timeout=3).text
+        result = requests.request(method, url, data=data, timeout=3).text
     else:
         result = urlopen(url, data=data, timeout=3).read()
 
@@ -157,7 +155,7 @@ def guessDeviceName(entity_id, attributes, places, aliases):
             name = name[len(place):]
             break
 
-    if aliases is None:
+    if aliases is None or entity_id.startswith('sensor'):
         return name
 
 
@@ -239,7 +237,7 @@ def discoveryDevice():
     #services = haCall('services')
 
     places = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/placelist').read())['data']
-    if not _ignoreAlias:
+    if _checkAlias:
         aliases = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/aliaslist').read())['data']
         aliases.append({'key': '电视', 'value': ['电视机']})
     else:
@@ -413,7 +411,7 @@ try:
             'header':{'namespace': 'AliGenie.Iot.Device.Discovery', 'name': 'DiscoveryDevices', 'messageId': 'd0c17289-55df-4c8c-955f-b735e9bdd305'},
             #'header':{'namespace': 'AliGenie.Iot.Device.Control', 'name': 'TurnOn', 'messageId': 'd0c17289-55df-4c8c-955f-b735e9bdd305'},
             #'header':{'namespace': 'AliGenie.Iot.Device.Query', 'name': 'Query', 'messageId': 'd0c17289-55df-4c8c-955f-b735e9bdd305'},
-            'payload':{'accessToken':'https://xxx.xxx.x.xxX:8123?password'}
+            'payload':{'accessToken':'https_192.168.1.10_8123_'}
             }
     _response = handleRequest(_request)
 except:

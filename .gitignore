@@ -1,5 +1,11 @@
-
-server.pem
-
 __pycache__
-.aircat.token
+.*
+*.conf
+*.cer
+*.key
+*.pem
+Secrets.yaml
+known_devices.yaml
+www/*.jpg
+entity_registry.yaml
+appdaemon.yaml

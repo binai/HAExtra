@@ -1,0 +1,181 @@
+default_view:
+    view: yes
+    icon: mdi:home-assistant
+    entities:
+      # - device_tracker.xphone
+      # - device_tracker.yphone
+      # - device_tracker.zphone
+      # - device_tracker.himedia
+      - group.hallway
+      - group.diningroom
+      - group.kitchen
+      - group.parlor
+      - group.balcony
+      - group.passage
+      - group.washroom
+      - group.bedroom
+      - group.study
+      - group.office
+      - group.outside
+      - sensor.temperature
+      - sensor.humidity
+      - sensor.co2
+      - sensor.hcho
+      - sensor.pm25
+      - sensor.balcony_pm25
+
+Hallway:
+    entities:
+      - binary_sensor.door_window_sensor_158d0001f3e5be
+      - light.hassmart1b
+      - light.hassmart1a
+
+Diningroom:
+    entities:
+      - light.hassmart2a
+      #- light.hassmart1c
+      - light.hassmart3c
+      - climate.daikin1
+      - climate.saswell2
+      - switch.outlet
+      - light.gateway_light_34ce0090901a
+      - fan.diningroom_purifier
+      - sensor.illumination_34ce0090901a
+      - sensor.phicomm_temperature
+      - sensor.phicomm_humidity
+      - sensor.phicomm_pm25
+      - sensor.phicomm_hcho
+
+#Kitchen:
+#    entities:
+#      -
+
+Parlor:
+    entities:
+      - light.hassmart3a
+      #- light.hassmart4a
+      - light.hassmart3b
+      - remote.apple_tv
+      - media_player.x9400e
+      - media_player.apple_tv
+      - climate.daikin2
+      - climate.saswell
+      - fan.wall_fan
+      - fan.fresher
+      - sensor.fresher_co2
+      - sensor.fresher_humidity
+      - sensor.fresher_pm25
+      - sensor.fresher_temperature
+
+Balcony:
+    entities:
+      - light.hassmart4b
+      - binary_sensor.door_window_sensor_158d000228a52b
+      - sensor.balcony_temperature
+      - sensor.balcony_humidity
+      #- sensor.balcony_pm25
+
+Passage:
+    entities:
+      - light.hassmart5a
+      - light.hassmart2b
+      #- light.hassmart5b
+      - light.sonoff1
+      - switch.storage
+      - binary_sensor.motion_sensor_158d0001d66ce9
+      # - binary_sensor.lightness
+      - input_text.miai
+
+Washroom:
+    entities:
+      - light.hassmart6a
+      - switch.hassmart6b
+      - binary_sensor.motion_sensor_158d0001f4a238
+
+Study:
+    entities:
+      - light.hassmart5c
+      - light.sonoff2
+      - light.lamp
+      - switch.projector
+      - vacuum.vacuum
+      - switch.mitsubishi
+      - fan.purifier
+      - switch.speaker
+      - sensor.speaker_status
+      - sensor.purifier_temperature
+      - sensor.purifier_humidity
+      - sensor.purifier_pm25
+
+Bedroom:
+    entities:
+      - media_player.x9300d
+      - climate.daikin3
+      - climate.daikin4
+      - fan.fan
+      - fan.bedroom_purifier
+      - fan.parents_purifier
+      - fan.kids_purifier
+      - sensor.parents_co2
+      - sensor.kids_co2
+      - sensor.phicomm3_temperature
+      - sensor.phicomm3_humidity
+      - sensor.phicomm3_pm25
+      - sensor.phicomm3_hcho
+      # - sensor.temperature
+      # - sensor.humidity
+      # - sensor.pm25
+      # - sensor.co2
+      #- sensor.hcho
+
+Office:
+    entities:
+      - sensor.phicomm2_temperature
+      - sensor.phicomm2_humidity
+      - sensor.phicomm2_pm25
+      - sensor.phicomm2_hcho
+
+Outside:
+    entities:
+      - sun.sun
+      - sensor.caiyun_weather
+      - sensor.caiyun_temperature
+      - sensor.caiyun_humidity
+      - sensor.caiyun_cloud_rate
+      - sensor.caiyun_pressure
+      - sensor.caiyun_wind_direction
+      - sensor.caiyun_wind_speed
+      - sensor.caiyun_local_precipitation
+      - sensor.caiyun_nearest_precipitation
+      - sensor.caiyun_precipitation_distance
+      - sensor.caiyun_aqi
+      - sensor.caiyun_pm25
+      - sensor.caiyun_pm10
+      - sensor.caiyun_o3
+      - sensor.caiyun_co
+      - sensor.caiyun_no2
+      - sensor.caiyun_so2
+
+Controls:
+    view: yes
+    icon: mdi:set-center
+    entities:
+      - group.all_lights
+      - group.all_switches
+      - group.all_fans
+      - group.all_vacuum_cleaners
+      - group.all_remotes
+      - media_player.x9300d
+      - media_player.x9400e
+      - climate.saswell
+      - climate.saswell2
+      - climate.daikin1
+      - climate.daikin2
+      - climate.daikin3
+      - climate.daikin4
+
+Automations:
+    view: yes
+    icon: mdi:robot
+    entities:
+      - group.all_automations
