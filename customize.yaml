@@ -68,31 +68,31 @@ climate.saswell2:
   friendly_name: 餐厅地暖
   hagenie_deviceName: 取暖器
   hagenie_deviceType: heater
-fan.fan:
-  friendly_name: 落地扇
-fan.fresher:
-  friendly_name: 新风系统
-  hagenie_deviceType: VMC
-  hagenie_deviceName: 新风机
-  icon: mdi:leaf
-fan.diningroom_purifier:
-  friendly_name: 餐厅净化器
-  hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
-fan.purifier:
-  friendly_name: 书房净化器
-  hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
-fan.kids_purifier:
-  friendly_name: 儿童房净化器
-  hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
 fan.bedroom_purifier:
   friendly_name: 主卧净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
+fan.diningroom_purifier:
+  friendly_name: 餐厅净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.fan:
+  friendly_name: 落地扇
+fan.fresher:
+  friendly_name: 新风系统
+  hagenie_deviceName: 新风机
+  hagenie_deviceType: VMC
+  icon: mdi:leaf
+fan.kids_purifier:
+  friendly_name: 儿童房净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
 fan.parents_purifier:
   friendly_name: 次卧净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:weather-hail
+fan.purifier:
+  friendly_name: 书房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
 fan.wall_fan:
@@ -232,8 +232,10 @@ media_player.apple_tv:
   friendly_name: 苹果电视
 media_player.x9300d:
   friendly_name: 主卧电视
+  icon: mdi:play-circle-outline
 media_player.x9400e:
   friendly_name: 客厅电视
+  icon: mdi:play-circle-outline
 remote.apple_tv:
   friendly_name: 苹果遥控
 sensor.balcony_humidity:
@@ -308,6 +310,14 @@ sensor.humidity:
 sensor.illumination_34ce0090901a:
   friendly_name: 亮度
   icon: mdi:lightbulb-on-outline
+sensor.kids_co2:
+  friendly_name: 儿童房二氧化碳
+  hagenie_zone: 儿童房
+  icon: mdi:periodic-table-co2
+sensor.parents_co2:
+  friendly_name: 次卧二氧化碳
+  hagenie_zone: 次卧
+  icon: mdi:periodic-table-co2
 sensor.phicomm2_hcho:
   friendly_name: 工位甲醛
 sensor.phicomm2_humidity:
@@ -351,14 +361,6 @@ sensor.purifier_temperature:
 sensor.speaker_status:
   friendly_name: 音箱状态
   icon: mdi:speaker
-sensor.parents_co2:
-  friendly_name: 次卧二氧化碳
-  hagenie_zone: 次卧
-  icon: mdi:periodic-table-co2
-sensor.kids_co2:
-  friendly_name: 儿童房二氧化碳
-  hagenie_zone: 儿童房
-  icon: mdi:periodic-table-co2
 sensor.temperature:
   friendly_name: 温度
   hagenie_zone: 主卧
@@ -385,14 +387,14 @@ switch.outlet:
   icon: mdi:power-socket-uk
 switch.projector:
   friendly_name: 投影仪
-  hagenie_deviceType: television
   hagenie_deviceName: 电视
+  hagenie_deviceType: television
   icon: mdi:projector
 switch.speaker:
   friendly_name: 音箱
-  icon: mdi:speaker
   hagenie_deviceName: 机顶盒
   hagenie_deviceType: STB
+  icon: mdi:speaker
 switch.storage:
   friendly_name: 网络存储
   hagenie_deviceName: 网关

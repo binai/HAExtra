@@ -120,6 +120,8 @@ device_tracker:
     host: Router
     username: admin
     password: !secret http_password
+    interval_seconds: 300
+    consider_home: 360
     new_device_defaults:
       track_new_devices: false
       hide_if_away: true
