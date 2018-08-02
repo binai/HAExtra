@@ -100,9 +100,9 @@ Study:
       - switch.projector
       - vacuum.vacuum
       - switch.mitsubishi
-      - fan.purifier
       - switch.speaker
       #- sensor.speaker_status
+      - fan.purifier
       - sensor.purifier_temperature
       - sensor.purifier_humidity
       - sensor.purifier_pm25
@@ -116,24 +116,24 @@ Bedroom:
       - fan.bedroom_purifier
       - fan.parents_purifier
       - fan.kids_purifier
-      - sensor.parents_co2
-      - sensor.kids_co2
-      - sensor.phicomm3_temperature
-      - sensor.phicomm3_humidity
-      - sensor.phicomm3_pm25
-      - sensor.phicomm3_hcho
+      - sensor.phicomm2_temperature
+      - sensor.phicomm2_humidity
+      - sensor.phicomm2_pm25
+      - sensor.phicomm2_hcho
       # - sensor.temperature
       # - sensor.humidity
       # - sensor.pm25
       # - sensor.co2
       #- sensor.hcho
+      - sensor.parents_co2
+      - sensor.kids_co2
 
 Office:
     entities:
-      - sensor.phicomm2_temperature
-      - sensor.phicomm2_humidity
-      - sensor.phicomm2_pm25
-      - sensor.phicomm2_hcho
+      - sensor.phicomm3_temperature
+      - sensor.phicomm3_humidity
+      - sensor.phicomm3_pm25
+      - sensor.phicomm3_hcho
 
 Outside:
     entities:

@@ -1,43 +1,3 @@
-automation.air_quality_restored:
-  friendly_name: 空气质量达标
-automation.air_quality_warning:
-  friendly_name: 空气质量警告
-automation.balcony_door_toggled:
-  friendly_name: 阳台移门开合
-automation.co2_freshed:
-  friendly_name: 二氧化碳清新
-automation.co2_staled:
-  friendly_name: 二氧化碳混浊
-automation.diningroom_light_sync:
-  friendly_name: 餐厅灯开关同步
-automation.humidity_overflow:
-  friendly_name: 空气湿度超标
-automation.humidity_restored:
-  friendly_name: 空气湿度恢复
-automation.miai_text_to_speech:
-  friendly_name: 小爱音箱文本朗读
-automation.parlor_light_sync:
-  friendly_name: 客厅灯开关同步
-automation.passage_backlight_reaction:
-  friendly_name: 过道背景灯感应开关
-automation.passage_light_off_brighten:
-  friendly_name: 过道灯白天变亮关
-automation.passage_light_off_day:
-  friendly_name: 过道灯白天感应关
-automation.passage_light_off_night:
-  friendly_name: 过道灯晚上感应关
-automation.passage_light_on_day:
-  friendly_name: 过道灯白天感应开
-automation.passage_light_on_night:
-  friendly_name: 过道灯晚上感应开
-automation.passage_light_sync:
-  friendly_name: 过道灯开关同步
-automation.study_light_sync:
-  friendly_name: 书房灯开关同步
-automation.washroom_light_reaction:
-  friendly_name: 洗手间灯感应开关
-automation.xiaomi_switch_pressed:
-  friendly_name: 无线开关长按
 binary_sensor.door_window_sensor_158d0001f3e5be:
   friendly_name: 入户门
 binary_sensor.door_window_sensor_158d000228a52b:
@@ -68,6 +28,8 @@ climate.saswell2:
   friendly_name: 餐厅地暖
   hagenie_deviceName: 取暖器
   hagenie_deviceType: heater
+customizer.customizer:
+  friendly_name: 定制界面
 fan.bedroom_purifier:
   friendly_name: 主卧净化器
   hagenie_deviceType: airpurifier
@@ -79,22 +41,32 @@ fan.diningroom_purifier:
 fan.fan:
   friendly_name: 落地扇
 fan.fresher:
-  friendly_name: 新风系统
-  hagenie_deviceName: 新风机
+  friendly_name: 新风机
   hagenie_deviceType: VMC
   icon: mdi:leaf
 fan.kids_purifier:
   friendly_name: 儿童房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
+  # custom_ui_state_card: state-card-custom-ui
+  # extra_badge:
+  #   - entity_id: sensor.kids_co2
 fan.parents_purifier:
   friendly_name: 次卧净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
+  # custom_ui_state_card: state-card-custom-ui
+  # extra_badge:
+  #   - entity_id: sensor.parents_co2
 fan.purifier:
   friendly_name: 书房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
+  custom_ui_state_card: state-card-custom-ui
+  # extra_badge:
+  #   - entity_id: sensor.purifier_temperature
+  #   - entity_id: sensor.purifier_humidity
+  #   - entity_id: sensor.purifier_pm25
 fan.wall_fan:
   friendly_name: 壁扇
   icon: mdi:fan
@@ -289,6 +261,7 @@ sensor.co2:
   icon: mdi:periodic-table-co2
 sensor.fresher_co2:
   friendly_name: 新风二氧化碳
+  icon: mdi:periodic-table-co2
 sensor.fresher_humidity:
   device_class: humidity
   friendly_name: 新风湿度
@@ -318,23 +291,23 @@ sensor.parents_co2:
   friendly_name: 次卧二氧化碳
   hagenie_zone: 次卧
   icon: mdi:periodic-table-co2
-sensor.phicomm2_hcho:
-  friendly_name: 工位甲醛
-sensor.phicomm2_humidity:
-  device_class: humidity
-  friendly_name: 工位湿度
-sensor.phicomm2_pm25:
-  friendly_name: 工位颗粒物
-sensor.phicomm2_temperature:
-  friendly_name: 工位温度
 sensor.phicomm3_hcho:
-  friendly_name: 卧室甲醛
+  friendly_name: 工位甲醛
 sensor.phicomm3_humidity:
   device_class: humidity
-  friendly_name: 卧室湿度
+  friendly_name: 工位湿度
 sensor.phicomm3_pm25:
-  friendly_name: 卧室颗粒物
+  friendly_name: 工位颗粒物
 sensor.phicomm3_temperature:
+  friendly_name: 工位温度
+sensor.phicomm2_hcho:
+  friendly_name: 卧室甲醛
+sensor.phicomm2_humidity:
+  device_class: humidity
+  friendly_name: 卧室湿度
+sensor.phicomm2_pm25:
+  friendly_name: 卧室颗粒物
+sensor.phicomm2_temperature:
   friendly_name: 卧室温度
 sensor.phicomm_hcho:
   friendly_name: 餐厅甲醛
@@ -396,7 +369,10 @@ switch.speaker:
   hagenie_deviceType: STB
   icon: mdi:speaker
   custom_ui_state_card: state-card-custom-ui
-  extra_data_template: ${entities['sensor.speaker_status'].state}
+  #extra_data_template: ${entities['sensor.speaker_status'].state}
+  extra_badge:
+    entity_id: sensor.speaker_status
+    blacklist_states: 关闭
 switch.storage:
   friendly_name: 网络存储
   hagenie_deviceName: 网关

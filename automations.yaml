@@ -24,6 +24,84 @@
 #     data:
 #       message: 欢迎光临
 
+# 门铃开关单击
+# - alias: Entrance Switch Clicked
+#   trigger:
+#     - platform: event
+#       event_type: click
+#       event_data:
+#         entity_id: binary_sensor.switch_158d0001e59b33
+#         click_type: single
+#   action:
+#     - service: hello_miai.send
+#       data:
+#         message: 叮咚，叮咚，有人按门铃啦
+
+# 门铃开关双击
+- alias: Entrance Switch Double Clicked
+  trigger:
+    - platform: event
+      event_type: click
+      event_data:
+        entity_id: binary_sensor.switch_158d0001e59b33
+        click_type: double
+  action:
+    - service: hello_miai.send
+      data:
+        message: 叮咚，叮咚，快开门啊
+
+# 门铃开关长按
+- alias: Entrance Switch Long Pressed
+  trigger:
+    - platform: event
+      event_type: click
+      event_data:
+        entity_id: binary_sensor.switch_158d0001e59b33
+        click_type: long_click_press
+  action:
+    - service: hello_miai.send
+      data:
+        message: 叮咚，叮咚，有人在家吗
+
+# 无线开关单击
+- alias: Xiaomi Switch Clicked
+  trigger:
+    - platform: event
+      event_type: click
+      event_data:
+        entity_id: binary_sensor.switch_158d000201a73f
+        click_type: single
+  action:
+    - service: hello_miai.send
+      data:
+        message: 快过来
+
+# 无线开关双击
+# - alias: Xiaomi Switch Double Clicked
+#   trigger:
+#     - platform: event
+#       event_type: click
+#       event_data:
+#         entity_id: binary_sensor.switch_158d000201a73f
+#         click_type: double
+#   action:
+#     - service: hello_miai.send
+#       data:
+#         message: 双击无线开关
+
+# # 无线开关长按
+# - alias: Xiaomi Switch Long Pressed
+#   trigger:
+#     - platform: event
+#       event_type: click
+#       event_data:
+#         entity_id: binary_sensor.switch_158d000201a73f
+#         click_type: long_click_press
+#   action:
+#     - service: hello_miai.send
+#       data:
+#         message: 长按无线开关
+
 # 阳台移门开合
 - alias: Balcony Door Toggled
   initial_state: true
@@ -74,8 +152,6 @@
       entity_id: binary_sensor.door_window_sensor_158d000228a52b
       from: 'on'
       to: 'off'
-      for:
-        minutes: 1
   action:
     - service: fan.turn_on
       entity_id: fan.fresher
@@ -84,80 +160,7 @@
     - service: fan.turn_on
       entity_id: fan.diningroom_purifier
 
-# 空气质量警告
-- alias: Air Quality Warning
-  initial_state: true
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.phicomm_pm25
-      above: 40
-    - platform: numeric_state
-      entity_id: sensor.co2
-      above: 900
-    - platform: numeric_state
-      entity_id: sensor.phicomm_hcho
-      above: 0.08
-  action:
-    - service: light.turn_on
-      data_template:
-        entity_id: light.gateway_light_34ce0090901a
-        rgb_color: ["{% if states('sensor.co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.phicomm_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.phicomm_pm25') | int > 40 %}255{% else %}0{% endif %}"]
-        brightness: 10
-
-# 空气质量达标
-- alias: Air Quality Restored
-  initial_state: true
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.phicomm_pm25
-      below: 40
-    - platform: numeric_state
-      entity_id: sensor.co2
-      below: 900
-    - platform: numeric_state
-      entity_id: sensor.phicomm_hcho
-      below: 0.08
-  condition:
-    - condition: numeric_state
-      entity_id: sensor.phicomm_pm25
-      below: 40
-    - condition: numeric_state
-      entity_id: sensor.co2
-      below: 900
-    - condition: numeric_state
-      entity_id: sensor.phicomm_hcho
-      below: 0.08
-  action:
-    - service: light.turn_off
-      entity_id: light.gateway_light_34ce0090901a
-
-# 湿度超标
-- alias: Humidity Overflow
-  initial_state: false
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.humidity
-      above: 66
-      for:
-        minutes: 10
-  action:
-    - service: switch.turn_on
-      entity_id: switch.outlet
-
-# 湿度恢复
-- alias: Humidity Restored
-  initial_state: false
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.humidity
-      below: 64
-      for:
-        minutes: 10
-  action:
-    - service: switch.turn_off
-      entity_id: switch.outlet
-
-# 洗手间灯感应开关
+# 洗手间灯感应
 - alias: Washroom Light Reaction
   initial_state: true
   trigger:
@@ -411,7 +414,7 @@
           {% endif %}
 
 # 阳台空气差
-- alias: Balcony PM2.5 Bad
+- alias: Balcony Air Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -429,7 +432,7 @@
         message: 外面空气很差，请关好门窗
 
 # 阳台空气好
-- alias: Balcony PM2.5 Good
+- alias: Balcony Air Good
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -457,8 +460,90 @@
       data:
         message: 外面空气很好，可以打开门窗
 
+# 客厅空气警告
+- alias: Parlor Air Warning
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.phicomm_pm25
+      above: 40
+    - platform: numeric_state
+      entity_id: sensor.fresher_co2
+      above: 900
+    - platform: numeric_state
+      entity_id: sensor.co2
+      above: 900
+    - platform: numeric_state
+      entity_id: sensor.phicomm_hcho
+      above: 0.08
+  action:
+    - service: light.turn_on
+      data_template:
+        entity_id: light.gateway_light_34ce0090901a
+        rgb_color: ["{% if states('sensor.co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.phicomm_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.phicomm_pm25') | int > 40 %}255{% else %}0{% endif %}"]
+        brightness: 10
+
+# 客厅空气达标
+- alias: Parlor Air Restored
+  initial_state: true
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.phicomm_pm25
+      below: 40
+    - platform: numeric_state
+      entity_id: sensor.fresher_co2
+      below: 900
+    - platform: numeric_state
+      entity_id: sensor.co2
+      below: 900
+    - platform: numeric_state
+      entity_id: sensor.phicomm_hcho
+      below: 0.08
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.phicomm_pm25
+      below: 40
+    - condition: numeric_state
+      entity_id: sensor.fresher_co2
+      below: 900
+    - condition: numeric_state
+      entity_id: sensor.co2
+      below: 900
+    - condition: numeric_state
+      entity_id: sensor.phicomm_hcho
+      below: 0.08
+  action:
+    - service: light.turn_off
+      entity_id: light.gateway_light_34ce0090901a
+
+# 客厅湿度超标
+- alias: Parlor Humidity Overflow
+  initial_state: false
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.phicomm_humidity
+      above: 66
+      for:
+        minutes: 10
+  action:
+    - service: switch.turn_on
+      entity_id: switch.outlet
+
+# 客厅湿度恢复
+- alias: Parlor Humidity Restored
+  initial_state: false
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.phicomm_humidity
+      below: 64
+      for:
+        minutes: 10
+  action:
+    - service: switch.turn_off
+      entity_id: switch.outlet
+
 # 客厅空气差
-- alias: Parlor PM2.5 Bad
+- alias: Parlor Air Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -495,7 +580,7 @@
         message: 室内空气差，启动净化器和新风机，请关好门窗
 
 # 客厅空气好
-- alias: Parlor PM2.5 Good
+- alias: Parlor Air Good
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -553,7 +638,7 @@
         speed: auto
 
 # 书房空气差
-- alias: Study PM2.5 Bad
+- alias: Study Air Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -583,7 +668,7 @@
        speed: high
 
 # 书房空气好
-- alias: Study PM2.5 Good
+- alias: Study Air Good
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -602,7 +687,7 @@
        speed: low
 
 # 主卧空气差
-- alias: Bedroom PM2.5 Bad
+- alias: Bedroom Air Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -626,7 +711,7 @@
        speed: high
 
 # 主卧空气好
-- alias: Bedroom PM2.5 Good
+- alias: Bedroom Air Good
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -639,81 +724,3 @@
       data:
        entity_id: fan.bedroom_purifier
        speed: low
-
-# 门铃开关单击
-# - alias: Entrance Switch Clicked
-#   trigger:
-#     - platform: event
-#       event_type: click
-#       event_data:
-#         entity_id: binary_sensor.switch_158d0001e59b33
-#         click_type: single
-#   action:
-#     - service: hello_miai.send
-#       data:
-#         message: 有人按门铃啦
-
-# 门铃开关双击
-- alias: Entrance Switch Double Clicked
-  trigger:
-    - platform: event
-      event_type: click
-      event_data:
-        entity_id: binary_sensor.switch_158d0001e59b33
-        click_type: double
-  action:
-    - service: hello_miai.send
-      data:
-        message: 快开门啊
-
-# 门铃开关长按
-- alias: Entrance Switch Long Pressed
-  trigger:
-    - platform: event
-      event_type: click
-      event_data:
-        entity_id: binary_sensor.switch_158d0001e59b33
-        click_type: long_click_press
-  action:
-    - service: hello_miai.send
-      data:
-        message: 有人在家吗
-
-# 无线开关单击
-- alias: Xiaomi Switch Clicked
-  trigger:
-    - platform: event
-      event_type: click
-      event_data:
-        entity_id: binary_sensor.switch_158d000201a73f
-        click_type: single
-  action:
-    - service: hello_miai.send
-      data:
-        message: !secret magic_text
-
-# 无线开关双击
-# - alias: Xiaomi Switch Double Clicked
-#   trigger:
-#     - platform: event
-#       event_type: click
-#       event_data:
-#         entity_id: binary_sensor.switch_158d000201a73f
-#         click_type: double
-#   action:
-#     - service: hello_miai.send
-#       data:
-#         message: 双击无线开关
-
-# # 无线开关长按
-# - alias: Xiaomi Switch Long Pressed
-#   trigger:
-#     - platform: event
-#       event_type: click
-#       event_data:
-#         entity_id: binary_sensor.switch_158d000201a73f
-#         click_type: long_click_press
-#   action:
-#     - service: hello_miai.send
-#       data:
-#         message: 长按无线开关
