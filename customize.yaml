@@ -395,6 +395,8 @@ switch.speaker:
   hagenie_deviceName: 机顶盒
   hagenie_deviceType: STB
   icon: mdi:speaker
+  custom_ui_state_card: state-card-custom-ui
+  extra_data_template: ${entities['sensor.speaker_status'].state}
 switch.storage:
   friendly_name: 网络存储
   hagenie_deviceName: 网关

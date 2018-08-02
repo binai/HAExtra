@@ -102,7 +102,7 @@ Study:
       - switch.mitsubishi
       - fan.purifier
       - switch.speaker
-      - sensor.speaker_status
+      #- sensor.speaker_status
       - sensor.purifier_temperature
       - sensor.purifier_humidity
       - sensor.purifier_pm25
