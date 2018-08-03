@@ -138,16 +138,16 @@ modbus:
   port: 8899
 
 #
-device_tracker:
-  - platform: asuswrt
-    host: Router
-    username: admin
-    password: !secret http_password
-    interval_seconds: 300
-    consider_home: 360
-    new_device_defaults:
-      track_new_devices: false
-      hide_if_away: true
+# device_tracker:
+#   - platform: asuswrt
+#     host: Router
+#     username: admin
+#     password: !secret http_password
+#     interval_seconds: 300
+#     consider_home: 360
+#     new_device_defaults:
+#       track_new_devices: false
+#       hide_if_away: true
 
 #
 binary_sensor:
@@ -279,6 +279,11 @@ switch:
     state_topic: Hassmart6/relay/1
     command_topic: Hassmart6/relay/1/set
     availability_topic: Hassmart6/status
+  - platform: mqtt
+    name: Sonoff3B
+    state_topic: Sonoff3/relay/1
+    command_topic: Sonoff3/relay/1/set
+    availability_topic: Sonoff3/status
   - platform: mqtt2
     name: Speaker
     state_topic: NodeMCU3/relay/0
@@ -311,14 +316,12 @@ switch:
     switches:
       projector:
         friendly_name: Projector
-        value_template: "{{ is_state('device_tracker.himedia', 'home') }}"
+        value_template: "{{ is_state('switch.sonoff3b', 'on') }}"
         turn_on:
           # - service: switch.turn_on
           #   entity_id: switch.storage
-          - service: mqtt.publish
-            data:
-              topic: Sonoff3/relay/1/set
-              payload: 'ON'
+          - service: switch.turn_on
+            entity_id: switch.sonoff3b
           - service: switch.broadlink_send_packet_remotemini
             data:
               packet:
@@ -326,10 +329,15 @@ switch:
                 - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
           - service: switch.turn_on
             entity_id: switch.speaker
+          - delay: 5
           - service: light.turn_off
             entity_id: light.sonoff2
           - service: light.turn_off
             entity_id: light.sonoff3
+          - service: switch.broadlink_send_packet_remotemini # Retry for switch.sonoff3b
+            data:
+              packet:
+                - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
         turn_off:
           - service: switch.broadlink_send_packet_remotemini
             data:
@@ -341,16 +349,11 @@ switch:
             data:
               topic: NodeMCU3/relay/0/set
               payload: 'OFF'
-          - condition: state
-            entity_id: sun.sun
-            state: above_horizon
-          - service: light.turn_on
+          - service_template: "{% if is_state('sun.sun', 'below_horizon') %}light.turn_on{% else %}light.turn_off{% endif %}"
             entity_id: light.sonoff3
-          - delay: 300
-          - service: mqtt.publish
-            data:
-              topic: Sonoff3/relay/1/set
-              payload: 'OFF'
+          - delay: 200
+          - service: switch.turn_off
+            entity_id: switch.sonoff3b
 
 #
 light:

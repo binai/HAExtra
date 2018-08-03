@@ -269,8 +269,7 @@ sensor.humidity:
   friendly_name: 湿度
   hagenie_zone: 主卧
 sensor.illumination_34ce0090901a:
-  friendly_name: 亮度
-  icon: mdi:lightbulb-on-outline
+  friendly_name: 餐厅亮度
 sensor.kids_co2:
   friendly_name: 儿童房二氧化碳
   hagenie_zone: 儿童房
@@ -346,6 +345,8 @@ switch.projector:
   hagenie_deviceName: 电视
   hagenie_deviceType: television
   icon: mdi:projector
+switch.sonoff3b:
+  friendly_name: 投影仪电源
 switch.speaker:
   custom_ui_state_card: state-card-custom-ui
   dashboard_static_text_attribute: original_state
