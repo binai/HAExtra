@@ -35,7 +35,7 @@ layout:
     - switch.mitsubishi, fan.fan, fan.wall_fan, switch.hassmart6b
     - media_player.x9400e, media_player.x9300d, switch.projector, switch.storage
 
-    - switch.speaker, sensor.speaker_status, sensor.parents_co2, sensor.kids_co2
+    - switch.speaker, binary_sensor.lightness, sensor.parents_co2, sensor.kids_co2
     - sensor.fresher_temperature, sensor.fresher_humidity, sensor.fresher_pm25, sensor.fresher_co2
     - sensor.phicomm_temperature, sensor.phicomm_humidity, sensor.phicomm_pm25, sensor.phicomm_hcho
     - sensor.purifier_temperature, sensor.purifier_humidity, sensor.purifier_pm25, sensor.illumination_34ce0090901a
@@ -43,5 +43,5 @@ layout:
 
     - binary_sensor.door_window_sensor_158d0001f3e5be, binary_sensor.door_window_sensor_158d000228a52b, binary_sensor.motion_sensor_158d0001d66ce9, binary_sensor.motion_sensor_158d0001f4a238
 
-    - binary_sensor.lightness, device_tracker.xphone, device_tracker.yphone, device_tracker.zphone
+    #- device_tracker.xphone, device_tracker.yphone, device_tracker.zphone
 

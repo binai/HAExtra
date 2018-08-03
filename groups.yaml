@@ -101,7 +101,6 @@ Study:
       - vacuum.vacuum
       - switch.mitsubishi
       - switch.speaker
-      #- sensor.speaker_status
       - fan.purifier
       - sensor.purifier_temperature
       - sensor.purifier_humidity

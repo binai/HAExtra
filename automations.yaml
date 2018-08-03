@@ -64,17 +64,17 @@
         message: 叮咚，叮咚，有人在家吗
 
 # 无线开关单击
-- alias: Xiaomi Switch Clicked
-  trigger:
-    - platform: event
-      event_type: click
-      event_data:
-        entity_id: binary_sensor.switch_158d000201a73f
-        click_type: single
-  action:
-    - service: hello_miai.send
-      data:
-        message: 快过来
+# - alias: Xiaomi Switch Clicked
+#   trigger:
+#     - platform: event
+#       event_type: click
+#       event_data:
+#         entity_id: binary_sensor.switch_158d000201a73f
+#         click_type: single
+#   action:
+#     - service: hello_miai.send
+#       data:
+#         message: 快过来
 
 # 无线开关双击
 # - alias: Xiaomi Switch Double Clicked
@@ -133,16 +133,19 @@
       for:
         minutes: 2
   action:
+    - service: climate.turn_off
+      entity_id: climate.daikin2
+    - service: climate.turn_off
+      entity_id: climate.daikin1
+    - condition: numeric_state
+      entity_id: sensor.phicomm_pm25
+      below: 30
     - service: fan.turn_off
       entity_id: fan.fresher
     - service: fan.turn_off
       entity_id: fan.purifier
     - service: fan.turn_off
       entity_id: fan.diningroom_purifier
-    - service: climate.turn_off
-      entity_id: climate.dakin2
-    - service: climate.turn_off
-      entity_id: climate.dakin1
 
 # 阳台移门关闭
 - alias: Balcony Door Closed
@@ -160,26 +163,44 @@
     - service: fan.turn_on
       entity_id: fan.diningroom_purifier
 
-# 洗手间灯感应
-- alias: Washroom Light Reaction
+# 洗手间灯感应开
+- alias: Washroom Light On
   initial_state: true
   trigger:
     - platform: state
       entity_id: binary_sensor.motion_sensor_158d0001f4a238
       to: 'on'
   condition:
-    - condition: state
-      entity_id: light.hassmart6a
-      state: 'off'
+    # - condition: state
+    #   entity_id: light.hassmart6a
+    #   state: 'off'
     - condition: state
       entity_id: sun.sun
       state: below_horizon
   action:
     - service: light.turn_on
       entity_id: light.hassmart6a
-    #- wait_template: "{{ is_state('binary_sensor.motion_sensor_158d0001f4a238', 'off') }}"
-    #- service: light.turn_off
-    #  entity_id: light.hassmart6a
+    - service: automation.turn_off
+      entity_id: automation.washroom_light_off
+    - service: automation.turn_on
+      entity_id: automation.washroom_light_off
+
+# 洗手间灯延迟关
+- alias: Washroom Light Off
+  initial_state: false
+  trigger:
+    - platform: time
+      minutes: '/5'
+      seconds: 00
+  condition:
+    - condition: state
+      entity_id: binary_sensor.motion_sensor_158d0001f4a238
+      state: 'off'
+  action:
+    - service: light.turn_off
+      entity_id: light.hassmart6a
+    - service: automation.turn_off
+      entity_id: automation.washroom_light_off
 
 # 过道灯白天感应开
 - alias: Passage Light On Day
@@ -414,7 +435,7 @@
           {% endif %}
 
 # 阳台空气差
-- alias: Balcony Air Bad
+- alias: Balcony PM2.5 Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -432,7 +453,7 @@
         message: 外面空气很差，请关好门窗
 
 # 阳台空气好
-- alias: Balcony Air Good
+- alias: Balcony PM2.5 Good
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -517,7 +538,7 @@
       entity_id: light.gateway_light_34ce0090901a
 
 # 客厅湿度超标
-- alias: Parlor Humidity Overflow
+- alias: Parlor Humidity Bad
   initial_state: false
   trigger:
     - platform: numeric_state
@@ -530,7 +551,7 @@
       entity_id: switch.outlet
 
 # 客厅湿度恢复
-- alias: Parlor Humidity Restored
+- alias: Parlor Humidity Good
   initial_state: false
   trigger:
     - platform: numeric_state
@@ -543,7 +564,7 @@
       entity_id: switch.outlet
 
 # 客厅空气差
-- alias: Parlor Air Bad
+- alias: Parlor PM2.5 Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -566,33 +587,33 @@
         entity_id: fan.fresher
         speed: strong
     - service: fan.set_speed
-      data:
+      data_template:
         entity_id: fan.diningroom_purifier
-        speed: high
+        speed: "{% if states('sensor.phicomm_pm25') | int > 40 %}high{% else %}medium{% endif %}"
     - condition: numeric_state
       entity_id: sensor.fresher_pm25
       above: 40
     - condition: state
       entity_id: binary_sensor.door_window_sensor_158d000228a52b
-      state: 'off'
+      state: 'on'
     - service: hello_miai.send
       data:
         message: 室内空气差，启动净化器和新风机，请关好门窗
 
 # 客厅空气好
-- alias: Parlor Air Good
+- alias: Parlor PM2.5 Good
   initial_state: true
   trigger:
     - platform: numeric_state
       entity_id: sensor.phicomm_pm25
-      below: 10
+      below: 15
       for:
         minutes: 5
   action:
     - service: fan.set_speed
       data:
         entity_id: fan.diningroom_purifier
-        speed: auto
+        speed: low
     - condition: numeric_state
       entity_id: sensor.fresher_co2
       below: 675
@@ -609,7 +630,11 @@
       entity_id: sensor.fresher_co2
       above: 725
       for:
-        minutes: 2
+        minutes: 5
+  # condition:
+  #   - condition: state
+  #     entity_id: binary_sensor.door_window_sensor_158d000228a52b
+  #     state: 'off'
   action:
     - service: fan.turn_on
       entity_id: fan.fresher
@@ -630,7 +655,10 @@
   condition:
     - condition: numeric_state
       entity_id: sensor.phicomm_pm25
-      below: 675
+      below: 20
+    - condition: state
+      entity_id: fan.fresher
+      state: 'on'
   action:
     - service: fan.set_speed
       data:
@@ -638,7 +666,7 @@
         speed: auto
 
 # 书房空气差
-- alias: Study Air Bad
+- alias: Study PM2.5 Bad
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -668,7 +696,7 @@
        speed: high
 
 # 书房空气好
-- alias: Study Air Good
+- alias: Study PM2.5 Good
   initial_state: true
   trigger:
     - platform: numeric_state
@@ -687,12 +715,12 @@
        speed: low
 
 # 主卧空气差
-- alias: Bedroom Air Bad
+- alias: Bedroom PM2.5 Bad
   initial_state: true
   trigger:
     - platform: numeric_state
       entity_id: sensor.pm25
-      above: 15
+      above: 20
       for:
         minutes: 5
   action:
@@ -711,12 +739,12 @@
        speed: high
 
 # 主卧空气好
-- alias: Bedroom Air Good
+- alias: Bedroom PM2.5 Good
   initial_state: true
   trigger:
     - platform: numeric_state
       entity_id: sensor.pm25
-      below: 10
+      below: 15
       for:
         minutes: 5
   action:
