@@ -96,6 +96,7 @@ homekit:
       - input_boolean
     exclude_entities:
       - light.hassmart5b
+      - light.hassmart5c
       - light.hassmart4a
       - light.hassmart1c
       - light.sonoff1b
@@ -167,11 +168,19 @@ sensor:
   #    - temperature
   #    - humidity
   - platform: mqtt
+    device_class: illuminance
+    state_topic: Sonoff3/lux
+    name: Study Lightness
+    unit_of_measurement: lx
+    availability_topic: Sonoff3/status
+  - platform: mqtt
+    device_class: temperature
     state_topic: NodeMCU2/temperature
     name: Balcony Temperature
     unit_of_measurement: °C
     availability_topic: NodeMCU2/status
   - platform: mqtt
+    device_class: humidity
     state_topic: NodeMCU2/humidity
     name: Balcony Humidity
     unit_of_measurement: '%'
@@ -192,11 +201,13 @@ sensor:
     unit_of_measurement: ppm
     availability_topic: NodeMCU6/status
   - platform: mqtt
+    device_class: temperature
     state_topic: NodeMCU7/temperature
     name: Temperature
     unit_of_measurement: °C
     availability_topic: NodeMCU7/status
   - platform: mqtt
+    device_class: humidity
     state_topic: NodeMCU7/humidity
     name: Humidity
     unit_of_measurement: '%'
@@ -223,10 +234,12 @@ sensor:
   - platform: template
     sensors:
       purifier_temperature:
+        device_class: temperature
         friendly_name: Purifier Temperature
         value_template: "{{ states.fan.purifier.attributes.temperature }}"
         unit_of_measurement: °C
       purifier_humidity:
+        device_class: humidity
         friendly_name: Purifier Humidity
         value_template: "{{ states.fan.purifier.attributes.humidity }}"
         unit_of_measurement: '%'
@@ -235,10 +248,12 @@ sensor:
         value_template: "{{ states.fan.purifier.attributes.aqi }}"
         unit_of_measurement: 'μg/m³'
       fresher_temperature:
+        device_class: temperature
         friendly_name: Fresher Temperature
         value_template: "{{ states.fan.fresher.attributes.temperature }}"
         unit_of_measurement: °C
       fresher_humidity:
+        device_class: humidity
         friendly_name: Fresher Humidity
         value_template: "{{ states.fan.fresher.attributes.humidity }}"
         unit_of_measurement: '%'
@@ -254,9 +269,9 @@ sensor:
 #
 switch:
   - platform: wake_on_lan
+    name: Storage
     mac_address: 00-11-32-6B-75-F7
     host: Storage
-    name: Storage
     turn_off:
       service: shell_command.turn_off_storage
   - platform: mqtt
@@ -264,8 +279,8 @@ switch:
     state_topic: Hassmart6/relay/1
     command_topic: Hassmart6/relay/1/set
     availability_topic: Hassmart6/status
-  - name: Speaker
-    platform: mqtt2
+  - platform: mqtt2
+    name: Speaker
     state_topic: NodeMCU3/relay/0
     payload_on: 1
     payload_off: toggle
@@ -278,19 +293,14 @@ switch:
 #    friendly_name: Outlet
 #    type: spmini2
   - platform: broadlink
+    friendly_name: Remote Pro
     host: RemotePro
     mac: 34:EA:34:58:73:5D
-    friendly_name: Remote Pro
     type: rm2_pro_plus
-    #switches:
-    #  fan:
-    #    friendly_name: Fan
-    #    command_on: 'JgCSACsMKw0PKCsMKwwQKA8oDygQJxAnECcr5ysMKwwQKCsMKwwQKA8oDygPKBAnECcr5ysMLAwPKCsMKwwQKA8oECcQJxAnECcr5ysMLAwPKCsMKw0PKA8oECcQJxAnECgr6SsMKw0PKCsMKwwQKA8oDygQJxAnECcr6isNKwwQJysMLAwQJxAnECcQKA8oDygrAA0FAAAAAAAA'
-    #    command_off: 'JgCSACsMKw0PKCsMKwwQKA8oDygQJxAnECcr5ysMKwwQKCsMKwwQKA8oDygPKBAnECcr5ysMLAwPKCsMKwwQKA8oECcQJxAnECcr5ysMLAwPKCsMKw0PKA8oECcQJxAnECgr6SsMKw0PKCsMKwwQKA8oDygQJxAnECcr6isNKwwQJysMLAwQJxAnECcQKA8oDygrAA0FAAAAAAAA'
   - platform: broadlink
+    friendly_name: Remote Mini
     host: RemoteMini
     mac: 78:0F:77:47:AA:8F
-    friendly_name: Remote Mini
     type: rm_mini
     switches:
       mitsubishi:
@@ -305,6 +315,10 @@ switch:
         turn_on:
           # - service: switch.turn_on
           #   entity_id: switch.storage
+          - service: mqtt.publish
+            data:
+              topic: Sonoff3/relay/1/set
+              payload: 'ON'
           - service: switch.broadlink_send_packet_remotemini
             data:
               packet:
@@ -312,6 +326,10 @@ switch:
                 - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
           - service: switch.turn_on
             entity_id: switch.speaker
+          - service: light.turn_off
+            entity_id: light.sonoff2
+          - service: light.turn_off
+            entity_id: light.sonoff3
         turn_off:
           - service: switch.broadlink_send_packet_remotemini
             data:
@@ -319,6 +337,20 @@ switch:
                 - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
                 - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
                 - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
+          - service: mqtt.publish
+            data:
+              topic: NodeMCU3/relay/0/set
+              payload: 'OFF'
+          - condition: state
+            entity_id: sun.sun
+            state: above_horizon
+          - service: light.turn_on
+            entity_id: light.sonoff3
+          - delay: 300
+          - service: mqtt.publish
+            data:
+              topic: Sonoff3/relay/1/set
+              payload: 'OFF'
 
 #
 light:
@@ -419,6 +451,11 @@ light:
     state_topic: Sonoff2/relay/0
     command_topic: Sonoff2/relay/0/set
     availability_topic: Sonoff2/status
+  - platform: mqtt
+    name: Sonoff3
+    state_topic: Sonoff3/relay/0
+    command_topic: Sonoff3/relay/0/set
+    availability_topic: Sonoff3/status
 
 #
 shell_command:

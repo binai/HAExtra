@@ -104,7 +104,6 @@ class MqttSwitch(MqttAvailability, SwitchDevice):
             """Handle new MQTT state messages."""
             if self._template is not None:
                 self._attributes = {'original_state': payload}
-                _LOGGER.error("original_state: " + payload)
                 payload = self._template.async_render_with_possible_json_value(
                     payload)
             if payload == self._payload_on:

@@ -418,7 +418,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: light.hassmart5b, light.hassmart5c
+      entity_id: light.hassmart5b, light.hassmart5c, light.sonoff3
   action:
     - service_template: >
         {% if trigger.to_state.state == 'on' %}
@@ -429,9 +429,11 @@
       data_template:
         entity_id: >
           {% if trigger.entity_id == 'light.hassmart5b' %}
-            light.hassmart5c
+            light.hassmart5c,light.sonoff3
+          {% elif trigger.entity_id == 'light.hassmart5c' %}
+            light.sonoff3,light.hassmart5b
           {% else %}
-            light.hassmart5b
+            light.hassmart5b,light.hassmart5c
           {% endif %}
 
 # 阳台空气差
@@ -691,9 +693,9 @@
     - service: fan.turn_on
       entity_id: fan.parents_purifier
     - service: fan.set_speed
-      data:
+      data_template:
        entity_id: fan.parents_purifier
-       speed: high
+       speed: "{% if states('sensor.purifier_pm25') | int > 40 %}high{% else %}medium{% endif %}"
 
 # 书房空气好
 - alias: Study PM2.5 Good
@@ -727,16 +729,16 @@
     - service: fan.turn_on
       entity_id: fan.bedroom_purifier
     - service: fan.set_speed
-      data:
+      data_template:
        entity_id: fan.bedroom_purifier
        speed: medium
     - condition: time
-      after: '18:00'
+      after: '8:00'
       before: '22:00'
     - service: fan.set_speed
-      data:
+      data_template:
        entity_id: fan.bedroom_purifier
-       speed: high
+       speed: "{% if states('sensor.pm25') | int > 40 %}high{% else %}medium{% endif %}"
 
 # 主卧空气好
 - alias: Bedroom PM2.5 Good

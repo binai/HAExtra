@@ -39,6 +39,7 @@ fan.diningroom_purifier:
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
 fan.fan:
+  dashboard_static_text_attribute: speed_level
   friendly_name: 落地扇
 fan.fresher:
   friendly_name: 新风机
@@ -48,25 +49,15 @@ fan.kids_purifier:
   friendly_name: 儿童房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
-  # custom_ui_state_card: state-card-custom-ui
-  # extra_badge:
-  #   - entity_id: sensor.kids_co2
 fan.parents_purifier:
   friendly_name: 次卧净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
-  # custom_ui_state_card: state-card-custom-ui
-  # extra_badge:
-  #   - entity_id: sensor.parents_co2
 fan.purifier:
+  custom_ui_state_card: state-card-custom-ui
   friendly_name: 书房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
-  custom_ui_state_card: state-card-custom-ui
-  # extra_badge:
-  #   - entity_id: sensor.purifier_temperature
-  #   - entity_id: sensor.purifier_humidity
-  #   - entity_id: sensor.purifier_pm25
 fan.wall_fan:
   friendly_name: 壁扇
   icon: mdi:fan
@@ -180,8 +171,8 @@ light.hassmart5b:
   hidden: true
   icon: mdi:ceiling-light
 light.hassmart5c:
-  friendly_name: 书房灯
-  hagenie_deviceName: 吸顶灯
+  friendly_name: 书房灯3
+  hidden: true
   icon: mdi:ceiling-light
 light.hassmart6a:
   friendly_name: 洗手间灯
@@ -200,6 +191,10 @@ light.sonoff1b:
 light.sonoff2:
   friendly_name: 天花灯
   icon: mdi:ceiling-light
+light.sonoff3:
+  friendly_name: 书房灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
 media_player.apple_tv:
   friendly_name: 苹果电视
 media_player.x9300d:
@@ -211,9 +206,7 @@ media_player.x9400e:
 remote.apple_tv:
   friendly_name: 苹果遥控
 sensor.balcony_humidity:
-  device_class: humidity
   friendly_name: 阳台湿度
-  icon: mdi:water-percent
 sensor.balcony_pm25:
   friendly_name: 阳台颗粒物
   hagenie_zone: 阳台
@@ -227,7 +220,6 @@ sensor.caiyun_cloud_rate:
 sensor.caiyun_co:
   friendly_name: 室外一氧化碳
 sensor.caiyun_humidity:
-  device_class: humidity
   friendly_name: 室外湿度
 sensor.caiyun_local_precipitation:
   friendly_name: 降水强度
@@ -263,9 +255,7 @@ sensor.fresher_co2:
   friendly_name: 新风二氧化碳
   icon: mdi:periodic-table-co2
 sensor.fresher_humidity:
-  device_class: humidity
   friendly_name: 新风湿度
-  icon: mdi:water-percent
 sensor.fresher_pm25:
   friendly_name: 新风颗粒物
   icon: mdi:blur
@@ -276,10 +266,8 @@ sensor.hcho:
   hagenie_zone: 主卧
   icon: mdi:biohazard
 sensor.humidity:
-  device_class: humidity
   friendly_name: 湿度
   hagenie_zone: 主卧
-  icon: mdi:water-percent
 sensor.illumination_34ce0090901a:
   friendly_name: 亮度
   icon: mdi:lightbulb-on-outline
@@ -291,28 +279,25 @@ sensor.parents_co2:
   friendly_name: 次卧二氧化碳
   hagenie_zone: 次卧
   icon: mdi:periodic-table-co2
-sensor.phicomm3_hcho:
-  friendly_name: 工位甲醛
-sensor.phicomm3_humidity:
-  device_class: humidity
-  friendly_name: 工位湿度
-sensor.phicomm3_pm25:
-  friendly_name: 工位颗粒物
-sensor.phicomm3_temperature:
-  friendly_name: 工位温度
 sensor.phicomm2_hcho:
   friendly_name: 卧室甲醛
 sensor.phicomm2_humidity:
-  device_class: humidity
   friendly_name: 卧室湿度
 sensor.phicomm2_pm25:
   friendly_name: 卧室颗粒物
 sensor.phicomm2_temperature:
   friendly_name: 卧室温度
+sensor.phicomm3_hcho:
+  friendly_name: 工位甲醛
+sensor.phicomm3_humidity:
+  friendly_name: 工位湿度
+sensor.phicomm3_pm25:
+  friendly_name: 工位颗粒物
+sensor.phicomm3_temperature:
+  friendly_name: 工位温度
 sensor.phicomm_hcho:
   friendly_name: 餐厅甲醛
 sensor.phicomm_humidity:
-  device_class: humidity
   friendly_name: 餐厅湿度
 sensor.phicomm_pm25:
   friendly_name: 餐厅颗粒物
@@ -323,7 +308,6 @@ sensor.pm25:
   hagenie_zone: 主卧
   icon: mdi:blur
 sensor.purifier_humidity:
-  device_class: humidity
   friendly_name: 书房湿度
   icon: mdi:water-percent
 sensor.purifier_pm25:
@@ -331,7 +315,8 @@ sensor.purifier_pm25:
   icon: mdi:blur
 sensor.purifier_temperature:
   friendly_name: 书房温度
-
+sensor.study_lightness:
+  friendly_name: 书房亮度
 sensor.temperature:
   friendly_name: 温度
   hagenie_zone: 主卧
@@ -362,14 +347,15 @@ switch.projector:
   hagenie_deviceType: television
   icon: mdi:projector
 switch.speaker:
+  custom_ui_state_card: state-card-custom-ui
+  dashboard_static_text_attribute: original_state
+  extra_badge:
+    attribute: original_state
+    blacklist_states: 关闭
   friendly_name: 音箱
   hagenie_deviceName: 机顶盒
   hagenie_deviceType: STB
   icon: mdi:speaker
-  custom_ui_state_card: state-card-custom-ui
-  extra_badge:
-    attribute: original_state
-    blacklist_states: 关闭
 switch.storage:
   friendly_name: 网络存储
   hagenie_deviceName: 网关
