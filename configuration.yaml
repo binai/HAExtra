@@ -329,15 +329,20 @@ switch:
                 - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
           - service: switch.turn_on
             entity_id: switch.speaker
-          - delay: 5
+          - delay: 3
           - service: light.turn_off
             entity_id: light.sonoff2
           - service: light.turn_off
             entity_id: light.sonoff3
-          - service: switch.broadlink_send_packet_remotemini # Retry for switch.sonoff3b
+          - service: switch.broadlink_send_packet_remotemini # Retry when power ready
             data:
               packet:
                 - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
+          - condition: numeric_state
+            entity_id: sensor.purifier_temperature
+            above: 28
+          - service: switch.turn_on
+            entity_id: switch.mitsubishi
         turn_off:
           - service: switch.broadlink_send_packet_remotemini
             data:
@@ -639,14 +644,14 @@ media_player:
 
 #
 panel_iframe:
-  nodemcu:
-    title: 室内
-    icon: mdi:chart-line
-    url: !secret nodemcu_url
-  nodemcu2:
-    title: 阳台
-    icon: mdi:chart-areaspline
-    url: !secret nodemcu2_url
+  # nodemcu:
+  #   title: 室内
+  #   icon: mdi:chart-line
+  #   url: !secret nodemcu_url
+  # nodemcu2:
+  #   title: 阳台
+  #   icon: mdi:chart-areaspline
+  #   url: !secret nodemcu2_url
   dashboard:
     title: 面板
     icon: mdi:microsoft

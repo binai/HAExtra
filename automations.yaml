@@ -38,7 +38,7 @@
 #         message: 叮咚，叮咚，有人按门铃啦
 
 # 门铃开关双击
-- alias: Entrance Switch Double Clicked
+- alias: Entrance Switch DBClicked
   trigger:
     - platform: event
       event_type: click
@@ -51,7 +51,7 @@
         message: 叮咚，叮咚，快开门啊
 
 # 门铃开关长按
-- alias: Entrance Switch Long Pressed
+- alias: Entrance Switch Pressed
   trigger:
     - platform: event
       event_type: click
@@ -77,7 +77,7 @@
 #         message: 快过来
 
 # 无线开关双击
-# - alias: Xiaomi Switch Double Clicked
+# - alias: Xiaomi Switch DBClicked
 #   trigger:
 #     - platform: event
 #       event_type: click
@@ -90,7 +90,7 @@
 #         message: 双击无线开关
 
 # # 无线开关长按
-# - alias: Xiaomi Switch Long Pressed
+# - alias: Xiaomi Switch Pressed
 #   trigger:
 #     - platform: event
 #       event_type: click
