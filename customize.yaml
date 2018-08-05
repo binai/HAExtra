@@ -340,11 +340,19 @@ switch.projector:
 switch.projector_power:
   friendly_name: 投影仪电源
 switch.speaker:
-  custom_ui_state_card: state-card-custom-ui
+  config:
+    extra_badge:
+      - entity_id: switch.speaker
+        attribute: original_state
+    entities:
+      - entity: switch.speaker
+        icon: mdi:video-input-component
+        service: mqtt.publish
+        data:
+          topic: NodeMCU3/relay/0/set
+          payload: toggle
+  custom_ui_state_card: state-card-button
   dashboard_static_text_attribute: original_state
-  extra_badge:
-    attribute: original_state
-    blacklist_states: 关闭
   friendly_name: 音箱
   hagenie_deviceName: 机顶盒
   hagenie_deviceType: STB
