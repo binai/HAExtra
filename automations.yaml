@@ -120,7 +120,7 @@
       state: below_horizon
   action:
     - service_template: "{% if is_state('binary_sensor.door_window_sensor_158d000228a52b', 'on') %}light.turn_on{% else %}light.turn_off{% endif %}"
-      entity_id: light.hassmart4b
+      entity_id: light.balcony_light
 
 # 阳台移门打开
 - alias: Balcony Door Opened
@@ -141,11 +141,14 @@
       entity_id: sensor.phicomm_pm25
       below: 30
     - service: fan.turn_off
-      entity_id: fan.fresher
-    - service: fan.turn_off
       entity_id: fan.purifier
     - service: fan.turn_off
       entity_id: fan.diningroom_purifier
+    - condition: numeric_state
+      entity_id: sensor.parlor_co2
+      below: 700
+    - service: fan.turn_off
+      entity_id: fan.fresher
 
 # 阳台移门关闭
 - alias: Balcony Door Closed
@@ -172,14 +175,14 @@
       to: 'on'
   condition:
     # - condition: state
-    #   entity_id: light.hassmart6a
+    #   entity_id: light.washroom_light
     #   state: 'off'
     - condition: state
       entity_id: sun.sun
       state: below_horizon
   action:
     - service: light.turn_on
-      entity_id: light.hassmart6a
+      entity_id: light.washroom_light
     - service: automation.turn_off
       entity_id: automation.washroom_light_off
     - service: automation.turn_on
@@ -198,7 +201,7 @@
       state: 'off'
   action:
     - service: light.turn_off
-      entity_id: light.hassmart6a
+      entity_id: light.washroom_light
     - service: automation.turn_off
       entity_id: automation.washroom_light_off
 
@@ -224,7 +227,7 @@
       below: 300
   action:
     - service: light.turn_on
-      entity_id: light.hassmart5a
+      entity_id: light.passage_light
 
 # 过道灯白天感应关
 - alias: Passage Light Off Day
@@ -260,7 +263,7 @@
       state: 'off'
   action:
     - service: light.turn_off
-      entity_id: light.hassmart5a
+      entity_id: light.passage_light
 
 # 过道灯白天变亮关
 - alias: Passage Light Off Brighten
@@ -277,7 +280,7 @@
       before: '18:00'
   action:
     - service: light.turn_off
-      entity_id: light.hassmart5a
+      entity_id: light.passage_light
 
 # 过道灯晚上感应开
 - alias: Passage Light On Night
@@ -297,7 +300,7 @@
       before: '21:30'
   action:
     - service: light.turn_on
-      entity_id: light.hassmart5a
+      entity_id: light.passage_light
 
 # 过道灯晚上感应关
 - alias: Passage Light Off Night
@@ -323,7 +326,7 @@
       state: 'off'
   action:
     - service: light.turn_off
-      entity_id: light.hassmart5a
+      entity_id: light.passage_light
 
 # 过道背景灯感应开关
 - alias: Passage Backlight Reaction
@@ -338,24 +341,24 @@
       after: '21:30'
       before: '06:00'
     - condition: state
-      entity_id: light.hassmart5a
+      entity_id: light.passage_light
       state: 'off'
     # - condition: state
-    #   entity_id: light.sonoff1
+    #   entity_id: light.passage_backlight
     #   state: 'off'
   action:
     - service: light.turn_on
-      entity_id: light.sonoff1
+      entity_id: light.passage_backlight
     - wait_template: "{{ is_state('binary_sensor.motion_sensor_158d0001d66ce9', 'off') }}"
     - service: light.turn_off
-      entity_id: light.sonoff1
+      entity_id: light.passage_backlight
 
 # 餐厅灯开关同步
 - alias: Diningroom Light Sync
   initial_state: true
   trigger:
     - platform: state
-      entity_id: light.hassmart1c, light.hassmart2a
+      entity_id: light.diningroom_light2, light.diningroom_light
   action:
     - service_template: >
         {% if trigger.to_state.state == 'on' %}
@@ -365,10 +368,10 @@
         {% endif %}
       data_template:
         entity_id: >
-          {% if trigger.entity_id == 'light.hassmart1c' %}
-            light.hassmart2a
+          {% if trigger.entity_id == 'light.diningroom_light2' %}
+            light.diningroom_light
           {% else %}
-            light.hassmart1c
+            light.diningroom_light2
           {% endif %}
 
 # 客厅灯开关同步
@@ -376,7 +379,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: light.hassmart4a, light.hassmart3a
+      entity_id: light.parlor_light2, light.parlor_light
   action:
     - service_template: >
         {% if trigger.to_state.state == 'on' %}
@@ -386,10 +389,10 @@
         {% endif %}
       data_template:
         entity_id: >
-          {% if trigger.entity_id == 'light.hassmart4a' %}
-            light.hassmart3a
+          {% if trigger.entity_id == 'light.parlor_light2' %}
+            light.parlor_light
           {% else %}
-            light.hassmart4a
+            light.parlor_light2
           {% endif %}
 
 # 过道灯开关同步
@@ -397,7 +400,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: light.sonoff1b, light.hassmart5a
+      entity_id: light.passage_light2, light.passage_light
   action:
     - service_template: >
         {% if trigger.to_state.state == 'on' %}
@@ -407,10 +410,10 @@
         {% endif %}
       data_template:
         entity_id: >
-          {% if trigger.entity_id == 'light.sonoff1b' %}
-            light.hassmart5a
+          {% if trigger.entity_id == 'light.passage_light2' %}
+            light.passage_light
           {% else %}
-            light.sonoff1b
+            light.passage_light2
           {% endif %}
 
 # 书房灯开关同步
@@ -418,7 +421,7 @@
   initial_state: true
   trigger:
     - platform: state
-      entity_id: light.hassmart5b, light.hassmart5c, light.sonoff3
+      entity_id: light.study_light2, light.study_light3, light.study_light
   action:
     - service_template: >
         {% if trigger.to_state.state == 'on' %}
@@ -428,12 +431,12 @@
         {% endif %}
       data_template:
         entity_id: >
-          {% if trigger.entity_id == 'light.hassmart5b' %}
-            light.hassmart5c,light.sonoff3
-          {% elif trigger.entity_id == 'light.hassmart5c' %}
-            light.sonoff3,light.hassmart5b
+          {% if trigger.entity_id == 'light.study_light2' %}
+            light.study_light3,light.study_light
+          {% elif trigger.entity_id == 'light.study_light3' %}
+            light.study_light,light.study_light2
           {% else %}
-            light.hassmart5b,light.hassmart5c
+            light.study_light2,light.study_light3
           {% endif %}
 
 # 阳台空气差
@@ -476,7 +479,7 @@
           entity_id: sensor.phicomm_pm25
           above: 20
         - condition: numeric_state
-          entity_id: sensor.fresher_co2
+          entity_id: sensor.parlor_co2
           above: 700
   action:
     - service: hello_miai.send
@@ -491,10 +494,10 @@
       entity_id: sensor.phicomm_pm25
       above: 40
     - platform: numeric_state
-      entity_id: sensor.fresher_co2
+      entity_id: sensor.parlor_co2
       above: 900
     - platform: numeric_state
-      entity_id: sensor.co2
+      entity_id: sensor.bedroom_co2
       above: 900
     - platform: numeric_state
       entity_id: sensor.phicomm_hcho
@@ -503,7 +506,7 @@
     - service: light.turn_on
       data_template:
         entity_id: light.gateway_light_34ce0090901a
-        rgb_color: ["{% if states('sensor.co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.phicomm_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.phicomm_pm25') | int > 40 %}255{% else %}0{% endif %}"]
+        rgb_color: ["{% if states('sensor.bedroom_co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.phicomm_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.phicomm_pm25') | int > 40 %}255{% else %}0{% endif %}"]
         brightness: 10
 
 # 客厅空气达标
@@ -514,10 +517,10 @@
       entity_id: sensor.phicomm_pm25
       below: 40
     - platform: numeric_state
-      entity_id: sensor.fresher_co2
+      entity_id: sensor.parlor_co2
       below: 900
     - platform: numeric_state
-      entity_id: sensor.co2
+      entity_id: sensor.bedroom_co2
       below: 900
     - platform: numeric_state
       entity_id: sensor.phicomm_hcho
@@ -527,10 +530,10 @@
       entity_id: sensor.phicomm_pm25
       below: 40
     - condition: numeric_state
-      entity_id: sensor.fresher_co2
+      entity_id: sensor.parlor_co2
       below: 900
     - condition: numeric_state
-      entity_id: sensor.co2
+      entity_id: sensor.bedroom_co2
       below: 900
     - condition: numeric_state
       entity_id: sensor.phicomm_hcho
@@ -570,7 +573,7 @@
   initial_state: true
   trigger:
     - platform: numeric_state
-      entity_id: sensor.fresher_pm25
+      entity_id: sensor.parlor_pm25
       above: 20
       for:
         minutes: 5
@@ -593,7 +596,7 @@
         entity_id: fan.diningroom_purifier
         speed: "{% if states('sensor.phicomm_pm25') | int > 40 %}high{% else %}medium{% endif %}"
     - condition: numeric_state
-      entity_id: sensor.fresher_pm25
+      entity_id: sensor.parlor_pm25
       above: 40
     - condition: state
       entity_id: binary_sensor.door_window_sensor_158d000228a52b
@@ -617,7 +620,7 @@
         entity_id: fan.diningroom_purifier
         speed: low
     - condition: numeric_state
-      entity_id: sensor.fresher_co2
+      entity_id: sensor.parlor_co2
       below: 675
     - service: fan.set_speed
       data:
@@ -629,7 +632,7 @@
   initial_state: true
   trigger:
     - platform: numeric_state
-      entity_id: sensor.fresher_co2
+      entity_id: sensor.parlor_co2
       above: 725
       for:
         minutes: 5
@@ -672,7 +675,7 @@
   initial_state: true
   trigger:
     - platform: numeric_state
-      entity_id: sensor.purifier_pm25
+      entity_id: sensor.study_pm25
       above: 25
       for:
         minutes: 5
@@ -686,7 +689,7 @@
     - service: fan.xiaomi_miio_set_favorite_level
       data:
        entity_id: fan.purifier
-       level: 7
+       level: "{% if is_state('switch.projector', 'on') %}5{% elif states('sensor.study_pm25') | int > 40 %}10{% else %}7{% endif %}"
     - condition: time
       after: '18:00'
       before: '22:00'
@@ -695,14 +698,14 @@
     - service: fan.set_speed
       data_template:
        entity_id: fan.parents_purifier
-       speed: "{% if states('sensor.purifier_pm25') | int > 40 %}high{% else %}medium{% endif %}"
+       speed: "{% if states('sensor.study_pm25') | int > 40 %}high{% else %}medium{% endif %}"
 
 # 书房空气好
 - alias: Study PM2.5 Good
   initial_state: true
   trigger:
     - platform: numeric_state
-      entity_id: sensor.purifier_pm25
+      entity_id: sensor.study_pm25
       below: 20
       for:
         minutes: 5
@@ -721,7 +724,7 @@
   initial_state: true
   trigger:
     - platform: numeric_state
-      entity_id: sensor.pm25
+      entity_id: sensor.bedroom_pm25
       above: 20
       for:
         minutes: 5
@@ -738,14 +741,14 @@
     - service: fan.set_speed
       data_template:
        entity_id: fan.bedroom_purifier
-       speed: "{% if states('sensor.pm25') | int > 40 %}high{% else %}medium{% endif %}"
+       speed: "{% if states('sensor.bedroom_pm25') | int > 40 %}high{% else %}medium{% endif %}"
 
 # 主卧空气好
 - alias: Bedroom PM2.5 Good
   initial_state: true
   trigger:
     - platform: numeric_state
-      entity_id: sensor.pm25
+      entity_id: sensor.bedroom_pm25
       below: 15
       for:
         minutes: 5

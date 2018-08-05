@@ -21,24 +21,24 @@ weather:
 
 layout:
     - sensor.balcony_temperature, sensor.balcony_humidity, sensor.balcony_pm25, weather(1x2)
-    - sensor.temperature, sensor.humidity, sensor.pm25
-    - sensor.co2, sensor.hcho, clock(2x1)
+    - sensor.bedroom_temperature, sensor.bedroom_humidity, sensor.bedroom_pm25
+    - sensor.bedroom_co2, sensor.bedroom_hcho, clock(2x1)
 
-    - light.hassmart3a, light.hassmart2a, light.hassmart1b, light.hassmart5a
-    - light.hassmart5c, light.sonoff2, light.hassmart4b, light.hassmart6a
-    - light.hassmart3b, light.hassmart3c, light.hassmart1a, light.hassmart2b
-    - light.sonoff1, light.gateway_light_34ce0090901a, light.lamp, vacuum.vacuum
+    - light.parlor_light, light.diningroom_light, light.hallway_light, light.passage_light
+    - light.study_light, light.ceiling_light, light.balcony_light, light.washroom_light
+    - light.parlor_spotlight, light.diningroom_spotlight, light.hallway_spotlight, light.passage_spotlight
+    - light.passage_backlight, light.gateway_light_34ce0090901a, light.lamp, vacuum.vacuum
 
     - climate.daikin2, climate.daikin1, climate.daikin3, climate.daikin4
     - climate.saswell, climate.saswell2, fan.fresher, fan.purifier
     - fan.diningroom_purifier, fan.bedroom_purifier, fan.parents_purifier, fan.kids_purifier
-    - switch.mitsubishi, fan.fan, fan.wall_fan, switch.hassmart6b
+    - switch.mitsubishi, fan.fan, fan.wall_fan, switch.washroom_fan
     - media_player.x9400e, media_player.x9300d, switch.projector, switch.storage
 
     - switch.speaker, sensor.study_lightness, sensor.parents_co2, sensor.kids_co2
-    - sensor.fresher_temperature, sensor.fresher_humidity, sensor.fresher_pm25, sensor.fresher_co2
+    - sensor.parlor_temperature, sensor.parlor_humidity, sensor.parlor_pm25, sensor.parlor_co2
     - sensor.phicomm_temperature, sensor.phicomm_humidity, sensor.phicomm_pm25, sensor.phicomm_hcho
-    - sensor.purifier_temperature, sensor.purifier_humidity, sensor.purifier_pm25, sensor.illumination_34ce0090901a
+    - sensor.study_temperature, sensor.study_humidity, sensor.study_pm25, sensor.illumination_34ce0090901a
     - sensor.phicomm2_temperature, sensor.phicomm2_humidity, sensor.phicomm2_pm25, sensor.phicomm2_hcho
 
     - binary_sensor.door_window_sensor_158d0001f3e5be, binary_sensor.door_window_sensor_158d000228a52b, binary_sensor.motion_sensor_158d0001d66ce9, binary_sensor.motion_sensor_158d0001f4a238

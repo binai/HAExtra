@@ -17,24 +17,24 @@ default_view:
       - group.study
       - group.office
       - group.outside
-      - sensor.temperature
-      - sensor.humidity
-      - sensor.co2
-      - sensor.hcho
-      - sensor.pm25
       - sensor.balcony_pm25
+      - sensor.bedroom_pm25
+      - sensor.bedroom_temperature
+      - sensor.bedroom_humidity
+      - sensor.bedroom_co2
+      - sensor.parlor_co2
 
 Hallway:
     entities:
       - binary_sensor.door_window_sensor_158d0001f3e5be
-      - light.hassmart1b
-      - light.hassmart1a
+      - light.hallway_light
+      - light.hallway_spotlight
 
 Diningroom:
     entities:
-      - light.hassmart2a
-      #- light.hassmart1c
-      - light.hassmart3c
+      - light.diningroom_light
+      #- light.diningroom_light2
+      - light.diningroom_spotlight
       - climate.daikin1
       - climate.saswell2
       - switch.outlet
@@ -52,9 +52,9 @@ Diningroom:
 
 Parlor:
     entities:
-      - light.hassmart3a
-      #- light.hassmart4a
-      - light.hassmart3b
+      - light.parlor_light
+      #- light.parlor_light2
+      - light.parlor_spotlight
       - remote.apple_tv
       - media_player.x9400e
       - media_player.apple_tv
@@ -62,14 +62,14 @@ Parlor:
       - climate.saswell
       - fan.wall_fan
       - fan.fresher
-      - sensor.fresher_co2
-      - sensor.fresher_humidity
-      - sensor.fresher_pm25
-      - sensor.fresher_temperature
+      #- sensor.parlor_co2
+      - sensor.parlor_humidity
+      - sensor.parlor_pm25
+      - sensor.parlor_temperature
 
 Balcony:
     entities:
-      - light.hassmart4b
+      - light.balcony_light
       - binary_sensor.door_window_sensor_158d000228a52b
       - sensor.balcony_temperature
       - sensor.balcony_humidity
@@ -77,10 +77,10 @@ Balcony:
 
 Passage:
     entities:
-      - light.hassmart5a
-      - light.hassmart2b
-      #- light.hassmart5b
-      - light.sonoff1
+      - light.passage_light
+      - light.passage_spotlight
+      #- light.study_light2
+      - light.passage_backlight
       - switch.storage
       - binary_sensor.motion_sensor_158d0001d66ce9
       # - binary_sensor.lightness
@@ -88,23 +88,23 @@ Passage:
 
 Washroom:
     entities:
-      - light.hassmart6a
-      - switch.hassmart6b
+      - light.washroom_light
+      - switch.washroom_fan
       - binary_sensor.motion_sensor_158d0001f4a238
 
 Study:
     entities:
-      - light.sonoff3
-      - light.sonoff2
+      - light.study_light
+      - light.ceiling_light
       - light.lamp
       - switch.projector
       - vacuum.vacuum
       - switch.mitsubishi
       - switch.speaker
       - fan.purifier
-      - sensor.purifier_temperature
-      - sensor.purifier_humidity
-      - sensor.purifier_pm25
+      - sensor.study_temperature
+      - sensor.study_humidity
+      - sensor.study_pm25
       - sensor.study_lightness
 
 Bedroom:
@@ -116,24 +116,24 @@ Bedroom:
       - fan.bedroom_purifier
       - fan.parents_purifier
       - fan.kids_purifier
-      - sensor.phicomm2_temperature
-      - sensor.phicomm2_humidity
-      - sensor.phicomm2_pm25
-      - sensor.phicomm2_hcho
-      # - sensor.temperature
-      # - sensor.humidity
-      # - sensor.pm25
-      # - sensor.co2
-      #- sensor.hcho
+      # - sensor.phicomm3_temperature
+      # - sensor.phicomm3_humidity
+      # - sensor.phicomm3_pm25
+      # - sensor.phicomm3_hcho
+      # - sensor.bedroom_temperature
+      # - sensor.bedroom_humidity
+      # - sensor.bedroom_pm25
+      # - sensor.bedroom_co2
+      - sensor.bedroom_hcho
       - sensor.parents_co2
       - sensor.kids_co2
 
 Office:
     entities:
-      - sensor.phicomm3_temperature
-      - sensor.phicomm3_humidity
-      - sensor.phicomm3_pm25
-      - sensor.phicomm3_hcho
+      - sensor.phicomm2_temperature
+      - sensor.phicomm2_humidity
+      - sensor.phicomm2_pm25
+      - sensor.phicomm2_hcho
 
 Outside:
     entities:

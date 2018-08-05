@@ -59,7 +59,7 @@ fan.purifier:
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
 fan.wall_fan:
-  friendly_name: 壁扇
+  friendly_name: 客厅壁扇
   icon: mdi:fan
 group.all_automations:
   friendly_name: 自动化
@@ -126,72 +126,72 @@ input_text.miai:
   icon: mdi:speaker-wireless
 light.gateway_light_34ce0090901a:
   friendly_name: 壁灯
-light.hassmart1a:
+light.hallway_spotlight:
   friendly_name: 玄关筒灯
   icon: mdi:spotlight
-light.hassmart1b:
+light.hallway_light:
   friendly_name: 玄关灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.hassmart1c:
+light.diningroom_light2:
   friendly_name: 餐厅灯2
   hidden: true
   icon: mdi:ceiling-light
-light.hassmart2a:
+light.diningroom_light:
   friendly_name: 餐厅灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.hassmart2b:
+light.passage_spotlight:
   friendly_name: 过道筒灯
   icon: mdi:spotlight
-light.hassmart3a:
+light.parlor_light:
   friendly_name: 客厅灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.hassmart3b:
+light.parlor_spotlight:
   friendly_name: 客厅筒灯
   icon: mdi:spotlight
-light.hassmart3c:
+light.diningroom_spotlight:
   friendly_name: 餐厅筒灯
   icon: mdi:spotlight
-light.hassmart4a:
+light.parlor_light2:
   friendly_name: 客厅灯2
   hidden: true
   icon: mdi:ceiling-light
-light.hassmart4b:
+light.balcony_light:
   friendly_name: 阳台灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.hassmart5a:
+light.passage_light:
   friendly_name: 过道灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.hassmart5b:
+light.study_light2:
   friendly_name: 书房灯2
   hidden: true
   icon: mdi:ceiling-light
-light.hassmart5c:
+light.study_light3:
   friendly_name: 书房灯3
   hidden: true
   icon: mdi:ceiling-light
-light.hassmart6a:
+light.washroom_light:
   friendly_name: 洗手间灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
 light.lamp:
   friendly_name: 台灯
   icon: mdi:lamp
-light.sonoff1:
+light.passage_backlight:
   friendly_name: 过道背景灯
   icon: mdi:spotlight-beam
-light.sonoff1b:
+light.passage_light2:
   friendly_name: 过道灯2
   hidden: true
   icon: mdi:ceiling-light
-light.sonoff2:
+light.ceiling_light:
   friendly_name: 天花灯
   icon: mdi:ceiling-light
-light.sonoff3:
+light.study_light:
   friendly_name: 书房灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
@@ -209,7 +209,6 @@ sensor.balcony_humidity:
   friendly_name: 阳台湿度
 sensor.balcony_pm25:
   friendly_name: 阳台颗粒物
-  hagenie_zone: 阳台
   icon: mdi:blur
 sensor.balcony_temperature:
   friendly_name: 阳台温度
@@ -247,52 +246,47 @@ sensor.caiyun_wind_direction:
   friendly_name: 风向
 sensor.caiyun_wind_speed:
   friendly_name: 风速
-sensor.co2:
-  friendly_name: 二氧化碳
-  hagenie_zone: 主卧
+sensor.bedroom_co2:
+  friendly_name: 主卧二氧化碳
   icon: mdi:periodic-table-co2
-sensor.fresher_co2:
-  friendly_name: 新风二氧化碳
+sensor.parlor_co2:
+  friendly_name: 客厅二氧化碳
   icon: mdi:periodic-table-co2
-sensor.fresher_humidity:
-  friendly_name: 新风湿度
-sensor.fresher_pm25:
-  friendly_name: 新风颗粒物
+sensor.parlor_humidity:
+  friendly_name: 客厅湿度
+sensor.parlor_pm25:
+  friendly_name: 客厅颗粒物
   icon: mdi:blur
-sensor.fresher_temperature:
-  friendly_name: 新风温度
-sensor.hcho:
-  friendly_name: 甲醛
-  hagenie_zone: 主卧
+sensor.parlor_temperature:
+  friendly_name: 客厅温度
+sensor.bedroom_hcho:
+  friendly_name: 主卧甲醛
   icon: mdi:biohazard
-sensor.humidity:
-  friendly_name: 湿度
-  hagenie_zone: 主卧
+sensor.bedroom_humidity:
+  friendly_name: 主卧湿度
 sensor.illumination_34ce0090901a:
   friendly_name: 餐厅亮度
 sensor.kids_co2:
   friendly_name: 儿童房二氧化碳
-  hagenie_zone: 儿童房
   icon: mdi:periodic-table-co2
 sensor.parents_co2:
   friendly_name: 次卧二氧化碳
-  hagenie_zone: 次卧
   icon: mdi:periodic-table-co2
-sensor.phicomm2_hcho:
-  friendly_name: 卧室甲醛
-sensor.phicomm2_humidity:
-  friendly_name: 卧室湿度
-sensor.phicomm2_pm25:
-  friendly_name: 卧室颗粒物
-sensor.phicomm2_temperature:
-  friendly_name: 卧室温度
 sensor.phicomm3_hcho:
-  friendly_name: 工位甲醛
+  friendly_name: 卧室甲醛
 sensor.phicomm3_humidity:
-  friendly_name: 工位湿度
+  friendly_name: 卧室湿度
 sensor.phicomm3_pm25:
-  friendly_name: 工位颗粒物
+  friendly_name: 卧室颗粒物
 sensor.phicomm3_temperature:
+  friendly_name: 卧室温度
+sensor.phicomm2_hcho:
+  friendly_name: 工位甲醛
+sensor.phicomm2_humidity:
+  friendly_name: 工位湿度
+sensor.phicomm2_pm25:
+  friendly_name: 工位颗粒物
+sensor.phicomm2_temperature:
   friendly_name: 工位温度
 sensor.phicomm_hcho:
   friendly_name: 餐厅甲醛
@@ -302,26 +296,24 @@ sensor.phicomm_pm25:
   friendly_name: 餐厅颗粒物
 sensor.phicomm_temperature:
   friendly_name: 餐厅温度
-sensor.pm25:
-  friendly_name: 颗粒物
-  hagenie_zone: 主卧
+sensor.bedroom_pm25:
+  friendly_name: 主卧颗粒物
   icon: mdi:blur
-sensor.purifier_humidity:
+sensor.study_humidity:
   friendly_name: 书房湿度
   icon: mdi:water-percent
-sensor.purifier_pm25:
+sensor.study_pm25:
   friendly_name: 书房颗粒物
   icon: mdi:blur
-sensor.purifier_temperature:
+sensor.study_temperature:
   friendly_name: 书房温度
 sensor.study_lightness:
   friendly_name: 书房亮度
-sensor.temperature:
-  friendly_name: 温度
-  hagenie_zone: 主卧
+sensor.bedroom_temperature:
+  friendly_name: 主卧温度
 sun.sun:
   friendly_name: 日照
-switch.hassmart6b:
+switch.washroom_fan:
   friendly_name: 洗手间排气扇
   hagenie_deviceName: 顶扇
   hagenie_deviceType: fan
@@ -345,7 +337,7 @@ switch.projector:
   hagenie_deviceName: 电视
   hagenie_deviceType: television
   icon: mdi:projector
-switch.sonoff3b:
+switch.projector_power:
   friendly_name: 投影仪电源
 switch.speaker:
   custom_ui_state_card: state-card-custom-ui

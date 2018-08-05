@@ -95,11 +95,12 @@ homekit:
       - automation
       - input_boolean
     exclude_entities:
-      - light.hassmart5b
-      - light.hassmart5c
-      - light.hassmart4a
-      - light.hassmart1c
-      - light.sonoff1b
+      - light.study_light2
+      - light.study_light3
+      - light.parlor_light2
+      - light.diningroom_light2
+      - light.passage_light2
+      - light.projector_power
       - binary_sensor.switch_158d0001e59b33
       - binary_sensor.switch_158d000201a73f
   entity_config:
@@ -203,28 +204,28 @@ sensor:
   - platform: mqtt
     device_class: temperature
     state_topic: NodeMCU7/temperature
-    name: Temperature
+    name: Bedroom Temperature
     unit_of_measurement: °C
     availability_topic: NodeMCU7/status
   - platform: mqtt
     device_class: humidity
     state_topic: NodeMCU7/humidity
-    name: Humidity
+    name: Bedroom Humidity
     unit_of_measurement: '%'
     availability_topic: NodeMCU7/status
   - platform: mqtt
     state_topic: NodeMCU7/pm2dot5
-    name: PM2.5
+    name: Bedroom PM2.5
     unit_of_measurement: μg/m³
     availability_topic: NodeMCU7/status
   - platform: mqtt
     state_topic: NodeMCU7/hcho
-    name: HCHO
+    name: Bedroom HCHO
     unit_of_measurement: mg/m³
     availability_topic: NodeMCU7/status
   - platform: mqtt
     state_topic: NodeMCU7/co2
-    name: CO2
+    name: Bedroom CO2
     unit_of_measurement: ppm
     availability_topic: NodeMCU7/status
   - platform: caiyun
@@ -233,36 +234,36 @@ sensor:
     password: !secret phicomm_password
   - platform: template
     sensors:
-      purifier_temperature:
+      study_temperature:
         device_class: temperature
-        friendly_name: Purifier Temperature
+        friendly_name: Study Temperature
         value_template: "{{ states.fan.purifier.attributes.temperature }}"
         unit_of_measurement: °C
-      purifier_humidity:
+      study_humidity:
         device_class: humidity
-        friendly_name: Purifier Humidity
+        friendly_name: Study Humidity
         value_template: "{{ states.fan.purifier.attributes.humidity }}"
         unit_of_measurement: '%'
-      purifier_pm25:
-        friendly_name: Purifier PM2.5
+      study_pm25:
+        friendly_name: Study PM2.5
         value_template: "{{ states.fan.purifier.attributes.aqi }}"
         unit_of_measurement: 'μg/m³'
-      fresher_temperature:
+      parlor_temperature:
         device_class: temperature
-        friendly_name: Fresher Temperature
+        friendly_name: Parlor Temperature
         value_template: "{{ states.fan.fresher.attributes.temperature }}"
         unit_of_measurement: °C
-      fresher_humidity:
+      parlor_humidity:
         device_class: humidity
-        friendly_name: Fresher Humidity
+        friendly_name: Parlor Humidity
         value_template: "{{ states.fan.fresher.attributes.humidity }}"
         unit_of_measurement: '%'
-      fresher_pm25:
-        friendly_name: Fresher PM2.5
+      parlor_pm25:
+        friendly_name: Parlor PM2.5
         value_template: "{{ states.fan.fresher.attributes.aqi }}"
         unit_of_measurement: 'μg/m³'
-      fresher_co2:
-        friendly_name: Fresher CO2
+      parlor_co2:
+        friendly_name: Parlor CO2
         value_template: "{{ states.fan.fresher.attributes.co2 }}"
         unit_of_measurement: 'ppm'
 
@@ -275,12 +276,12 @@ switch:
     turn_off:
       service: shell_command.turn_off_storage
   - platform: mqtt
-    name: Hassmart6B
+    name: Washroom Fan
     state_topic: Hassmart6/relay/1
     command_topic: Hassmart6/relay/1/set
     availability_topic: Hassmart6/status
   - platform: mqtt
-    name: Sonoff3B
+    name: Projector Power
     state_topic: Sonoff3/relay/1
     command_topic: Sonoff3/relay/1/set
     availability_topic: Sonoff3/status
@@ -316,12 +317,12 @@ switch:
     switches:
       projector:
         friendly_name: Projector
-        value_template: "{{ is_state('switch.sonoff3b', 'on') }}"
+        value_template: "{{ is_state('switch.projector_power', 'on') }}"
         turn_on:
           # - service: switch.turn_on
           #   entity_id: switch.storage
           - service: switch.turn_on
-            entity_id: switch.sonoff3b
+            entity_id: switch.projector_power
           - service: switch.broadlink_send_packet_remotemini
             data:
               packet:
@@ -331,16 +332,22 @@ switch:
             entity_id: switch.speaker
           - delay: 3
           - service: light.turn_off
-            entity_id: light.sonoff2
+            entity_id: light.ceiling_light
           - service: light.turn_off
-            entity_id: light.sonoff3
+            entity_id: light.study_light
           - service: switch.broadlink_send_packet_remotemini # Retry when power ready
             data:
               packet:
                 - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
+          - service: fan.turn_on
+            entity_id: fan.purifier
+          - service: fan.set_speed
+            data:
+             entity_id: fan.purifier
+             speed: auto
           - condition: numeric_state
-            entity_id: sensor.purifier_temperature
-            above: 28
+            entity_id: sensor.study_temperature
+            above: 29
           - service: switch.turn_on
             entity_id: switch.mitsubishi
         turn_off:
@@ -355,10 +362,10 @@ switch:
               topic: NodeMCU3/relay/0/set
               payload: 'OFF'
           - service_template: "{% if is_state('sun.sun', 'below_horizon') %}light.turn_on{% else %}light.turn_off{% endif %}"
-            entity_id: light.sonoff3
+            entity_id: light.study_light
           - delay: 200
           - service: switch.turn_off
-            entity_id: switch.sonoff3b
+            entity_id: switch.projector_power
 
 #
 light:
@@ -369,98 +376,98 @@ light:
         transition: 1000
 
   - platform: mqtt
-    name: Hassmart1A
+    name: Hallway Spotlight
     state_topic: Hassmart1/relay/0
     command_topic: Hassmart1/relay/0/set
     availability_topic: Hassmart1/status
   - platform: mqtt
-    name: Hassmart1B
+    name: Hallway Light
     state_topic: Hassmart1/relay/1
     command_topic: Hassmart1/relay/1/set
     availability_topic: Hassmart1/status
   - platform: mqtt
-    name: Hassmart1C
+    name: Diningroom Light2
     state_topic: Hassmart1/relay/2
     command_topic: Hassmart1/relay/2/set
     availability_topic: Hassmart1/status
 
   - platform: mqtt
-    name: Hassmart2A
+    name: Diningroom light
     state_topic: Hassmart2/relay/0
     command_topic: Hassmart2/relay/0/set
     availability_topic: Hassmart2/status
   - platform: mqtt
-    name: Hassmart2B
+    name: Passage Spotlight
     state_topic: Hassmart2/relay/1
     command_topic: Hassmart2/relay/1/set
     availability_topic: Hassmart2/status
 
   - platform: mqtt
-    name: Hassmart3A
+    name: Parlor Light
     state_topic: Hassmart3/relay/0
     command_topic: Hassmart3/relay/0/set
     availability_topic: Hassmart3/status
   - platform: mqtt
-    name: Hassmart3B
+    name: Parlor Spotlight
     state_topic: Hassmart3/relay/1
     command_topic: Hassmart3/relay/1/set
     availability_topic: Hassmart3/status
   - platform: mqtt
-    name: Hassmart3C
+    name: Diningroom Spotlight
     state_topic: Hassmart3/relay/2
     command_topic: Hassmart3/relay/2/set
     availability_topic: Hassmart3/status
 
   - platform: mqtt
-    name: Hassmart4A
+    name: Parlor Light2
     state_topic: Hassmart4/relay/0
     command_topic: Hassmart4/relay/0/set
     availability_topic: Hassmart4/status
   - platform: mqtt
-    name: Hassmart4B
+    name: Balcony Light
     state_topic: Hassmart4/relay/1
     command_topic: Hassmart4/relay/1/set
     availability_topic: Hassmart4/status
 
   - platform: mqtt
-    name: Hassmart5A
+    name: Passage Light
     state_topic: Hassmart5/relay/0
     command_topic: Hassmart5/relay/0/set
     availability_topic: Hassmart5/status
   - platform: mqtt
-    name: Hassmart5B
+    name: Study Light2
     state_topic: Hassmart5/relay/1
     command_topic: Hassmart5/relay/1/set
     availability_topic: Hassmart5/status
   - platform: mqtt
-    name: Hassmart5C
+    name: Study Light3
     state_topic: Hassmart5/relay/2
     command_topic: Hassmart5/relay/2/set
     availability_topic: Hassmart5/status
 
   - platform: mqtt
-    name: Hassmart6A
+    name: Washroom Light
     state_topic: Hassmart6/relay/0
     command_topic: Hassmart6/relay/0/set
     availability_topic: Hassmart6/status
 
   - platform: mqtt
-    name: Sonoff1
+    name: Passage Backlight
     state_topic: Sonoff1/relay/0
     command_topic: Sonoff1/relay/0/set
     availability_topic: Sonoff1/status
   - platform: mqtt
-    name: Sonoff1B
+    name: Passage Light2
     state_topic: Sonoff1/relay/1
     command_topic: Sonoff1/relay/1/set
     availability_topic: Sonoff1/status
   - platform: mqtt
-    name: Sonoff2
+    name: Ceiling Light
     state_topic: Sonoff2/relay/0
     command_topic: Sonoff2/relay/0/set
     availability_topic: Sonoff2/status
   - platform: mqtt
-    name: Sonoff3
+    name: Study Light
     state_topic: Sonoff3/relay/0
     command_topic: Sonoff3/relay/0/set
     availability_topic: Sonoff3/status

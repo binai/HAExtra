@@ -116,7 +116,7 @@ class PhicommSensor(Entity):
     def available(self):
         """Return if the sensor data are available."""
         data = self.data
-        return data and data.get('pm25') is not None
+        return data and data.get('online') == '1'
 
     @property
     def state(self):
