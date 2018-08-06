@@ -1,0 +1,43 @@
+
+#
+turn_on_projector:
+  alias: 打开投影仪
+  sequence:
+  - service: switch.turn_on
+    entity_id: switch.benq
+  - service: switch.turn_on
+    entity_id: switch.himedia
+  - service: fan.turn_on
+    entity_id: fan.purifier
+  - service: fan.set_speed
+    data:
+     entity_id: fan.purifier
+     speed: auto
+  - service: switch.turn_on
+    entity_id: switch.speaker
+  - service: light.turn_off
+    entity_id: light.ceiling_light
+  - service: light.turn_off
+    entity_id: light.study_light
+  - condition: numeric_state
+    entity_id: sensor.study_temperature
+    above: 28
+  - service: switch.turn_on
+    entity_id: switch.mitsubishi
+
+#
+turn_off_projector:
+  alias: 关闭投影仪
+  sequence:
+  - service: switch.turn_off
+    entity_id: switch.benq
+  - service: switch.turn_off
+    entity_id: switch.himedia
+  - service: switch.turn_off
+    entity_id: switch.benq
+  - service: switch.turn_off
+    entity_id: switch.speaker
+  - service_template: "{% if is_state('sun.sun', 'below_horizon') %}light.turn_on{% else %}light.turn_off{% endif %}"
+    entity_id: light.study_light
+  - service: switch.turn_off
+    entity_id: switch.mitsubishi

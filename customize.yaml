@@ -75,6 +75,8 @@ group.all_lights:
 group.all_remotes:
   friendly_name: 遥控器
   hidden: false
+group.all_scripts:
+  friendly_name: 脚本
 group.all_switches:
   friendly_name: 开关
   hidden: false
@@ -124,46 +126,63 @@ input_select.wall_fan_speed:
 input_text.miai:
   friendly_name: 小爱音箱
   icon: mdi:speaker-wireless
-light.gateway_light_34ce0090901a:
-  friendly_name: 壁灯
-light.hallway_spotlight:
-  friendly_name: 玄关筒灯
-  icon: mdi:spotlight
-light.hallway_light:
-  friendly_name: 玄关灯
+light.balcony_light:
+  friendly_name: 阳台灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.ceiling_light:
+  friendly_name: 天花灯
+  icon: mdi:ceiling-light
+light.diningroom_light:
+  friendly_name: 餐厅灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
 light.diningroom_light2:
   friendly_name: 餐厅灯2
   hidden: true
   icon: mdi:ceiling-light
-light.diningroom_light:
-  friendly_name: 餐厅灯
+light.diningroom_spotlight:
+  friendly_name: 餐厅筒灯
+  icon: mdi:spotlight
+light.gateway_light_34ce0090901a:
+  friendly_name: 壁灯
+light.hallway_light:
+  friendly_name: 玄关灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.passage_spotlight:
-  friendly_name: 过道筒灯
+light.hallway_spotlight:
+  friendly_name: 玄关筒灯
   icon: mdi:spotlight
+light.lamp:
+  friendly_name: 台灯
+  icon: mdi:lamp
 light.parlor_light:
   friendly_name: 客厅灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.parlor_spotlight:
-  friendly_name: 客厅筒灯
-  icon: mdi:spotlight
-light.diningroom_spotlight:
-  friendly_name: 餐厅筒灯
-  icon: mdi:spotlight
 light.parlor_light2:
   friendly_name: 客厅灯2
   hidden: true
   icon: mdi:ceiling-light
-light.balcony_light:
-  friendly_name: 阳台灯
-  hagenie_deviceName: 吸顶灯
-  icon: mdi:ceiling-light
+light.parlor_spotlight:
+  friendly_name: 客厅筒灯
+  icon: mdi:spotlight
+light.passage_backlight:
+  friendly_name: 过道背景灯
+  icon: mdi:spotlight-beam
 light.passage_light:
   friendly_name: 过道灯
+  hagenie_deviceName: 吸顶灯
+  icon: mdi:ceiling-light
+light.passage_light2:
+  friendly_name: 过道灯2
+  hidden: true
+  icon: mdi:ceiling-light
+light.passage_spotlight:
+  friendly_name: 过道筒灯
+  icon: mdi:spotlight
+light.study_light:
+  friendly_name: 书房灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
 light.study_light2:
@@ -176,23 +195,6 @@ light.study_light3:
   icon: mdi:ceiling-light
 light.washroom_light:
   friendly_name: 洗手间灯
-  hagenie_deviceName: 吸顶灯
-  icon: mdi:ceiling-light
-light.lamp:
-  friendly_name: 台灯
-  icon: mdi:lamp
-light.passage_backlight:
-  friendly_name: 过道背景灯
-  icon: mdi:spotlight-beam
-light.passage_light2:
-  friendly_name: 过道灯2
-  hidden: true
-  icon: mdi:ceiling-light
-light.ceiling_light:
-  friendly_name: 天花灯
-  icon: mdi:ceiling-light
-light.study_light:
-  friendly_name: 书房灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
 media_player.apple_tv:
@@ -212,6 +214,19 @@ sensor.balcony_pm25:
   icon: mdi:blur
 sensor.balcony_temperature:
   friendly_name: 阳台温度
+sensor.bedroom_co2:
+  friendly_name: 主卧二氧化碳
+  icon: mdi:periodic-table-co2
+sensor.bedroom_hcho:
+  friendly_name: 主卧甲醛
+  icon: mdi:biohazard
+sensor.bedroom_humidity:
+  friendly_name: 主卧湿度
+sensor.bedroom_pm25:
+  friendly_name: 主卧颗粒物
+  icon: mdi:blur
+sensor.bedroom_temperature:
+  friendly_name: 主卧温度
 sensor.caiyun_aqi:
   friendly_name: 空气指数
 sensor.caiyun_cloud_rate:
@@ -246,8 +261,13 @@ sensor.caiyun_wind_direction:
   friendly_name: 风向
 sensor.caiyun_wind_speed:
   friendly_name: 风速
-sensor.bedroom_co2:
-  friendly_name: 主卧二氧化碳
+sensor.illumination_34ce0090901a:
+  friendly_name: 餐厅亮度
+sensor.kids_co2:
+  friendly_name: 儿童房二氧化碳
+  icon: mdi:periodic-table-co2
+sensor.parents_co2:
+  friendly_name: 次卧二氧化碳
   icon: mdi:periodic-table-co2
 sensor.parlor_co2:
   friendly_name: 客厅二氧化碳
@@ -259,27 +279,6 @@ sensor.parlor_pm25:
   icon: mdi:blur
 sensor.parlor_temperature:
   friendly_name: 客厅温度
-sensor.bedroom_hcho:
-  friendly_name: 主卧甲醛
-  icon: mdi:biohazard
-sensor.bedroom_humidity:
-  friendly_name: 主卧湿度
-sensor.illumination_34ce0090901a:
-  friendly_name: 餐厅亮度
-sensor.kids_co2:
-  friendly_name: 儿童房二氧化碳
-  icon: mdi:periodic-table-co2
-sensor.parents_co2:
-  friendly_name: 次卧二氧化碳
-  icon: mdi:periodic-table-co2
-sensor.phicomm3_hcho:
-  friendly_name: 卧室甲醛
-sensor.phicomm3_humidity:
-  friendly_name: 卧室湿度
-sensor.phicomm3_pm25:
-  friendly_name: 卧室颗粒物
-sensor.phicomm3_temperature:
-  friendly_name: 卧室温度
 sensor.phicomm2_hcho:
   friendly_name: 工位甲醛
 sensor.phicomm2_humidity:
@@ -288,6 +287,14 @@ sensor.phicomm2_pm25:
   friendly_name: 工位颗粒物
 sensor.phicomm2_temperature:
   friendly_name: 工位温度
+sensor.phicomm3_hcho:
+  friendly_name: 卧室甲醛
+sensor.phicomm3_humidity:
+  friendly_name: 卧室湿度
+sensor.phicomm3_pm25:
+  friendly_name: 卧室颗粒物
+sensor.phicomm3_temperature:
+  friendly_name: 卧室温度
 sensor.phicomm_hcho:
   friendly_name: 餐厅甲醛
 sensor.phicomm_humidity:
@@ -296,28 +303,22 @@ sensor.phicomm_pm25:
   friendly_name: 餐厅颗粒物
 sensor.phicomm_temperature:
   friendly_name: 餐厅温度
-sensor.bedroom_pm25:
-  friendly_name: 主卧颗粒物
-  icon: mdi:blur
 sensor.study_humidity:
   friendly_name: 书房湿度
   icon: mdi:water-percent
+sensor.study_lightness:
+  friendly_name: 书房亮度
 sensor.study_pm25:
   friendly_name: 书房颗粒物
   icon: mdi:blur
 sensor.study_temperature:
   friendly_name: 书房温度
-sensor.study_lightness:
-  friendly_name: 书房亮度
-sensor.bedroom_temperature:
-  friendly_name: 主卧温度
 sun.sun:
   friendly_name: 日照
-switch.washroom_fan:
-  friendly_name: 洗手间排气扇
-  hagenie_deviceName: 顶扇
-  hagenie_deviceType: fan
-  icon: mdi:fan
+switch.benq:
+  friendly_name: 投影仪遥控
+switch.himedia:
+  friendly_name: 播放器遥控
 switch.mitsubishi:
   friendly_name: 书房空调
   hagenie_deviceType: aircondition
@@ -340,15 +341,15 @@ switch.projector:
 switch.speaker:
   config:
     extra_badge:
-      - entity_id: switch.speaker
-        attribute: original_state
+    - entity_id: switch.speaker
+      attribute: original_state
     entities:
-      - entity: switch.speaker
-        icon: mdi:video-input-component
-        service: mqtt.publish
-        data:
-          topic: NodeMCU3/relay/0/set
-          payload: toggle
+    - entity: switch.speaker
+      icon: mdi:video-input-component
+      service: mqtt.publish
+      data:
+        topic: NodeMCU3/relay/0/set
+        payload: toggle
   custom_ui_state_card: state-card-button
   dashboard_static_text_attribute: original_state
   friendly_name: 音箱
@@ -360,6 +361,11 @@ switch.storage:
   hagenie_deviceName: 网关
   hagenie_deviceType: gateway
   icon: mdi:harddisk
+switch.washroom_fan:
+  friendly_name: 洗手间排气扇
+  hagenie_deviceName: 顶扇
+  hagenie_deviceType: fan
+  icon: mdi:fan
 updater.updater:
   friendly_name: 有更新
 vacuum.vacuum:

@@ -1,181 +1,178 @@
 default_view:
-    view: yes
-    icon: mdi:home-assistant
-    entities:
-      # - device_tracker.xphone
-      # - device_tracker.yphone
-      # - device_tracker.zphone
-      # - device_tracker.himedia
-      - group.hallway
-      - group.diningroom
-      - group.kitchen
-      - group.parlor
-      - group.balcony
-      - group.passage
-      - group.washroom
-      - group.bedroom
-      - group.study
-      - group.office
-      - group.outside
-      - sensor.parlor_co2
-      - sensor.bedroom_co2
-      - sensor.bedroom_temperature
-      - sensor.bedroom_humidity
-      - sensor.bedroom_pm25
-      - sensor.balcony_pm25
+  view: yes
+  icon: mdi:home-assistant
+  entities:
+  # - device_tracker.xphone
+  # - device_tracker.yphone
+  # - device_tracker.zphone
+  # - device_tracker.himedia
+  - group.hallway
+  - group.diningroom
+  - group.kitchen
+  - group.parlor
+  - group.balcony
+  - group.passage
+  - group.washroom
+  - group.bedroom
+  - group.study
+  - group.office
+  - group.outside
+  - sensor.parlor_co2
+  - sensor.bedroom_co2
+  - sensor.bedroom_temperature
+  - sensor.bedroom_humidity
+  - sensor.bedroom_pm25
+  - sensor.balcony_pm25
 
 Hallway:
-    entities:
-      - binary_sensor.door_window_sensor_158d0001f3e5be
-      - light.hallway_light
-      - light.hallway_spotlight
+  entities:
+  - binary_sensor.door_window_sensor_158d0001f3e5be
+  - light.hallway_light
+  - light.hallway_spotlight
 
 Diningroom:
-    entities:
-      - light.diningroom_light
-      #- light.diningroom_light2
-      - light.diningroom_spotlight
-      - climate.daikin1
-      - climate.saswell2
-      - switch.outlet
-      - light.gateway_light_34ce0090901a
-      - fan.diningroom_purifier
-      - sensor.illumination_34ce0090901a
-      - sensor.phicomm_temperature
-      - sensor.phicomm_humidity
-      - sensor.phicomm_pm25
-      - sensor.phicomm_hcho
-
-#Kitchen:
-#    entities:
-#      -
+  entities:
+  - light.diningroom_light
+  #- light.diningroom_light2
+  - light.diningroom_spotlight
+  - climate.daikin1
+  - climate.saswell2
+  - switch.outlet
+  - light.gateway_light_34ce0090901a
+  - fan.diningroom_purifier
+  - sensor.illumination_34ce0090901a
+  - sensor.phicomm_temperature
+  - sensor.phicomm_humidity
+  - sensor.phicomm_pm25
+  - sensor.phicomm_hcho
 
 Parlor:
-    entities:
-      - light.parlor_light
-      #- light.parlor_light2
-      - light.parlor_spotlight
-      - remote.apple_tv
-      - media_player.x9400e
-      - media_player.apple_tv
-      - climate.daikin2
-      - climate.saswell
-      - fan.wall_fan
-      - fan.fresher
-      #- sensor.parlor_co2
-      - sensor.parlor_humidity
-      - sensor.parlor_pm25
-      - sensor.parlor_temperature
+  entities:
+  - light.parlor_light
+  #- light.parlor_light2
+  - light.parlor_spotlight
+  - remote.apple_tv
+  - media_player.x9400e
+  - media_player.apple_tv
+  - climate.daikin2
+  - climate.saswell
+  - fan.wall_fan
+  - fan.fresher
+  #- sensor.parlor_co2
+  - sensor.parlor_humidity
+  - sensor.parlor_pm25
+  - sensor.parlor_temperature
 
 Balcony:
-    entities:
-      - light.balcony_light
-      - binary_sensor.door_window_sensor_158d000228a52b
-      - sensor.balcony_temperature
-      - sensor.balcony_humidity
-      #- sensor.balcony_pm25
+  entities:
+  - light.balcony_light
+  - binary_sensor.door_window_sensor_158d000228a52b
+  - sensor.balcony_temperature
+  - sensor.balcony_humidity
+  #- sensor.balcony_pm25
 
 Passage:
-    entities:
-      - light.passage_light
-      - light.passage_spotlight
-      #- light.study_light2
-      - light.passage_backlight
-      - switch.storage
-      - binary_sensor.motion_sensor_158d0001d66ce9
-      # - binary_sensor.lightness
-      - input_text.miai
+  entities:
+  - light.passage_light
+  - light.passage_spotlight
+  #- light.study_light2
+  - light.passage_backlight
+  - switch.storage
+  - binary_sensor.motion_sensor_158d0001d66ce9
+  # - binary_sensor.lightness
+  - input_text.miai
 
 Washroom:
-    entities:
-      - light.washroom_light
-      - switch.washroom_fan
-      - binary_sensor.motion_sensor_158d0001f4a238
+  entities:
+  - light.washroom_light
+  - switch.washroom_fan
+  - binary_sensor.motion_sensor_158d0001f4a238
 
 Study:
-    entities:
-      - light.study_light
-      - light.ceiling_light
-      - light.lamp
-      - fan.purifier
-      - switch.projector
-      - switch.speaker
-      - switch.mitsubishi
-      - vacuum.vacuum
-      - sensor.study_temperature
-      - sensor.study_humidity
-      - sensor.study_pm25
-      - sensor.study_lightness
+  entities:
+  - light.study_light
+  - light.ceiling_light
+  - light.lamp
+  - fan.purifier
+  - switch.projector
+  - switch.speaker
+  - switch.mitsubishi
+  - vacuum.vacuum
+  - sensor.study_temperature
+  - sensor.study_humidity
+  - sensor.study_pm25
+  - sensor.study_lightness
 
 Bedroom:
-    entities:
-      - media_player.x9300d
-      - climate.daikin3
-      - climate.daikin4
-      - fan.fan
-      - fan.bedroom_purifier
-      - fan.parents_purifier
-      - fan.kids_purifier
-      # - sensor.phicomm3_temperature
-      # - sensor.phicomm3_humidity
-      # - sensor.phicomm3_pm25
-      # - sensor.phicomm3_hcho
-      # - sensor.bedroom_temperature
-      # - sensor.bedroom_humidity
-      # - sensor.bedroom_pm25
-      # - sensor.bedroom_co2
-      - sensor.bedroom_hcho
-      - sensor.parents_co2
-      - sensor.kids_co2
+  entities:
+  - media_player.x9300d
+  - climate.daikin3
+  - climate.daikin4
+  - fan.fan
+  - fan.bedroom_purifier
+  - fan.parents_purifier
+  - fan.kids_purifier
+  # - sensor.phicomm3_temperature
+  # - sensor.phicomm3_humidity
+  # - sensor.phicomm3_pm25
+  # - sensor.phicomm3_hcho
+  # - sensor.bedroom_temperature
+  # - sensor.bedroom_humidity
+  # - sensor.bedroom_pm25
+  # - sensor.bedroom_co2
+  - sensor.bedroom_hcho
+  - sensor.parents_co2
+  - sensor.kids_co2
 
 Office:
-    entities:
-      - sensor.phicomm2_temperature
-      - sensor.phicomm2_humidity
-      - sensor.phicomm2_pm25
-      - sensor.phicomm2_hcho
+  entities:
+  - sensor.phicomm2_temperature
+  - sensor.phicomm2_humidity
+  - sensor.phicomm2_pm25
+  - sensor.phicomm2_hcho
 
 Outside:
-    entities:
-      - sun.sun
-      - sensor.caiyun_weather
-      - sensor.caiyun_temperature
-      - sensor.caiyun_humidity
-      - sensor.caiyun_cloud_rate
-      - sensor.caiyun_pressure
-      - sensor.caiyun_wind_direction
-      - sensor.caiyun_wind_speed
-      - sensor.caiyun_local_precipitation
-      - sensor.caiyun_nearest_precipitation
-      - sensor.caiyun_precipitation_distance
-      - sensor.caiyun_aqi
-      - sensor.caiyun_pm25
-      - sensor.caiyun_pm10
-      - sensor.caiyun_o3
-      - sensor.caiyun_co
-      - sensor.caiyun_no2
-      - sensor.caiyun_so2
+  entities:
+  - sun.sun
+  - sensor.caiyun_weather
+  - sensor.caiyun_temperature
+  - sensor.caiyun_humidity
+  - sensor.caiyun_cloud_rate
+  - sensor.caiyun_pressure
+  - sensor.caiyun_wind_direction
+  - sensor.caiyun_wind_speed
+  - sensor.caiyun_local_precipitation
+  - sensor.caiyun_nearest_precipitation
+  - sensor.caiyun_precipitation_distance
+  - sensor.caiyun_aqi
+  - sensor.caiyun_pm25
+  - sensor.caiyun_pm10
+  - sensor.caiyun_o3
+  - sensor.caiyun_co
+  - sensor.caiyun_no2
+  - sensor.caiyun_so2
 
 Controls:
-    view: yes
-    icon: mdi:set-center
-    entities:
-      - group.all_lights
-      - group.all_switches
-      - group.all_fans
-      - group.all_vacuum_cleaners
-      - group.all_remotes
-      - media_player.x9300d
-      - media_player.x9400e
-      - climate.saswell
-      - climate.saswell2
-      - climate.daikin1
-      - climate.daikin2
-      - climate.daikin3
-      - climate.daikin4
+  view: yes
+  icon: mdi:set-center
+  entities:
+  - group.all_lights
+  - group.all_switches
+  - group.all_fans
+  - group.all_vacuum_cleaners
+  - group.all_remotes
+  - media_player.x9300d
+  - media_player.x9400e
+  - climate.saswell
+  - climate.saswell2
+  - climate.daikin1
+  - climate.daikin2
+  - climate.daikin3
+  - climate.daikin4
 
 Automations:
-    view: yes
-    icon: mdi:robot
-    entities:
-      - group.all_automations
+  view: yes
+  icon: mdi:robot
+  entities:
+  - group.all_automations
+  - group.all_scripts
