@@ -141,8 +141,6 @@
       entity_id: sensor.phicomm_pm25
       below: 30
     - service: fan.turn_off
-      entity_id: fan.purifier
-    - service: fan.turn_off
       entity_id: fan.diningroom_purifier
     - condition: numeric_state
       entity_id: sensor.parlor_co2
@@ -161,8 +159,6 @@
   action:
     - service: fan.turn_on
       entity_id: fan.fresher
-    - service: fan.turn_on
-      entity_id: fan.purifier
     - service: fan.turn_on
       entity_id: fan.diningroom_purifier
 
@@ -689,7 +685,7 @@
     - service: fan.xiaomi_miio_set_favorite_level
       data:
        entity_id: fan.purifier
-       level: "{% if is_state('switch.projector', 'on') %}5{% elif states('sensor.study_pm25') | int > 40 %}10{% else %}7{% endif %}"
+       level: "{% if is_state('switch.projector', 'on') %}5{% elif states('sensor.study_pm25') | int > 50 %}10{% else %}7{% endif %}"
     - condition: time
       after: '18:00'
       before: '22:00'

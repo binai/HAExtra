@@ -21,8 +21,8 @@ default_view:
       - sensor.bedroom_co2
       - sensor.bedroom_temperature
       - sensor.bedroom_humidity
-      - sensor.balcony_pm25
       - sensor.bedroom_pm25
+      - sensor.balcony_pm25
 
 Hallway:
     entities:
