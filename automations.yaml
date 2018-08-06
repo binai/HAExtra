@@ -762,12 +762,21 @@
 - alias: Projector Turn On
   initial_state: true
   trigger:
-    - platform: state
-      entity_id: switch.turn_on
-      from: 'off'
-      to: 'on'
+    - platform: mqtt
+      topic: Projector/relay/1/set
+      payload: 'ON'
   action:
-    - delay: 1
+    - service: mqtt.publish
+      data:
+        topic: Sonoff3/relay/1/set
+        payload: 'ON'
+    - service: fan.turn_on
+      entity_id: fan.purifier
+    - service: fan.set_speed
+      data:
+       entity_id: fan.purifier
+       speed: auto
+    - delay: 2
     - service: switch.broadlink_send_packet_remotemini
       data:
         packet:
@@ -779,12 +788,6 @@
       entity_id: light.ceiling_light
     - service: light.turn_off
       entity_id: light.study_light
-    - service: fan.turn_on
-      entity_id: fan.purifier
-    - service: fan.set_speed
-      data:
-       entity_id: fan.purifier
-       speed: auto
     - condition: numeric_state
       entity_id: sensor.study_temperature
       above: 29
@@ -811,5 +814,7 @@
       entity_id: light.study_light
     - delay: 200
     - wait_template: "{{ is_state('device_tracker.himedia', 'not_home') }}"
-    - service: switch.turn_off
-      entity_id: switch.projector_power
+    - service: mqtt.publish
+      data:
+        topic: Sonoff3/relay/1/set
+        payload: 'OFF'
