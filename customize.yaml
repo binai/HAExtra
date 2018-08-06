@@ -337,8 +337,6 @@ switch.projector:
   hagenie_deviceName: 电视
   hagenie_deviceType: television
   icon: mdi:projector
-switch.projector_power:
-  friendly_name: 投影仪电源
 switch.speaker:
   config:
     extra_badge:

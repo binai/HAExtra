@@ -757,3 +757,59 @@
       data:
        entity_id: fan.bedroom_purifier
        speed: low
+
+# 投影仪开机
+- alias: Projector Turn On
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: switch.turn_on
+      from: 'off'
+      to: 'on'
+  action:
+    - delay: 1
+    - service: switch.broadlink_send_packet_remotemini
+      data:
+        packet:
+          - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+          - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
+    - service: switch.turn_on
+      entity_id: switch.speaker
+    - service: light.turn_off
+      entity_id: light.ceiling_light
+    - service: light.turn_off
+      entity_id: light.study_light
+    - service: fan.turn_on
+      entity_id: fan.purifier
+    - service: fan.set_speed
+      data:
+       entity_id: fan.purifier
+       speed: auto
+    - condition: numeric_state
+      entity_id: sensor.study_temperature
+      above: 29
+    - service: switch.turn_on
+      entity_id: switch.mitsubishi
+
+# 投影仪关机
+- alias: Projector Turn Off
+  initial_state: true
+  trigger:
+    - platform: mqtt
+      topic: Projector/relay/1/set
+      payload: 'OFF'
+  action:
+    - service: switch.broadlink_send_packet_remotemini
+      data:
+        packet:
+          - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
+          - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+          - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
+    - service: switch.turn_off
+      entity_id: switch.speaker
+    - service_template: "{% if is_state('sun.sun', 'below_horizon') %}light.turn_on{% else %}light.turn_off{% endif %}"
+      entity_id: light.study_light
+    - delay: 200
+    - wait_template: "{{ is_state('device_tracker.himedia', 'not_home') }}"
+    - service: switch.turn_off
+      entity_id: switch.projector_power

@@ -112,6 +112,7 @@ homekit:
     media_player.x9400e:
       feature_list:
         - feature: on_off
+
 # Text to speech
 #tts:
 #  - platform: google
@@ -139,16 +140,15 @@ modbus:
   port: 8899
 
 #
-# device_tracker:
-#   - platform: asuswrt
-#     host: Router
-#     username: admin
-#     password: !secret http_password
-#     interval_seconds: 300
-#     consider_home: 360
-#     new_device_defaults:
-#       track_new_devices: false
-#       hide_if_away: true
+device_tracker:
+  - platform: asuswrt
+    host: Router
+    username: admin
+    password: !secret http_password
+    interval_seconds: 120
+    new_device_defaults:
+      track_new_devices: false
+      hide_if_away: true
 
 #
 binary_sensor:
@@ -281,18 +281,16 @@ switch:
     command_topic: Hassmart6/relay/1/set
     availability_topic: Hassmart6/status
   - platform: mqtt
-    name: Projector Power
+    name: Projector
     state_topic: Sonoff3/relay/1
-    command_topic: Sonoff3/relay/1/set
+    command_topic: Projector/relay/1/set
     availability_topic: Sonoff3/status
   - platform: mqtt
     name: Speaker
     state_topic: NodeMCU3/relay/0
-    payload_on: 1
-    payload_off: toggle
     command_topic: NodeMCU3/relay/0/set
     availability_topic: NodeMCU3/status
-    value_template: "{% if value == '关闭' %}toggle{% else %}1{% endif %}"
+    value_template: "{% if value == '关闭' %}OFF{% else %}ON{% endif %}"
 #  - platform: broadlink
 #    host: Outlet
 #    mac: 34:EA:34:B8:36:AC
@@ -313,59 +311,14 @@ switch:
         friendly_name: Mitsubishi
         command_on: 'JgBMAnE2DykPKQ8NDg4ODg4qDw0ODg8pDykPDQ0rDwwODg4qDyoODg4qDykODg4ODSsODg0ODioPDQ4ODg4ODg4ODg4ODg4ODg4ODg4ODQ8NDg4ODg4ODg4ODg4ODg4ODioODg4ODg4ODg0PDSoOKg4ODioPDQ4ODg4ODg4qDg4ODg4ODg4ODg0rDioODg4ODQ4OKw0ODioOKg4ODg4ODg4qDioODg4qDioOKg4qDg4ODg4ODioODg4ODg4ODg4ODg4ODg0PDQ4ODg4ODg4ODg4ODg4PDQ4ODg4PDQ8NDQ8PDBAMDg4QDA4OEAwQDBAoDg4ODg4ODw0ODg8NDQ8PDA4ODg4QDA4OEAwODhAMDg4PDQ8NDw0PKQ4ODygOKg4qDg4OKg4qDgACA284DSoOKg4ODg4ODg4qDg4ODg4qDioODg4qDg4ODg4qDioODg4qDioODg4ODioODg4ODioODg4ODg4ODg0ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODQ8NDg4ODisNDg4ODg4ODg4ODioOKg4ODioODg4ODg4ODg0rDQ4ODg4ODg4ODg4qDioODg4ODg4OKg4ODioOKg4ODg4PDQ0qDykPDQ8pDykPKQ8pDw0ODg4ODisPDQ0OEAwODg8NDg4PDQ4ODw0ODg8NDg4PDQ0PDwwODg4OEA0ODQ4ODw0ODg4ODw0ODhAMDQ8PDQ0qEQsODhAMDg4QDA4ODw0ODg8NDg4PDQ4ODw0NDhAMDg4PDQ8NDg4PKQ8NDioPKRAoEAwOKhAoEAANBQAAAAAAAAAAAAAAAA=='
         command_off: 'JgBMAnI1EScQKBEKEA0QCxEoEAsRCxEnEScRCxAoEQsRCxEnEScSCg8qECcSChELEScRCxELECgRCxELEQsQCxELEQsRDBAMEAsRCxELEQsRCxELEQsRCxAMEAsRDBAMEAsRCxEMEAsRCxELEScRJxIJESgRCxELEAwQCw4rEAsQDRALEQsRCxAoEScRCxELEQsRJxELDykRJxAMEAwQDBAoECgQCxApECgQCxELDg4RCxELEQsRCxELEQsQDBAMEAsRDBALEQsRCxELEQsRCxELEQsQDBAMEAwQCxELEQsRCxELEQsRCxELEQsRCxAoEQsQDBAMEAwODhALEA0QCw4ODg4RCw4ODw0QDA4OEAwODg4ODg4QKBAMEAwNDhEnECgQDA4ODgACBXA3DykPKQ8NDQ4ODg4qDg4ODg4qDioPDQ4qDg4ODg4qDioODg4qDioODg4ODioODg4ODioODg4ODg4ODg0PDQ4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4NDw0PDQ4ODg4ODg4ODg4ODioOKg4ODioODg4ODg4ODg0rDg4NDg4ODg4ODg4qDioODg4ODg4OKg4ODioOKg4ODg4NDw0rDioODg0qDioODg4ODg4ODg4ODg4ODg8NDg4ODg4ODQ8NDw0ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg0PDQ4ODg4ODg4ODg4ODg4ODg4qDg4ODg4ODg4NDw0PDQ4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODQ8NKw4NDg4ODg4qDioODg4ODQANBQAAAAAAAAAAAAAAAA=='
-  - platform: template
-    switches:
-      projector:
-        friendly_name: Projector
-        value_template: "{{ is_state('switch.projector_power', 'on') }}"
-        turn_on:
-          # - service: switch.turn_on
-          #   entity_id: switch.storage
-          - service: switch.turn_on
-            entity_id: switch.projector_power
-          - service: switch.broadlink_send_packet_remotemini
-            data:
-              packet:
-                - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
-                - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
-          - service: switch.turn_on
-            entity_id: switch.speaker
-          - delay: 3
-          - service: light.turn_off
-            entity_id: light.ceiling_light
-          - service: light.turn_off
-            entity_id: light.study_light
-          - service: switch.broadlink_send_packet_remotemini # Retry when power ready
-            data:
-              packet:
-                - 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
-          - service: fan.turn_on
-            entity_id: fan.purifier
-          - service: fan.set_speed
-            data:
-             entity_id: fan.purifier
-             speed: auto
-          - condition: numeric_state
-            entity_id: sensor.study_temperature
-            above: 29
-          - service: switch.turn_on
-            entity_id: switch.mitsubishi
-        turn_off:
-          - service: switch.broadlink_send_packet_remotemini
-            data:
-              packet:
-                - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
-                - 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
-                - 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
-          - service: mqtt.publish
-            data:
-              topic: NodeMCU3/relay/0/set
-              payload: 'OFF'
-          - service_template: "{% if is_state('sun.sun', 'below_horizon') %}light.turn_on{% else %}light.turn_off{% endif %}"
-            entity_id: light.study_light
-          - delay: 200
-          - service: switch.turn_off
-            entity_id: switch.projector_power
+      benq:
+        friendly_name: BenQ
+        command_on: 'JgDYAAABJ5QSExITEhMRFBEUERMSExITEhMRFBEUERMSOBE4EhMSExI4ETgSOBE4EhMSExI4ERQRExITEhMSExE4EjgSExE4EgAF='
+        command_off: 'JgAgAQABJ5QSExITEhITEhMSEhMSExITEhITEhMSEhMSOBI3ExISExITEjcTNxI3ExITEhI4EhITNxITEhMSExI3EzcSExI3EwAF='
+      himedia:
+        friendly_name: HiMedia
+        command_on: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+        command_off: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
 
 #
 light:

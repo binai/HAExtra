@@ -97,11 +97,11 @@ Study:
       - light.study_light
       - light.ceiling_light
       - light.lamp
-      - switch.projector
-      - vacuum.vacuum
-      - switch.mitsubishi
-      - switch.speaker
       - fan.purifier
+      - switch.projector
+      - switch.speaker
+      - switch.mitsubishi
+      - vacuum.vacuum
       - sensor.study_temperature
       - sensor.study_humidity
       - sensor.study_pm25
