@@ -17,12 +17,12 @@ default_view:
       - group.study
       - group.office
       - group.outside
-      - sensor.balcony_pm25
-      - sensor.bedroom_pm25
+      - sensor.parlor_co2
+      - sensor.bedroom_co2
       - sensor.bedroom_temperature
       - sensor.bedroom_humidity
-      - sensor.bedroom_co2
-      - sensor.parlor_co2
+      - sensor.balcony_pm25
+      - sensor.bedroom_pm25
 
 Hallway:
     entities:
