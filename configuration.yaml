@@ -616,7 +616,7 @@ climate:
   operation: {registers: [5,9,13,17]}
   fan: {registers: [6,10,14,18]}
   is_on: {registers: [1,2,3,4], register_type: coil}
-  operation_list: ['off', cool, heat, dehum, blow]
+  operation_list: ['off', cool, heat, dry, fan]
   fan_list: [自动, 一级, 二级, 三级, 四级, 五级]
 
 #

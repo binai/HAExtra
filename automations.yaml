@@ -793,7 +793,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.bedroom_temperature
-    below: 21
+    below: 21.1
     for:
       minutes: 10
   # condition:
