@@ -20,9 +20,12 @@
 #     from: 'off'
 #     to: 'on'
 #   action:
-#   - service: hello_miai.send
+#   - service: xiaomi_aqara.play_ringtone
 #     data:
-#       message: 欢迎光临
+#       gw_mac: 34CE0090901A
+#       ringtone_id: 10001
+#       ringtone_vol:100
+
 
 # 门铃开关单击
 # - alias: Entrance Switch Clicked
@@ -471,12 +474,12 @@
   #   below: 32
   - condition: or
     conditions:
-      - condition: numeric_state
-        entity_id: sensor.phicomm_pm25
-        above: 20
-      - condition: numeric_state
-        entity_id: sensor.parlor_co2
-        above: 700
+    - condition: numeric_state
+      entity_id: sensor.phicomm_pm25
+      above: 20
+    - condition: numeric_state
+      entity_id: sensor.parlor_co2
+      above: 700
   action:
   - service: hello_miai.send
     data:
@@ -544,7 +547,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.phicomm_humidity
-    above: 66
+    above: 68
     for:
       minutes: 10
   action:
@@ -557,7 +560,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.phicomm_humidity
-    below: 64
+    below: 65
     for:
       minutes: 10
   action:
@@ -694,7 +697,7 @@
   - service: fan.set_speed
     data_template:
      entity_id: fan.parents_purifier
-     speed: "{% if states('sensor.study_pm25') | int > 40 %}high{% else %}medium{% endif %}"
+     speed: "{% if states('sensor.study_pm25') | int > 50 %}high{% else %}medium{% endif %}"
 
 # 书房空气好
 - alias: Study PM2.5 Good
@@ -737,7 +740,7 @@
   - service: fan.set_speed
     data_template:
      entity_id: fan.bedroom_purifier
-     speed: "{% if states('sensor.bedroom_pm25') | int > 40 %}high{% else %}medium{% endif %}"
+     speed: "{% if states('sensor.bedroom_pm25') | int > 50 %}high{% else %}medium{% endif %}"
 
 # 主卧空气好
 - alias: Bedroom PM2.5 Good
@@ -753,3 +756,164 @@
     data:
      entity_id: fan.bedroom_purifier
      speed: low
+
+# 主卧温度高
+- alias: Bedroom Temperature High
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.bedroom_temperature
+    above: 22
+    for:
+      minutes: 5
+  condition:
+  - condition: or
+    conditions:
+    - condition: time
+      after: '00:00'
+      before: '08:00'
+    - condition: state
+      entity_id: device_tracker.yphone
+      state: 'home'
+    - condition: state
+      entity_id: device_tracker.zphone
+      state: 'home'
+  action:
+  - service: climate.turn_on
+    entity_id: climate.daikin3
+  - service: climate.set_temperature
+    data:
+     entity_id: climate.daikin3
+     temperature: 26
+     operation_mode: cool
+
+# 主卧温度低
+- alias: Bedroom Temperature Low
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.bedroom_temperature
+    below: 21
+    for:
+      minutes: 10
+  # condition:
+  # - condition: numeric_state
+  #   entity_id: sensor.balcony_temperature
+  #   below: 32
+  action:
+  - service: climate.turn_off
+    entity_id: climate.daikin3
+
+# 客厅温度高
+- alias: Parlor Temperature High
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.parlor_temperature
+    above: 30
+    for:
+      minutes: 5
+  - platform: state
+    entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+    to: 'on'
+  condition:
+  - condition: time
+    after: '08:00'
+    before: '21:30'
+  - condition: numeric_state
+    entity_id: sensor.parlor_temperature
+    above: 30
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: device_tracker.xphone
+      state: 'home'
+    - condition: state
+      entity_id: device_tracker.yphone
+      state: 'home'
+    - condition: state
+      entity_id: device_tracker.zphone
+      state: 'home'
+    - condition: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      state: 'on'
+  action:
+  - service: climate.turn_on
+    entity_id: climate.daikin2
+  - service: climate.set_temperature
+    data:
+     entity_id: climate.daikin2
+     temperature: 26
+     operation_mode: cool
+
+# 客厅温度低
+- alias: Parlor Temperature Low
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.parlor_temperature
+    below: 29
+    for:
+      minutes: 5
+  - platform: time
+    at: '22:00:00'
+  action:
+  - service: climate.turn_off
+    entity_id: climate.daikin2
+
+# 餐厅温度高
+- alias: Diningroom Temperature High
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.phicomm_temperature
+    above: 29.5
+    for:
+      minutes: 10
+  - platform: state
+    entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+    to: 'on'
+  condition:
+  - condition: time
+    after: '08:00'
+    before: '19:30'
+  - condition: numeric_state
+    entity_id: sensor.phicomm_temperature
+    above: 29.5
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: device_tracker.xphone
+      state: 'home'
+    - condition: state
+      entity_id: device_tracker.yphone
+      state: 'home'
+    - condition: state
+      entity_id: device_tracker.zphone
+      state: 'home'
+    - condition: state
+      entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+      state: 'on'
+  action:
+  - service: climate.turn_on
+    entity_id: climate.daikin1
+  - service: climate.set_temperature
+    data:
+     entity_id: climate.daikin1
+     temperature: 26
+     operation_mode: cool
+
+# 餐厅温度低
+- alias: Diningroom Temperature Low
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.phicomm_temperature
+    below: 28.5
+    for:
+      minutes: 10
+  - platform: time
+    at: '20:00:00'
+  action:
+  - service: climate.turn_off
+    entity_id: climate.daikin1

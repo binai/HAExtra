@@ -317,8 +317,10 @@ sun.sun:
   friendly_name: 日照
 switch.benq:
   friendly_name: 投影仪遥控
+  icon: mdi:projector
 switch.himedia:
   friendly_name: 播放器遥控
+  icon: mdi:play-circle
 switch.mitsubishi:
   friendly_name: 书房空调
   hagenie_deviceType: aircondition
@@ -337,7 +339,7 @@ switch.projector:
   friendly_name: 投影仪
   hagenie_deviceName: 电视
   hagenie_deviceType: television
-  icon: mdi:projector
+  icon: mdi:projector-screen
 switch.speaker:
   config:
     extra_badge:

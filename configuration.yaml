@@ -56,10 +56,6 @@ http:
   ssl_key: /root/.homeassistant/yonsm.net.key
 
 # Checks for available updates
-# Note: This component will send some information about your system to
-# the developers to assist with development of Home Assistant.
-# For more information, please see:
-# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
 #updater:
   # Optional, allows Home Assistant developers to focus on popular components.
   # include_used_components: true
@@ -72,6 +68,20 @@ http:
 
 # Enables support for tracking state changes over time
 history:
+  exclude:
+    domains:
+    - sun
+    - group
+    - climate
+    - automation
+    - input_text
+    - input_select
+    - input_boolean
+
+#
+recorder:
+  purge_keep_days: 3
+  db_url: sqlite:////run/home-assistant.db
 
 # View all events in a logbook
 logbook:
@@ -92,6 +102,7 @@ sun:
 homekit:
   filter:
     exclude_domains:
+    - script
     - automation
     - input_boolean
     exclude_entities:
@@ -175,7 +186,7 @@ sensor:
   device_class: illuminance
   state_topic: Sonoff3/lux
   name: Study Lightness
-  unit_of_measurement: lx
+  unit_of_measurement: lm
   availability_topic: Sonoff3/status
 - platform: mqtt
   device_class: temperature
@@ -445,19 +456,21 @@ light:
 #
 shell_command:
   turn_off_storage: 'ssh root@Storage shutdown -h now'
+  #clear_mosquitto: 'systemctl stop mosquitto; sleep 2; rm -rf /var/lib/mosquitto/mosquitto.db; systemctl start mosquitto'
+  #upgrade_homeassistant: 'systemctl stop homeassistant; pip3 install homeassistant --upgrade; systemctl start homeassistant'
 
 #
 xiaomi_aqara:
   gateways:
-      - mac: 34CE0090901A
-        key: 3ECB50168D7F4AEB
+  - mac: 34CE0090901A
+    key: 3ECB50168D7F4AEB
 
 #
 vacuum:
 - platform: xiaomi_miio
   name: Vacuum
   host: Vacuum
-  token: 4F5A79476B7041744A676B6959625670
+  token: 716a4e4a387079554c5867534c5a4237
 
 #
 fan:

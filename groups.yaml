@@ -58,10 +58,10 @@ Parlor:
   - climate.saswell
   - fan.wall_fan
   - fan.fresher
-  #- sensor.parlor_co2
+  - sensor.parlor_temperature
   - sensor.parlor_humidity
   - sensor.parlor_pm25
-  - sensor.parlor_temperature
+  #- sensor.parlor_co2
 
 Balcony:
   entities:
