@@ -323,11 +323,6 @@ switch:
   host: RemotePro
   mac: 34:EA:34:58:73:5D
   type: rm2_pro_plus
-- platform: broadlink
-  friendly_name: Remote Mini
-  host: RemoteMini
-  mac: 78:0F:77:47:AA:8F
-  type: rm_mini
   switches:
     mitsubishi:
       friendly_name: Mitsubishi
@@ -341,6 +336,11 @@ switch:
       friendly_name: HiMedia
       command_on: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
       command_off: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+- platform: broadlink
+  friendly_name: Remote Mini
+  host: RemoteMini
+  mac: 78:0F:77:47:AA:8F
+  type: rm_mini
 - platform: template
   switches:
     projector:
@@ -568,7 +568,7 @@ fan:
       turn_on:
       - condition: template
         value_template: "{{ is_state('input_boolean.wall_fan_state', 'off') }}"
-      - service: switch.broadlink_send_packet_remotepro
+      - service: switch.broadlink_send_packet_remotemini
         data:
           packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
       - service: input_boolean.turn_on
@@ -577,7 +577,7 @@ fan:
       turn_off:
       - condition: template
         value_template: "{{ is_state('input_boolean.wall_fan_state', 'on') }}"
-      - service: switch.broadlink_send_packet_remotepro
+      - service: switch.broadlink_send_packet_remotemini
         data:
           packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
       - service: input_boolean.turn_off
@@ -586,21 +586,21 @@ fan:
       set_speed:
       - condition: template
         value_template: "{{ not is_state('input_select.wall_fan_speed', speed) }}"
-      - service: switch.broadlink_send_packet_remotepro
+      - service: switch.broadlink_send_packet_remotemini
         data:
           packet: 'JgDCACkOKg4OKSoNKg4qDg4pDikOKQ4qKQ4q6SoOKQ4OKSoOKg4pDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6yoOKQ4OKSoOKg0qDg4pDioNKg4pKg4p7CkOKg0PKSkOKg4pDg4pDioOKQ4pKg4p6yoNKg4OKSkOKg4pDg4pDioOKQ4pKQ4q6yoNKg4OKSkOKg4pDg4pDikOKg4pKQ4qAA0FAAAAAAAA'
       - service: input_select.select_next
         data:
           entity_id: input_select.wall_fan_speed
       set_oscillating:
-      - service: switch.broadlink_send_packet_remotepro
+      - service: switch.broadlink_send_packet_remotemini
         data:
           packet: 'JgDqACkOKg0PKSkOKQ4OKQ4qKQ4OKQ4pDikPAAEDKg4pDg4pKQ4qDg4pDikpDg8pDikOKQ4AAQQpDioODikpDikODykOKSkODikOKQ4qDgABBCkOKQ4OKSoNKg4OKQ4pKg4OKQ4pDikOAAEHKg0qDg4pKQ4pDg4pDykpDg4pDikOKQ4AAQgqDSoODikpDioODikOKSkODikPKQ4pDgABByoNKg4OKSkOKg4OKQ4pKg0OKQ4qDikOAAEHKQ4qDQ8oKg4pDg4pDykpDg4pDikOKQ4AAQcqDikODikpDioODikOKSkODykOKQ4pDgANBQAAAAAAAAAAAAAAAAAA'
       - service: input_boolean.toggle
         data:
           entity_id: input_boolean.wall_fan_osc
       set_direction:
-      - service: switch.broadlink_send_packet_remotepro
+      - service: switch.broadlink_send_packet_remotemini
         data_template:
           packet: "{% if direction == 'forward' %}'JgDyACwLLAwQJywLLAwsCxApDigQJw8oLAwr5ywMLAsQJywMLAssDBAnECcQKA8oKQ4s5ywMKwwQJyoOLAssDBAnDykQJw8oLAwr6CsMLAwQJywLLAwsCxEnECcPKA8pKwws6SwMLAsRJysMLAwrDBAoECcQJxAnLAws6SwLLAwQJywMKwwsDBAnECcQJxAoKQ4s6SsMLAsRJysMLAwrDBAnECcRJxAnKQ4s6SsMLAsQJywMKwwsDBAnDygQJxAoKwwr6isMLAsQKCsMKwwsDBAnECcQJxAnLAwr6iwLLAwQKCoMLAwrDBAnECcQKA4pKQ4sAA0FAAAAAAAA'{% else %}'JgDqACkOKQ8NKikPKQ4qDg0qDSoOKigPKQ8NAAEGKA8pDw0qKQ8oDykPDSoNKw0qKQ8oDw0AAQcoDykPDSoqDigPKQ8NKg8pECcrDSgPDQABBisNKQ8NKikOKQ8pDw8oECcQKCsMKw0PAAEFLAwqDQ8pKwwrDSoNDykQJxAnKw0qDQ8AAQYrDCsNECcrDCsNKg0PKRAnECcsDCoNDwABBSwMKA8NKiwMKA8pDw0qECcQJywMKA8NAAEIKg0pDg4qKg0pDygPDSoQJxAoKwwpDg8AAQYsDCoNDygsDCoNKg0PKRAnECcrDCsNDwANBQAAAAAAAAAAAAAAAAAA'{% endif %}"
       - service: input_boolean.toggle

@@ -326,6 +326,8 @@ def controlDevice(name, payload):
     service = getControlService(name)
     domain = entity_id[:entity_id.find('.')]
     data = '{"entity_id":"' + entity_id + '"}'
+    if domain == 'cover':
+        service = 'close_cover' if service == 'turn_off' else 'open_cover'
     items = haCall('services/' + domain + '/' + service, data)
     #for item in items:
     #    if item['entity_id'] == entity_id:
