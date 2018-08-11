@@ -793,7 +793,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.bedroom_temperature
-    below: 21.1
+    below: 21
     for:
       minutes: 10
   # condition:
@@ -822,7 +822,7 @@
     before: '21:30'
   - condition: numeric_state
     entity_id: sensor.parlor_temperature
-    above: 30
+    above: 29.5
   - condition: or
     conditions:
     - condition: state
@@ -852,7 +852,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.parlor_temperature
-    below: 29
+    below: 28.5
     for:
       minutes: 5
   - platform: time
@@ -917,3 +917,39 @@
   action:
   - service: climate.turn_off
     entity_id: climate.daikin1
+
+# 书房窗帘打开
+- alias: Study Cover Open
+  initial_state: true
+  trigger:
+  - platform: time
+    at: '13:00:00'
+  # - platform: numeric_state
+  #   entity_id: sensor.study_lightness
+  #   above: 150
+  #   for:
+  #     minutes: 10
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.study_lightness
+    above: 150
+  # - condition: time
+  #   after: '14:00'
+  #   before: '16:30'
+  action:
+  - service: cover.close_cover
+    entity_id: cover.study_cover
+
+# 书房窗帘关闭
+- alias: Study Cover Close
+  initial_state: true
+  trigger:
+  - platform: time
+    at: '16:00:00'
+  condition:
+  - condition: state
+    entity_id: switch.projector
+    state: 'off'
+  action:
+  - service: cover.open_cover
+    entity_id: cover.study_cover

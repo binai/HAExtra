@@ -54,6 +54,9 @@ http:
   base_url: !secret http_base_url
   ssl_certificate: /root/.homeassistant/fullchain.cer
   ssl_key: /root/.homeassistant/yonsm.net.key
+  cors_allowed_origins:
+    - https://reformedreality.com
+    - http://reformedreality.com
 
 # Checks for available updates
 #updater:
@@ -618,6 +621,19 @@ climate:
   is_on: {registers: [1,2,3,4], register_type: coil}
   operation_list: ['off', cool, heat, dry, fan]
   fan_list: [自动, 一级, 二级, 三级, 四级, 五级]
+
+#
+cover:
+  - platform: broadlink
+    host: RemotePro
+    mac: 34:EA:34:58:73:5D
+    covers:
+      study_cover:
+        name: 书房窗帘
+        travel_time: 13
+        command_open: 'sgD8AJ8wGAwNFxgMGAwYDAwYFwwYDQwYGAsNFw0XDRcYDAwYDBgNFxkMDBgYDBgMDBcNFw0XGQsNFxgMGAwMGAwYDBgXDQwYDBcNFxgMDRcMGAwXGAABIZ4xGQwNFxgMGAwYDAwXGAwYDQwXGAwNFw0XDBgYDAwYDBgMGBgMDBcYDBgMDRcMGAwYGAwMGBgMGAwMFw0XDRcYDA0XDBgMGBgMDBkMFw0XGAABIZ4xFwwNFxgMGAwYDAwYGAwYDAwYGAwMFw0XDRcYDAwYDBgNFxgMDBgYDRgMDBgMFw0YGAsNFxgMGAwMGAwYDBcYDQwYDBcNFxgMDBgMGAwYFwAF3AAAAAAAAAAAAAAAAA=='
+        command_stop: 'sgD8AJ4xGAwMGBcMGAwYDAwYGAwYDAwYGAwMGAwZDBcYDAwYDBkLGBgMDBgYDBcNDBgMFw0YFw0MFxgMGAwMGAwYDBgXDQwYFw0MFxgMDRcYDAwYFwABIZ8xGAwMGBcNFw0XDQwXGAwYDQwYFwwNFwwYDBgXDQwYDBgMGBcMDRcYDBgMDBgMGAwYGAwMGBcNFwwNFwwYDBgZDAwYFw0MGBcNDBcYDAwYGAABIJ4xGAwMGBgMGAwXDQwXGAwYDQwYFwwNFwwYDBgYDAwYDRgMGBcNDBcYDBgMDBgMGAwYGAwMGBcNFw0MGAsYDBgYDAwYGAwMGBcNDBcYDAwYGAAF3AAAAAAAAAAAAAAAAA=='
+        command_close: 'sgD8AJ0xGAwMGBcNFw0XDQsYGAwYDAwZFwwMGAwYDBgXDQwXDBkMGBcNCxkXDBgMDBkMGAwYGAwMGBcNFw0MGAsZCxgYDQsYDBgXDRcNDBgMGBcNFwABIZ4xFw0MGBcNFwwYDA0YGAwYDAwYGAwMGAwYDBgXDQsYDBgMGBgMDBgXDRcNDBgMGAwYFw0MGBcMGAwMGAwYDBgXDQwYDBgXDRcMDBgMGBgMFwABI50yFw0LGBgMGAwXDQwYFw0XDQwYFw0MGAwYDBcYDAwYDBgMGBgMDBgXDRcNCxkLGAwYGA4MFxgMGAwMGAwYDBgXDQwYDBgXDBgNCxgMGBcNFwAF3AAAAAAAAAAAAAAAAA=='
 
 #
 media_player:

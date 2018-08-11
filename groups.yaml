@@ -8,7 +8,7 @@ default_view:
   # - device_tracker.himedia
   - group.hallway
   - group.diningroom
-  - group.kitchen
+  #- group.kitchen
   - group.parlor
   - group.balcony
   - group.passage
@@ -37,7 +37,7 @@ Diningroom:
   - light.diningroom_spotlight
   - climate.daikin1
   - climate.saswell2
-  - switch.outlet
+  #- switch.outlet
   - light.gateway_light_34ce0090901a
   - fan.diningroom_purifier
   - sensor.illumination_34ce0090901a
@@ -51,9 +51,9 @@ Parlor:
   - light.parlor_light
   #- light.parlor_light2
   - light.parlor_spotlight
-  - remote.apple_tv
+  #- remote.apple_tv
   - media_player.x9400e
-  - media_player.apple_tv
+  #- media_player.apple_tv
   - climate.daikin2
   - climate.saswell
   - fan.wall_fan
@@ -93,6 +93,7 @@ Study:
   - light.study_light
   - light.ceiling_light
   - light.lamp
+  - cover.study_cover
   - fan.purifier
   - switch.projector
   - switch.speaker
@@ -137,20 +138,20 @@ Outside:
   - sensor.caiyun_weather
   - sensor.caiyun_temperature
   - sensor.caiyun_humidity
-  - sensor.caiyun_cloud_rate
-  - sensor.caiyun_pressure
-  - sensor.caiyun_wind_direction
-  - sensor.caiyun_wind_speed
-  - sensor.caiyun_local_precipitation
-  - sensor.caiyun_nearest_precipitation
-  - sensor.caiyun_precipitation_distance
-  - sensor.caiyun_aqi
+  # - sensor.caiyun_cloud_rate
+  # - sensor.caiyun_pressure
+  # - sensor.caiyun_wind_direction
+  # - sensor.caiyun_wind_speed
+  # - sensor.caiyun_local_precipitation
+  # - sensor.caiyun_nearest_precipitation
+  # - sensor.caiyun_precipitation_distance
+  # - sensor.caiyun_aqi
   - sensor.caiyun_pm25
-  - sensor.caiyun_pm10
-  - sensor.caiyun_o3
-  - sensor.caiyun_co
-  - sensor.caiyun_no2
-  - sensor.caiyun_so2
+  # - sensor.caiyun_pm10
+  # - sensor.caiyun_o3
+  # - sensor.caiyun_co
+  # - sensor.caiyun_no2
+  # - sensor.caiyun_so2
 
 Controls:
   view: yes
@@ -160,7 +161,7 @@ Controls:
   - group.all_switches
   - group.all_fans
   - group.all_vacuum_cleaners
-  - group.all_remotes
+  #- group.all_remotes
   - media_player.x9300d
   - media_player.x9400e
   - climate.saswell
