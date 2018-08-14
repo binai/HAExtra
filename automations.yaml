@@ -918,30 +918,30 @@
   - service: climate.turn_off
     entity_id: climate.daikin1
 
-# 书房窗帘打开
-- alias: Study Cover Open
+# 书房亮度太高
+- alias: Study Lightness High
   initial_state: true
   trigger:
   - platform: time
-    at: '13:00:00'
-  # - platform: numeric_state
-  #   entity_id: sensor.study_lightness
-  #   above: 150
-  #   for:
-  #     minutes: 10
+    at: '13:10:00'
+  - platform: numeric_state
+    entity_id: sensor.study_lightness
+    above: 180
+    for:
+      minutes: 10
   condition:
   - condition: numeric_state
     entity_id: sensor.study_lightness
-    above: 150
-  # - condition: time
-  #   after: '14:00'
-  #   before: '16:30'
+    above: 180
+  - condition: time
+    after: '13:00'
+    before: '16:00'
   action:
   - service: cover.close_cover
     entity_id: cover.study_cover
 
-# 书房窗帘关闭
-- alias: Study Cover Close
+# 书房亮度正常
+- alias: Study Lightness Normal
   initial_state: true
   trigger:
   - platform: time

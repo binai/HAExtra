@@ -473,7 +473,7 @@ vacuum:
 - platform: xiaomi_miio
   name: Vacuum
   host: Vacuum
-  token: 716a4e4a387079554c5867534c5a4237
+  token: 526373684671464d35724d3478667530
 
 #
 fan:
@@ -481,7 +481,7 @@ fan:
   name: Purifier
   host: Purifier
   model: zhimi.airpurifier.m1
-  token: 60DE28844161312D230B555D0EB7C798
+  token: FE2D793B34DCE57F32BF50B2E6B00874
 - platform: xiaomi_miio_fan
   name: Fan
   host: Fan
