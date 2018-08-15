@@ -632,7 +632,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.parlor_co2
-    above: 725
+    above: 720
     for:
       minutes: 5
 # condition:
@@ -652,8 +652,8 @@
   initial_state: true
   trigger:
   - platform: numeric_state
-    entity_id: sensor.phicomm_co2
-    below: 675
+    entity_id: sensor.parlor_co2
+    below: 680
     for:
       minutes: 5
   condition:
@@ -763,9 +763,9 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.bedroom_temperature
-    above: 22
+    above: 21.6
     for:
-      minutes: 5
+      minutes: 10
   condition:
   - condition: or
     conditions:
@@ -795,7 +795,7 @@
     entity_id: sensor.bedroom_temperature
     below: 21
     for:
-      minutes: 10
+      minutes: 5
   # condition:
   # - condition: numeric_state
   #   entity_id: sensor.balcony_temperature
@@ -806,11 +806,11 @@
 
 # 客厅温度高
 - alias: Parlor Temperature High
-  initial_state: true
+  initial_state: false
   trigger:
   - platform: numeric_state
     entity_id: sensor.parlor_temperature
-    above: 30
+    above: 29.5
     for:
       minutes: 5
   - platform: state
@@ -848,7 +848,7 @@
 
 # 客厅温度低
 - alias: Parlor Temperature Low
-  initial_state: true
+  initial_state: false
   trigger:
   - platform: numeric_state
     entity_id: sensor.parlor_temperature
@@ -863,7 +863,7 @@
 
 # 餐厅温度高
 - alias: Diningroom Temperature High
-  initial_state: true
+  initial_state: false
   trigger:
   - platform: numeric_state
     entity_id: sensor.phicomm_temperature
@@ -905,7 +905,7 @@
 
 # 餐厅温度低
 - alias: Diningroom Temperature Low
-  initial_state: true
+  initial_state: false
   trigger:
   - platform: numeric_state
     entity_id: sensor.phicomm_temperature

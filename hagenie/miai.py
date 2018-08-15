@@ -31,7 +31,7 @@ def validateToken(queryString):
         _appName = unquote(parts[0])
         _haUrl = parts[1] + '://' + parts[2] + ':' + parts[3] + '/api/%s'
         if len(parts) > 4:
-            _haUrl += '?api_password=' + parts[3]
+            _haUrl += '?api_password=' + parts[4]
         log('validateToken: ' + _appName + ', HAURL: ' + _haUrl)
         return True
     return False
