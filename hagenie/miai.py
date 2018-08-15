@@ -130,16 +130,25 @@ def handleRequest(body):
 
     #
     items = haCall('states')
+    names = [] if query == '导出词表' else None
     for item in items:
         entity_id = item['entity_id']
-        if entity_id.startswith('zone'):
+        if entity_id.startswith('zone') or entity_id.startswith('automation'):
             continue
 
         attributes = item['attributes']
         friendly_name = attributes.get('friendly_name')
-        if friendly_name is not None and query.endswith(friendly_name):
-            action = guessAction(entity_id, intent_name, query)
-            return (True, friendly_name + handleEntity(entity_id, item['state'], action))
+        if friendly_name is not None:
+            if names is not None:
+                names.append(friendly_name)
+            if query.endswith(friendly_name):
+                action = guessAction(entity_id, intent_name, query)
+                return (True, friendly_name + handleEntity(entity_id, item['state'], action))
+
+    if names is not None:
+        import locale
+        locale.setlocale(locale.LC_COLLATE, 'zh_CN.UTF8')
+        return (True, ','.join(sorted(names, cmp=locale.strcoll)))
 
     return (False, "您好主人，我能为你做什么呢？" if intent_name == 'Mi_Welcome' else _appName + "未找到设备，请再说一遍吧")
 
