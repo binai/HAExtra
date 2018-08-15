@@ -103,7 +103,7 @@ def handleQuery(query, request_type):
     items = haCall('states')
     for item in items:
         entity_id = item['entity_id']
-        if entity_id.startswith('group') and not entity_id.startswith('group.all_'):
+        if entity_id.startswith('group'):
             continue
 
         attributes = item['attributes']
