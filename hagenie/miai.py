@@ -111,7 +111,7 @@ def handleQuery(query, request_type):
         if friendly_name is not None and query.endswith(friendly_name):
             return (True, friendly_name + handleEntity(entity_id, item, query.split(_appName)[-1]))
 
-    return (False, "您好主人，我能为你做什么呢？" if request_type == 0 else _appName + "未找到设备，请再说一遍吧")
+    return (False, "您好主人，我能为你做什么呢？" if (request_type == 0 and query.endswith(_appName)) else _appName + "未找到设备，请再说一遍吧")
 
 #
 def handleRequest(body):
