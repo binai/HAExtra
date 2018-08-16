@@ -94,18 +94,36 @@ STATE_NAMES = {
     'unavailable': '不可用',
 }
 #
-def handleEntity(entity_id, state, action):
-    #domain = entity_id[:entity_id.find('.')]
+def handleState(entity_id, state, action):
     if action == '打开':
-        service = 'turn_on' # if domain != 'cover' else 'open_cover'
+        service = 'cover/open_cover' if entity_id.startswith('cover') or entity_id == 'group.all_covers' else 'homeassistant/turn_on'
     elif action == '关闭':
-        service = 'turn_off' # if domain != 'cover' else 'close_cover'
+        service = 'cover/close_cover' if entity_id.startswith('cover') or entity_id == 'group.all_covers' else 'homeassistant/turn_off'
     else:
         return '为' + (STATE_NAMES[state] if state in STATE_NAMES else state)
 
     data = '{"entity_id":"' + entity_id + '"}'
-    result = haCall('services/homeassistant/' + service, data)
+    result = haCall('services/' + service, data)
     return action + "成功" if type(result) is list else "不成功"
+
+#
+def handleStates(intent_name, query, states, group, names):
+    for state in states:
+        entity_id = state['entity_id']
+        if entity_id.startswith('zone') or entity_id.startswith('automation') or group != entity_id.startswith('group'):
+            continue
+
+        attributes = state['attributes']
+        friendly_name = attributes.get('friendly_name')
+        if friendly_name is None:
+            continue
+
+        if names is not None:
+            names.append(friendly_name)
+        if query.endswith(friendly_name):
+            action = guessAction(entity_id, intent_name, query)
+            return friendly_name + handleState(entity_id, state['state'], action)
+    return None
 
 #
 def handleRequest(body):
@@ -129,21 +147,15 @@ def handleRequest(body):
     intent_name = slot_info.get('intent_name') if slot_info is not None else None
 
     #
-    items = haCall('states')
+    states = haCall('states')
     names = [] if query == '导出词表' else None
-    for item in items:
-        entity_id = item['entity_id']
-        if entity_id.startswith('zone') or entity_id.startswith('automation'):
-            continue
 
-        attributes = item['attributes']
-        friendly_name = attributes.get('friendly_name')
-        if friendly_name is not None:
-            if names is not None:
-                names.append(friendly_name)
-            if query.endswith(friendly_name):
-                action = guessAction(entity_id, intent_name, query)
-                return (True, friendly_name + handleEntity(entity_id, item['state'], action))
+    text = handleStates(intent_name, query, states, False, names)
+    if text is not None:
+        return (True, text)
+    text = handleStates(intent_name, query, states, True, names)
+    if text is not None:
+        return (True, text)
 
     if names is not None:
         import locale
