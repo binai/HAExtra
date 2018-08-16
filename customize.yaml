@@ -64,6 +64,8 @@ fan.wall_fan:
 group.all_automations:
   friendly_name: 自动化
   hidden: false
+group.all_covers:
+  friendly_name: 窗帘
 group.all_devices:
   friendly_name: 设备
 group.all_fans:

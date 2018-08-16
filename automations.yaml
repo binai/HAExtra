@@ -134,7 +134,7 @@
     from: 'off'
     to: 'on'
     for:
-      minutes: 2
+      minutes: 5
   action:
   - service: climate.turn_off
     entity_id: climate.daikin2
@@ -567,15 +567,10 @@
   - service: switch.turn_off
     entity_id: switch.outlet
 
-# 客厅空气差
-- alias: Parlor PM2.5 Bad
+# 餐厅空气差
+- alias: Diningroom PM2.5 Bad
   initial_state: true
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.parlor_pm25
-    above: 20
-    for:
-      minutes: 5
   - platform: numeric_state
     entity_id: sensor.phicomm_pm25
     above: 20
@@ -583,13 +578,7 @@
       minutes: 5
   action:
   - service: fan.turn_on
-    entity_id: fan.fresher
-  - service: fan.turn_on
     entity_id: fan.diningroom_purifier
-  - service: fan.set_speed
-    data:
-      entity_id: fan.fresher
-      speed: strong
   - service: fan.set_speed
     data_template:
       entity_id: fan.diningroom_purifier
@@ -597,6 +586,12 @@
   - condition: numeric_state
     entity_id: sensor.parlor_pm25
     above: 40
+  - service: fan.turn_on
+    entity_id: fan.fresher
+  - service: fan.set_speed
+    data:
+      entity_id: fan.fresher
+      speed: strong
   - condition: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
     state: 'on'
@@ -604,8 +599,8 @@
     data:
       message: 室内空气差，启动净化器和新风机，请关好门窗
 
-# 客厅空气好
-- alias: Parlor PM2.5 Good
+# 餐厅空气好
+- alias: Diningroom PM2.5 Good
   initial_state: true
   trigger:
   - platform: numeric_state
@@ -659,7 +654,7 @@
   condition:
   - condition: numeric_state
     entity_id: sensor.phicomm_pm25
-    below: 20
+    below: 30
   - condition: state
     entity_id: fan.fresher
     state: 'on'
@@ -763,7 +758,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.bedroom_temperature
-    above: 21.6
+    above: 21.8
     for:
       minutes: 10
   condition:
