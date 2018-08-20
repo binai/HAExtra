@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 class AirCatData():
     """Class for handling the data retrieval."""
 
-    def __init__(self, state_changed=None):
+    def __init__(self):
         """Initialize the data object."""
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -19,7 +19,6 @@ class AirCatData():
         self._socket.bind(('', 9000)) # aircat.phicomm.com
         self._socket.listen(5)
         self._rlist = [self._socket]
-        self._state_changed = state_changed
         self.devs = {}
 
     def shutdown(self):
@@ -74,11 +73,9 @@ class AirCatData():
         jsonStr = re.findall(r"(\{.*?\})", str(data), re.M)
         count = len(jsonStr)
         if count > 0:
-            state = json.loads(jsonStr[count - 1])
-            self.devs[mac] = state
-            _LOGGER.debug('Received %s: %s', mac, state)
-            if self._state_changed:
-                self._state_changed(mac)
+            attributes = json.loads(jsonStr[count - 1])
+            self.devs[mac] = attributes
+            _LOGGER.debug('Received %s: %s', mac, attributes)
         else:
             _LOGGER.debug('Received %s: %s',  mac, data)
 
@@ -145,15 +142,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     macs = config[CONF_MAC]
     sensors = config[CONF_SENSORS]
 
-    devices = []
-
-    def state_changed(mac):
-        for device in devices:
-            if (device._mac == '') or device._mac == mac:
-                #_LOGGER.debug('state_changed %s %s', mac, device._sensor_type)
-                device.schedule_update_ha_state()
-
-    aircat = AirCatData(state_changed if AIRCAT_SENSOR_THREAD_MODE else None)
+    aircat = AirCatData()
 
     if AIRCAT_SENSOR_THREAD_MODE:
         import threading
@@ -162,6 +151,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         AirCatSensor.times = 0
         AirCatSensor.interval = len(sensors)
 
+    devices = []
     for index in range(len(macs)):
         for sensor_type in sensors:
             devices.append(AirCatSensor(aircat,
@@ -210,7 +200,12 @@ class AirCatSensor(Entity):
         if attributes is None:
             return None
         state = float(attributes[self._sensor_type])
-        return state/1000 if self._sensor_type == SENSOR_HCHO else round(state)
+        if self._sensor_type == SENSOR_PM25:
+            return state
+        elif self._sensor_type == SENSOR_HCHO:
+            return state / 1000
+        else:
+            return round(state, 1)
 
     @property
     def device_state_attributes(self):
@@ -226,15 +221,10 @@ class AirCatSensor(Entity):
             return self._aircat.devs[mac]
         return None
 
-    @property
-    def should_poll(self):  # pylint: disable=no-self-use
-        """No polling needed."""
-        return not AIRCAT_SENSOR_THREAD_MODE
-
     def update(self):
         """Update state."""
-        if AIRCAT_SENSOR_THREAD_MODE: # Dead code
-            _LOGGER.error("Running in thread mode")
+        if AIRCAT_SENSOR_THREAD_MODE:
+            #_LOGGER.debug("Running in thread mode")
             return
 
         if AirCatSensor.times % AirCatSensor.interval == 0:
