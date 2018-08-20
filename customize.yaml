@@ -281,29 +281,29 @@ sensor.parlor_pm25:
   icon: mdi:blur
 sensor.parlor_temperature:
   friendly_name: 客厅温度
-sensor.phicomm2_hcho:
+sensor.aircat2_hcho:
   friendly_name: 工位甲醛
-sensor.phicomm2_humidity:
+sensor.aircat2_humidity:
   friendly_name: 工位湿度
-sensor.phicomm2_pm25:
+sensor.aircat2_pm25:
   friendly_name: 工位颗粒物
-sensor.phicomm2_temperature:
+sensor.aircat2_temperature:
   friendly_name: 工位温度
-sensor.phicomm3_hcho:
+sensor.aircat3_hcho:
   friendly_name: 卧室甲醛
-sensor.phicomm3_humidity:
+sensor.aircat3_humidity:
   friendly_name: 卧室湿度
-sensor.phicomm3_pm25:
+sensor.aircat3_pm25:
   friendly_name: 卧室颗粒物
-sensor.phicomm3_temperature:
+sensor.aircat3_temperature:
   friendly_name: 卧室温度
-sensor.phicomm_hcho:
+sensor.aircat_hcho:
   friendly_name: 餐厅甲醛
-sensor.phicomm_humidity:
+sensor.aircat_humidity:
   friendly_name: 餐厅湿度
-sensor.phicomm_pm25:
+sensor.aircat_pm25:
   friendly_name: 餐厅颗粒物
-sensor.phicomm_temperature:
+sensor.aircat_temperature:
   friendly_name: 餐厅温度
 sensor.study_humidity:
   friendly_name: 书房湿度

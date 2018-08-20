@@ -24,6 +24,14 @@ default_view:
   - sensor.bedroom_pm25
   - sensor.balcony_pm25
 
+Balcony:
+  entities:
+  - light.balcony_light
+  - binary_sensor.door_window_sensor_158d000228a52b
+  - sensor.balcony_temperature
+  - sensor.balcony_humidity
+  #- sensor.balcony_pm25
+
 Hallway:
   entities:
   - binary_sensor.door_window_sensor_158d0001f3e5be
@@ -37,14 +45,14 @@ Diningroom:
   - light.diningroom_spotlight
   - climate.daikin1
   - climate.saswell2
-  #- switch.outlet
+  - switch.outlet
   - light.gateway_light_34ce0090901a
   - fan.diningroom_purifier
   - sensor.illumination_34ce0090901a
-  - sensor.phicomm_temperature
-  - sensor.phicomm_humidity
-  - sensor.phicomm_pm25
-  - sensor.phicomm_hcho
+  - sensor.aircat_temperature
+  - sensor.aircat_humidity
+  - sensor.aircat_pm25
+  - sensor.aircat_hcho
 
 Parlor:
   entities:
@@ -62,14 +70,6 @@ Parlor:
   - sensor.parlor_humidity
   - sensor.parlor_pm25
   #- sensor.parlor_co2
-
-Balcony:
-  entities:
-  - light.balcony_light
-  - binary_sensor.door_window_sensor_158d000228a52b
-  - sensor.balcony_temperature
-  - sensor.balcony_humidity
-  #- sensor.balcony_pm25
 
 Passage:
   entities:
@@ -113,10 +113,10 @@ Bedroom:
   - fan.bedroom_purifier
   - fan.parents_purifier
   - fan.kids_purifier
-  # - sensor.phicomm3_temperature
-  # - sensor.phicomm3_humidity
-  # - sensor.phicomm3_pm25
-  # - sensor.phicomm3_hcho
+  # - sensor.aircat3_temperature
+  # - sensor.aircat3_humidity
+  # - sensor.aircat3_pm25
+  # - sensor.aircat3_hcho
   # - sensor.bedroom_temperature
   # - sensor.bedroom_humidity
   # - sensor.bedroom_pm25
@@ -127,10 +127,10 @@ Bedroom:
 
 Office:
   entities:
-  - sensor.phicomm2_temperature
-  - sensor.phicomm2_humidity
-  - sensor.phicomm2_pm25
-  - sensor.phicomm2_hcho
+  - sensor.aircat2_temperature
+  - sensor.aircat2_humidity
+  - sensor.aircat2_pm25
+  - sensor.aircat2_hcho
 
 Outside:
   entities:

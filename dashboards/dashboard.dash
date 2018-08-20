@@ -37,9 +37,9 @@ layout:
 
     - switch.speaker, sensor.study_lightness, sensor.parents_co2, sensor.kids_co2
     - sensor.parlor_temperature, sensor.parlor_humidity, sensor.parlor_pm25, sensor.parlor_co2
-    - sensor.phicomm_temperature, sensor.phicomm_humidity, sensor.phicomm_pm25, sensor.phicomm_hcho
+    - sensor.aircat_temperature, sensor.aircat_humidity, sensor.aircat_pm25, sensor.aircat_hcho
     - sensor.study_temperature, sensor.study_humidity, sensor.study_pm25, sensor.illumination_34ce0090901a
-    - sensor.phicomm2_temperature, sensor.phicomm2_humidity, sensor.phicomm2_pm25, sensor.phicomm2_hcho
+    - sensor.aircat2_temperature, sensor.aircat2_humidity, sensor.aircat2_pm25, sensor.aircat2_hcho
 
     - binary_sensor.door_window_sensor_158d0001f3e5be, binary_sensor.door_window_sensor_158d000228a52b, binary_sensor.motion_sensor_158d0001d66ce9, binary_sensor.motion_sensor_158d0001f4a238
 
