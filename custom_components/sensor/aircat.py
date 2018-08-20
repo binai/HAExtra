@@ -31,6 +31,9 @@ class AirCatData():
             self._socket.close()
             self._socket = None
 
+    def loop(self):
+        while True: self.update()
+
     def update(self, timeout=None): # None = wait forever, 0 = right now
         rfd,wfd,efd = select.select(self._rlist, [], [], timeout)
         for fd in rfd:
@@ -88,7 +91,7 @@ if __name__ == '__main__':
     _LOGGER.addHandler(logging.StreamHandler())
     aircat = AirCatData()
     try:
-        while True: aircat.update()
+        aircat.loop()
     except KeyboardInterrupt:
         pass
     aircat.shutdown()
@@ -144,10 +147,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     aircat = AirCatData()
     if AIRCAT_SENSOR_THREAD:
-        import thread
-        def worker():
-            while True: aircat.update()
-        thread.start_new_thread(worker)
+        import threading
+        threading.Thread(target=aircat.loop).start()
     else:
         AirCatSensor.times = 0
         AirCatSensor.interval = len(sensors)
@@ -223,7 +224,7 @@ class AirCatSensor(Entity):
 
     def update(self):
         """Update state."""
-        if AIRCAT_SENSOR_THREAD:
+        if AIRCAT_SENSOR_THREAD: # Dead code
             _LOGGER.error("Running in thread mode")
             return
 
