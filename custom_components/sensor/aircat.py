@@ -6,8 +6,6 @@ import socket
 import select
 import logging
 
-TIMEOUT = 0.5
-
 _LOGGER = logging.getLogger(__name__)
 
 class AirCatData():
@@ -17,8 +15,7 @@ class AirCatData():
         """Initialize the data object."""
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._socket.settimeout(TIMEOUT)
-        self._socket.setblocking(0)
+        self._socket.settimeout(1)
         self._socket.bind(('', 9000)) # aircat.phicomm.com
         self._socket.listen(5)
         self._rlist = [self._socket]
@@ -42,7 +39,7 @@ class AirCatData():
                     conn, addr = self._socket.accept()
                     _LOGGER.debug('Connected %s', addr)
                     self._rlist.append(conn)
-                    conn.settimeout(TIMEOUT)
+                    conn.settimeout(1)
                 else:
                     self.handle(fd)
             except:
