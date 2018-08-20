@@ -29,9 +29,10 @@ class AirCatData():
             self._socket = None
 
     def loop(self):
-        while True: self.update()
+        while True:
+            self.update(None) # None = wait forever
 
-    def update(self, timeout=None): # None = wait forever, 0 = right now
+    def update(self, timeout=0): # 0 = return right now
         rfd,wfd,efd = select.select(self._rlist, [], [], timeout)
         for fd in rfd:
             try:
