@@ -31,7 +31,7 @@ class AirCatData():
             self._socket.close()
             self._socket = None
 
-    def update(self, timeout=0):
+    def update(self, timeout=None): # None = wait forever, 0 = right now
         rfd,wfd,efd = select.select(self._rlist, [], [], timeout)
         for fd in rfd:
             try:
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     _LOGGER.addHandler(logging.StreamHandler())
     aircat = AirCatData()
     try:
-        while True: aircat.update(None) # None = wait forever
+        while True: aircat.update()
     except KeyboardInterrupt:
         pass
     aircat.shutdown()
@@ -108,7 +108,6 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
     CONF_NAME, CONF_DEVICES, CONF_SENSORS, TEMP_CELSIUS)
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers import config_validation as cv
 
 SENSOR_PM25 = 'value'
@@ -135,6 +134,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         vol.All(cv.ensure_list, vol.Length(min=1), [vol.In(SENSOR_MAP)]),
 })
 
+AIRCAT_SENSOR_THREAD = True # True: Thread mode, False: HomeAssistant update/poll mode
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the AirCat sensor."""
@@ -143,8 +143,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     sensors = config[CONF_SENSORS]
 
     aircat = AirCatData()
-    AirCatSensor.times = 0
-    AirCatSensor.interval = len(sensors)
+    if AIRCAT_SENSOR_THREAD:
+        import thread
+        def worker():
+            while True: aircat.update()
+        thread.start_new_thread(worker)
+    else:
+        AirCatSensor.times = 0
+        AirCatSensor.interval = len(sensors)
 
     result = []
     for index in range(len(devices)):
@@ -152,8 +158,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             result.append(AirCatSensor(aircat,
                 name + str(index + 1) if index else name,
                 devices[index], sensor_type))
-    add_devices(result, True)
-
+    add_devices(result)
 
 class AirCatSensor(Entity):
     """Implementation of a AirCat sensor."""
@@ -211,12 +216,23 @@ class AirCatSensor(Entity):
             return self._aircat.devs[mac]
         return None
 
+    @property
+    def should_poll(self):  # pylint: disable=no-self-use
+        """No polling needed."""
+        return not AIRCAT_SENSOR_THREAD
+
     def update(self):
         """Update state."""
-        if AirCatSensor.times % self._interval == 0:
-            _LOGGER.debug("Begin update %d: %s %s", AirCatSensor.times, self._mac, self._sensor_type)
+        if AIRCAT_SENSOR_THREAD:
+            _LOGGER.error("Running in thread mode")
+            return
+
+        if AirCatSensor.times % AirCatSensor.interval == 0:
+            _LOGGER.debug("Begin update %d: %s %s", AirCatSensor.times,
+                self._mac, self._sensor_type)
             self._aircat.update()
-            _LOGGER.debug("Ended update %d: %s %s", AirCatSensor.times, self._mac, self._sensor_type)
+            _LOGGER.debug("Ended update %d: %s %s", AirCatSensor.times,
+                self._mac, self._sensor_type)
         AirCatSensor.times += 1
 
     def shutdown(self, event):
