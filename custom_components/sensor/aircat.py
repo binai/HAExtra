@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 class AirCatData():
     """Class for handling the data retrieval."""
 
-    def __init__(self, interval=1):
+    def __init__(self, state_changed=None):
         """Initialize the data object."""
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -19,6 +19,7 @@ class AirCatData():
         self._socket.bind(('', 9000)) # aircat.phicomm.com
         self._socket.listen(5)
         self._rlist = [self._socket]
+        self._state_changed = state_changed
         self.devs = {}
 
     def shutdown(self):
@@ -73,9 +74,11 @@ class AirCatData():
         jsonStr = re.findall(r"(\{.*?\})", str(data), re.M)
         count = len(jsonStr)
         if count > 0:
-            status = json.loads(jsonStr[count - 1])
-            self.devs[mac] = status
-            _LOGGER.debug('Received %s: %s', mac, status)
+            state = json.loads(jsonStr[count - 1])
+            self.devs[mac] = state
+            _LOGGER.debug('Received %s: %s', mac, state)
+            if self._state_changed:
+                self._state_changed(mac)
         else:
             _LOGGER.debug('Received %s: %s',  mac, data)
 
@@ -106,8 +109,7 @@ https://home-assistant.io/components/sensor.aircat/
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (
-    CONF_NAME, CONF_DEVICES, CONF_SENSORS, TEMP_CELSIUS)
+from homeassistant.const import CONF_NAME, CONF_MAC, CONF_SENSORS, TEMP_CELSIUS
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers import config_validation as cv
 
@@ -129,21 +131,30 @@ SENSOR_MAP = {
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_DEVICES, default=['']):
+    vol.Optional(CONF_MAC, default=['']):
         vol.All(cv.ensure_list, vol.Length(min=1)),
     vol.Optional(CONF_SENSORS, default=DEFAULT_SENSORS):
         vol.All(cv.ensure_list, vol.Length(min=1), [vol.In(SENSOR_MAP)]),
 })
 
-AIRCAT_SENSOR_THREAD_MODE = True # True: Thread mode, False: HomeAssistant update/poll mode
+AIRCAT_SENSOR_THREAD_MODE = False # True: Thread mode, False: HomeAssistant update/poll mode
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the AirCat sensor."""
     name = config[CONF_NAME]
-    devices = config[CONF_DEVICES]
+    macs = config[CONF_MAC]
     sensors = config[CONF_SENSORS]
 
-    aircat = AirCatData()
+    devices = []
+
+    def state_changed(mac):
+        for device in devices:
+            if (device._mac == '') or device._mac == mac:
+                #_LOGGER.debug('state_changed %s %s', mac, device._sensor_type)
+                device.schedule_update_ha_state()
+
+    aircat = AirCatData(state_changed if AIRCAT_SENSOR_THREAD_MODE else None)
+
     if AIRCAT_SENSOR_THREAD_MODE:
         import threading
         threading.Thread(target=aircat.loop).start()
@@ -151,13 +162,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         AirCatSensor.times = 0
         AirCatSensor.interval = len(sensors)
 
-    result = []
-    for index in range(len(devices)):
+    for index in range(len(macs)):
         for sensor_type in sensors:
-            result.append(AirCatSensor(aircat,
+            devices.append(AirCatSensor(aircat,
                 name + str(index + 1) if index else name,
-                devices[index], sensor_type))
-    add_devices(result)
+                macs[index], sensor_type))
+
+    add_devices(devices)
 
 class AirCatSensor(Entity):
     """Implementation of a AirCat sensor."""
