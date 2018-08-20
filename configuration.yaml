@@ -89,11 +89,11 @@ recorder:
 # View all events in a logbook
 logbook:
 
-#logger:
-  #default: warning
-  #logs:
+logger:
+  default: warning
+  logs:
     #homeassistant.components.homekit: debug
-    #custom_components.climate.modbus: debug
+    custom_components.sensor.aircat: debug
 
 # Enables a map showing the location of tracked devices
 #map:
@@ -158,7 +158,7 @@ modbus:
 
 #
 device_tracker:
-- platform: asuswrt
+- platform: padavan
   host: Router
   username: admin
   password: !secret http_password
@@ -247,7 +247,7 @@ sensor:
   availability_topic: NodeMCU7/status
 - platform: caiyun
 - platform: aircat
-  #mac:[]
+  mac: ['F89324913200', 'B0F893249132']
   # username: !secret phicomm_username
   # password: !secret phicomm_password
 - platform: template

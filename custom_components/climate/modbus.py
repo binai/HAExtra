@@ -177,6 +177,7 @@ class ModbusClimate(ClimateDevice):
         self._fan_list = fan_list
         self._swing_list = swing_list
         self._values = {}
+        self._exception = 0
 
     @property
     def name(self):
@@ -282,7 +283,7 @@ class ModbusClimate(ClimateDevice):
     def is_on(self):
         """Return true if the device is on."""
         return self.get_value(CONF_IS_ON)
-        
+
     def try_reconnect(self):
         from pymodbus.client.sync import ModbusTcpClient as ModbusClient
         from pymodbus.transaction import ModbusRtuFramer as ModbusFramer
@@ -302,16 +303,11 @@ class ModbusClimate(ClimateDevice):
                 self.register_info(mod)
             count = mod[CONF_COUNT] if CONF_COUNT in mod else 1
 
-            if register_type == REGISTER_TYPE_COIL:
-                result = modbus.HUB.read_coils(slave, register, count)
-                try:
-                	value = bool(result.bits[0])
-                except:
-                    _LOGGER.error("No response from %s %s", self._name, prop)
-                    self.try_reconnect()
-                    return
-            else:
-                try:
+            try:
+                if register_type == REGISTER_TYPE_COIL:
+                    result = modbus.HUB.read_coils(slave, register, count)
+                    value = bool(result.bits[0])
+                else:
                     if register_type == REGISTER_TYPE_INPUT:
                         result = modbus.HUB.read_input_registers(slave,
                                                              register, count)
@@ -323,17 +319,20 @@ class ModbusClimate(ClimateDevice):
                     registers = result.registers
                     if mod.get(CONF_REVERSE_ORDER):
                         registers.reverse()
-                except:
-                    _LOGGER.error("No response from %s %s", self._name, prop)
+
+                    byte_string = b''.join(
+                        [x.to_bytes(2, byteorder='big') for x in registers]
+                    )
+                    val = struct.unpack(mod[CONF_STRUCTURE], byte_string)[0]
+                    value = scale * val + offset
+            except:
+                self._exception += 1
+                _LOGGER.error("Exception %d on %s %s", self._exception, self._name, prop)
+                if self._exception < 5:
                     self.try_reconnect()
-                    return
+                return
 
-                byte_string = b''.join(
-                    [x.to_bytes(2, byteorder='big') for x in registers]
-                )
-                val = struct.unpack(mod[CONF_STRUCTURE], byte_string)[0]
-                value = scale * val + offset
-
+            self._exception = 0
             _LOGGER.info("Read %s: %s = %f", self.name, prop, value)
             self._values[prop] = value
 
