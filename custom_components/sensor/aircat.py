@@ -1,14 +1,107 @@
+#!/usr/bin/env python
+# encoding: utf-8
+import re
+import json
+import socket
+import select
+import logging
+
+TIMEOUT = 0.5
+
+_LOGGER = logging.getLogger(__name__)
+
+class AirCatData():
+    """Class for handling the data retrieval."""
+
+    def __init__(self, interval=1):
+        """Initialize the data object."""
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._socket.settimeout(TIMEOUT)
+        self._socket.setblocking(0)
+        self._socket.bind(('', 9000)) # aircat.phicomm.com
+        self._socket.listen(5)
+        self._rlist = [self._socket]
+        self.devs = {}
+
+    def shutdown(self):
+        """Shutdown."""
+        if self._socket  is not None:
+            #_LOGGER.debug("Socket shutdown")
+            self._socket.close()
+            self._socket = None
+
+    def update(self, timeout=0):
+        rfd,wfd,efd = select.select(self._rlist, [], [], timeout)
+        for fd in rfd:
+            try:
+                if fd is self._socket:
+                    conn, addr = self._socket.accept()
+                    _LOGGER.debug('Connected %s', addr)
+                    self._rlist.append(conn)
+                    conn.settimeout(TIMEOUT)
+                else:
+                    self.handle(fd)
+            except:
+                import traceback
+                _LOGGER.error('Exception: %s', traceback.format_exc())
+
+    def handle(self, conn):
+        """Handle connection."""
+        data = conn.recv(1024) # If connection is closed, recv() will result a timeout exception and receive '' next time, so we can purge connection list
+        if not data:
+            _LOGGER.error('Closed %s', conn)
+            self._rlist.remove(conn)
+            conn.close()
+            return
+
+        if data.startswith(b'GET'):
+            _LOGGER.debug('Request from HTTP -->\n%s', data)
+            conn.sendall(b'HTTP/1.0 200 OK\nContent-Type: text/json\n\n' +
+                json.dumps(self.devs, indent=2).encode('utf-8'))
+            self._rlist.remove(conn)
+            conn.close()
+            return
+
+        if len(data) < 34: # 23+5+6
+            _LOGGER.error('Received Invalid %s', data)
+            return
+
+        address = data[17:23]
+        mac = ''.join(['%02X' % (x if isinstance(x,int) else ord(x)) for x in address])
+        jsonStr = re.findall(r"(\{.*?\})", str(data), re.M)
+        count = len(jsonStr)
+        if count > 0:
+            status = json.loads(jsonStr[count - 1])
+            self.devs[mac] = status
+            _LOGGER.debug('Received %s: %s', mac, status)
+        else:
+            _LOGGER.debug('Received %s: %s',  mac, data)
+
+        response = data[:23] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
+        #_LOGGER.debug('Response %s', response)
+        conn.sendall(response)
+
+
+if __name__ == '__main__':
+    _LOGGER.setLevel(logging.DEBUG)
+    _LOGGER.addHandler(logging.StreamHandler())
+    aircat = AirCatData()
+    try:
+        while True: aircat.update(None) # None = wait forever
+    except KeyboardInterrupt:
+        pass
+    aircat.shutdown()
+    exit(0)
+
+
 """
 Support for AirCat air sensor.
 
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/sensor.aircat/
-
-Host redirect: 192.168.1.x aircat.phicomm.com
 """
 
-import asyncio
-import logging
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -17,8 +110,6 @@ from homeassistant.const import (
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers import config_validation as cv
-
-_LOGGER = logging.getLogger(__name__)
 
 SENSOR_PM25 = 'value'
 SENSOR_HCHO = 'hcho'
@@ -51,7 +142,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     devices = config[CONF_DEVICES]
     sensors = config[CONF_SENSORS]
 
-    aircat = AirCatData(len(sensors))
+    aircat = AirCatData()
+    AirCatSensor.times = 0
+    AirCatSensor.interval = len(sensors)
 
     result = []
     for index in range(len(devices)):
@@ -118,88 +211,15 @@ class AirCatSensor(Entity):
             return self._aircat.devs[mac]
         return None
 
-    async def async_update(self):
+    def update(self):
         """Update state."""
-        #_LOGGER.debug("Begin update %s: %s", self._mac, self._sensor_type)
-        await self._aircat.async_update()
-        #_LOGGER.debug("Ended update %s: %s", self._mac, self._sensor_type)
+        if AirCatSensor.times % self._interval == 0:
+            _LOGGER.debug("Begin update %d: %s %s", AirCatSensor.times, self._mac, self._sensor_type)
+            self._aircat.update()
+            _LOGGER.debug("Ended update %d: %s %s", AirCatSensor.times, self._mac, self._sensor_type)
+        AirCatSensor.times += 1
 
     def shutdown(self, event):
         """Signal shutdown."""
         #_LOGGER.debug('Shutdown')
         self._aircat.shutdown()
-
-import re
-import json
-import socket
-import select
-TIMEOUT=0.5
-class AirCatData():
-    """Class for handling the data retrieval."""
-
-    def __init__(self, interval):
-        """Initialize the data object."""
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._socket.settimeout(TIMEOUT)
-        self._socket.setblocking(0)
-        self._socket.bind(('', 9000))
-        self._socket.listen(5)
-        self._rlist = [self._socket]
-        self._times = 0
-        self._interval = interval
-        self.devs = {}
-
-    def shutdown(self):
-        """Shutdown."""
-        if self._socket  is not None:
-            #_LOGGER.debug("Socket shutdown")
-            self._socket.close()
-            self._socket = None
-
-    async def async_update(self):
-        self._times += 1
-        if self._times % self._interval != 1:
-            return
-
-        _LOGGER.debug('Begin update %d', self._times)
-        rfd,wfd,efd = select.select(self._rlist, [], [], 0)
-        for fd in rfd:
-            try:
-                if fd is self._socket:
-                    conn, addr = self._socket.accept()
-                    _LOGGER.debug('Connected %s', addr)
-                    self._rlist.append(conn)
-                    conn.settimeout(TIMEOUT)
-                else:
-                    self.handle(fd)
-            except:
-                import traceback
-                _LOGGER.error('Exception: %s', traceback.format_exc())
-        _LOGGER.debug('Ended update %d', self._times)
-
-    def handle(self, conn):
-        data = conn.recv(1024) # If connection is closed, recv() will result a timeout exception and receive '' next time, so we can purge connection list
-        if not data:
-            _LOGGER.error('Closed %s', conn)
-            self._rlist.remove(conn)
-            conn.close()
-            return
-
-        if len(data) < 34: # 23+5+6
-            _LOGGER.error('Received Invalid %s', data)
-            return
-
-        mac = data[17:23].hex()
-        jsonStr = re.findall(r"(\{.*?\})", str(data), re.M)
-        count = len(jsonStr)
-        if count > 0:
-            status = json.loads(jsonStr[count - 1])
-            self.devs[mac] = status
-            _LOGGER.debug('Received %s: %s', mac, status)
-        else:
-            _LOGGER.debug('Received %s: %s',  mac, data)
-
-        response = data[:23] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
-        #_LOGGER.debug('Response %s', response)
-        conn.sendall(response)
