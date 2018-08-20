@@ -135,7 +135,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         vol.All(cv.ensure_list, vol.Length(min=1), [vol.In(SENSOR_MAP)]),
 })
 
-AIRCAT_SENSOR_THREAD = True # True: Thread mode, False: HomeAssistant update/poll mode
+AIRCAT_SENSOR_THREAD_MODE = True # True: Thread mode, False: HomeAssistant update/poll mode
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the AirCat sensor."""
@@ -144,7 +144,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     sensors = config[CONF_SENSORS]
 
     aircat = AirCatData()
-    if AIRCAT_SENSOR_THREAD:
+    if AIRCAT_SENSOR_THREAD_MODE:
         import threading
         threading.Thread(target=aircat.loop).start()
     else:
@@ -218,11 +218,11 @@ class AirCatSensor(Entity):
     @property
     def should_poll(self):  # pylint: disable=no-self-use
         """No polling needed."""
-        return not AIRCAT_SENSOR_THREAD
+        return not AIRCAT_SENSOR_THREAD_MODE
 
     def update(self):
         """Update state."""
-        if AIRCAT_SENSOR_THREAD: # Dead code
+        if AIRCAT_SENSOR_THREAD_MODE: # Dead code
             _LOGGER.error("Running in thread mode")
             return
 
