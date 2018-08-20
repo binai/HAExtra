@@ -3,6 +3,8 @@ Support for AirCat air sensor.
 
 For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/sensor.aircat/
+
+Host redirect: 192.168.1.x aircat.phicomm.com
 """
 
 import asyncio
@@ -161,7 +163,7 @@ class AirCatData():
             return
 
         _LOGGER.debug('Begin update %d', self._times)
-        rfd,wfd,efd = select.select(self._rlist, [], [], TIMEOUT)
+        rfd,wfd,efd = select.select(self._rlist, [], [], 0)
         for fd in rfd:
             try:
                 if fd is self._socket:
