@@ -199,11 +199,13 @@ class AirCatSensor(Entity):
         attributes = self.attributes
         if attributes is None:
             return None
-        state = float(attributes[self._sensor_type])
-        if self._sensor_type == SENSOR_HCHO:
-            return state / 1000
+        state = attributes[self._sensor_type]
+        if self._sensor_type == SENSOR_PM25:
+            return state
+        elif self._sensor_type == SENSOR_HCHO:
+            return float(state) / 1000
         else:
-            return round(state, 0 if self._sensor_type == SENSOR_PM25 else 1)
+            return round(float(state), 1)
 
     @property
     def device_state_attributes(self):
