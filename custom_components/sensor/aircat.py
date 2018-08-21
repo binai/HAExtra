@@ -64,11 +64,12 @@ class AirCatData():
             conn.close()
             return
 
-        if len(data) < 34: # 23+5+6
+        token = data.find(b'\xaa') # Sync point to adapt flood data > 1024
+        if token == -1 or len(data) < token + 34: # 23+5+6
             _LOGGER.error('Received Invalid %s', data)
             return
 
-        address = data[17:23]
+        address = data[token+17:token+23]
         mac = ''.join(['%02X' % (x if isinstance(x,int) else ord(x)) for x in address])
         jsonStr = re.findall(r"(\{.*?\})", str(data), re.M)
         count = len(jsonStr)
@@ -79,7 +80,7 @@ class AirCatData():
         else:
             _LOGGER.debug('Received %s: %s',  mac, data)
 
-        response = data[:23] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
+        response = data[token:token+23] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
         #_LOGGER.debug('Response %s', response)
         conn.sendall(response)
 
