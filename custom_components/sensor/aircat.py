@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-import re
 import json
 import socket
 import select
@@ -64,26 +63,24 @@ class AirCatData():
             conn.close()
             return
 
-        token = data.find(b'\xaa') # Sync point to adapt flood data > 1024
-        if token == -1 or len(data) < token + 34: # 23+5+6
-            _LOGGER.error('Received Invalid %s', data)
+        end = data.rfind(b'\xff#END#')
+        payload = data.rfind(b'{', 0, end)
+        if payload == -1:
+            payload = end
+        if payload < 28: # begin(17) + mac(6)+size(5) + payload(0~) + end(6)
+            _LOGGER.error('Received invalid %s', data)
             return
 
-        address = data[token+17:token+23]
-        mac = ''.join(['%02X' % (x if isinstance(x,int) else ord(x)) for x in address])
-        jsonStr = re.findall(r"(\{.*?\})", str(data), re.M)
-        count = len(jsonStr)
-        if count > 0:
-            attributes = json.loads(jsonStr[count - 1])
+        if payload != end:
+            mac = ''.join(['%02X' % (x if isinstance(x, int) else ord(x)) for x in data[payload-11:payload-5]])
+            jsonStr = data[payload:end]
+            attributes = json.loads(jsonStr)
             self.devs[mac] = attributes
             _LOGGER.debug('Received %s: %s', mac, attributes)
-        else:
-            _LOGGER.debug('Received %s: %s',  mac, data)
 
-        response = data[token:token+23] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
+        response = data[payload-28:payload-5] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
         #_LOGGER.debug('Response %s', response)
         conn.sendall(response)
-
 
 if __name__ == '__main__':
     _LOGGER.setLevel(logging.DEBUG)
