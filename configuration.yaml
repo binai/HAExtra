@@ -53,7 +53,7 @@ http:
   - 101.132.66.191
   base_url: !secret http_base_url
   ssl_certificate: /root/.homeassistant/fullchain.cer
-  ssl_key: /root/.homeassistant/yonsm.net.key
+  ssl_key: /root/.homeassistant/privkey.pem
   cors_allowed_origins:
     - https://reformedreality.com
     - http://reformedreality.com
@@ -247,7 +247,7 @@ sensor:
   availability_topic: NodeMCU7/status
 - platform: caiyun
 - platform: aircat
-  mac: ['F89324913200', 'B0F893249132']
+  mac: ['B0F893249132', 'B0F893249132']
   # username: !secret phicomm_username
   # password: !secret phicomm_password
 - platform: template
