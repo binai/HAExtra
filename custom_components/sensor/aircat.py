@@ -48,7 +48,7 @@ class AirCatData():
 
     def handle(self, conn):
         """Handle connection."""
-        data = conn.recv(1024) # If connection is closed, recv() will result a timeout exception and receive '' next time, so we can purge connection list
+        data = conn.recv(4096) # If connection is closed, recv() will result a timeout exception and receive '' next time, so we can purge connection list
         if not data:
             _LOGGER.error('Closed %s', conn)
             self._rlist.remove(conn)
@@ -72,11 +72,14 @@ class AirCatData():
             return
 
         if payload != end:
-            mac = ''.join(['%02X' % (x if isinstance(x, int) else ord(x)) for x in data[payload-11:payload-5]])
-            jsonStr = data[payload:end]
-            attributes = json.loads(jsonStr)
-            self.devs[mac] = attributes
-            _LOGGER.debug('Received %s: %s', mac, attributes)
+            try:
+                mac = ''.join(['%02X' % (x if isinstance(x, int) else ord(x)) for x in data[payload-11:payload-5]])
+                jsonStr = data[payload:end]
+                attributes = json.loads(jsonStr)
+                self.devs[mac] = attributes
+                _LOGGER.debug('Received %s: %s', mac, attributes)
+            except:
+                _LOGGER.error('Received invalid JSON: %s', data)
 
         response = data[payload-28:payload-5] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
         #_LOGGER.debug('Response %s', response)
@@ -141,16 +144,17 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     sensors = config[CONF_SENSORS]
 
     aircat = AirCatData()
+    count = len(macs)
 
     if AIRCAT_SENSOR_THREAD_MODE:
         import threading
         threading.Thread(target=aircat.loop).start()
     else:
         AirCatSensor.times = 0
-        AirCatSensor.interval = len(sensors)
+        AirCatSensor.interval = len(sensors) * count
 
     devices = []
-    for index in range(len(macs)):
+    for index in range(count):
         for sensor_type in sensors:
             devices.append(AirCatSensor(aircat,
                 name + str(index + 1) if index else name,
