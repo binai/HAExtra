@@ -312,11 +312,11 @@ switch:
   command_topic: NodeMCU3/relay/0/set
   availability_topic: NodeMCU3/status
   value_template: "{% if value == '关闭' %}OFF{% else %}ON{% endif %}"
-# - platform: broadlink
-#   host: Outlet
-#   mac: 34:EA:34:B8:36:AC
-#   friendly_name: Outlet
-#   type: spmini2
+- platform: broadlink
+  host: Outlet
+  mac: 34:EA:34:B8:36:AC
+  friendly_name: Outlet
+  type: spmini2
 - platform: broadlink
   friendly_name: Remote Pro
   host: RemotePro
