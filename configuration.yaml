@@ -247,9 +247,7 @@ sensor:
   availability_topic: NodeMCU7/status
 - platform: caiyun
 - platform: aircat
-  mac: ['B0F893249132', 'B0F893249132']
-  # username: !secret phicomm_username
-  # password: !secret phicomm_password
+  #mac: ['B0F893249132', 'B0F893249132']
 - platform: template
   sensors:
     study_temperature:

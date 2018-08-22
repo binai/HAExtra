@@ -6,11 +6,11 @@ default_view:
   # - device_tracker.yphone
   # - device_tracker.zphone
   # - device_tracker.himedia
+  - group.balcony
   - group.hallway
   - group.diningroom
   #- group.kitchen
   - group.parlor
-  - group.balcony
   - group.passage
   - group.washroom
   - group.bedroom
