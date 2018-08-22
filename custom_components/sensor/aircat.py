@@ -74,7 +74,7 @@ class AirCatData():
         if payload != end:
             try:
                 mac = ''.join(['%02X' % (x if isinstance(x, int) else ord(x)) for x in data[payload-11:payload-5]])
-                jsonStr = data[payload:end]
+                jsonStr = data[payload:end].decode('utf-8')
                 attributes = json.loads(jsonStr)
                 self.devs[mac] = attributes
                 _LOGGER.debug('Received %s: %s', mac, attributes)
