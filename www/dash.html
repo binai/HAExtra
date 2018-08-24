@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>智能家庭</title>
+    <meta charset="utf-8">
+    <link href="https://cdn.bootcss.com/MaterialDesign-Webfont/2.4.85/css/materialdesignicons.min.css" rel="stylesheet">
+    <style>
+.grid {
+    background-color: #03a9f4;
+    float:left;
+    width: 150px;
+    height: 150px;
+    margin: 3px;
+
+    color: white;
+    text-align: center;
+    font-weight: 300;
+    font-size: : 11pt;
+
+/*    justify-content: center;
+    align-items: center;
+    display: -webkit-flex;*/
+}
+
+.sensor {
+    font-size: : 50pt;
+}
+
+.grid:hover {
+    background-color: green;
+}
+
+    </style>
+</head>
+<body bgcolor="black" text="white">
+    <script>
+function httpRequest(url, callback, body, headers) {
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        try {
+            if(req.readyState == 4) {
+                if(req.status == 200) {
+                    var text = req.responseText;
+                    if(callback) callback(text);
+                } else {
+                    if(callback) callback();
+                }
+            }
+        }
+        catch(e) {
+            req.abort();
+            if(callback) callback();
+        }
+    };
+    req.open((body ? 'POST' : 'GET'), url, true);
+    if(headers) for(var key in headers) req.setRequestHeader(key, headers[key]);
+    req.send(body);
+    return req;
+}
+
+function haRequest(api, callback, body, headers) {
+    var url;
+    var search = location.search;
+    if (search.startsWith('?http')) {
+        var parts = search.slice(1).split('_');
+        if (parts.length < 3) {
+            document.write('Error in url parameter! e.g. http_xxx.xxx.xxx.xxx_8123_password');
+            return
+        }
+        url = parts[0] + '://' + parts[1] + ':' + parts[2] + '/api/' + api
+        if (parts.length > 3)
+            url += '?api_password=' + parts[3]
+    } else {
+        url = location.protocol + '//' + location.host + '/api/' + api
+    }
+
+    httpRequest(url, function(text) {
+        if (callback) callback(text ? JSON.parse(text) : null);
+    }, body, headers);
+}
+
+haRequest("states", function(items) {
+    if (items == null) {
+        document.write('Error on request states');
+        return;
+    }
+
+    var domain_icons = {
+        'binary_sensor': 'bootstrap',
+        'climate': 'thermostat',
+        'cover': 'window-closed',
+        'device_tracker': 'human',
+        'fan': 'fan',
+        'group': 'account-group',
+        'light': 'ceiling-light',
+        'media_player': 'play-circle-outline',
+        'sensor': 'flower',
+        'sun': 'weather-sunset',
+        'switch': 'light-switch',
+        'vacuum': 'robot-vacuum',
+    };
+
+    var states = {
+        'off': '关闭',
+        'o': '开启',
+
+        'auto': '自动',
+        'low': '低速',
+        'medium': '中速',
+        'middle': '中速',
+        'high': '高速',
+
+        'strong': '高速',
+        'silent': '静音',
+        'interval': '间歇',
+
+        'unavailable': '不可用',
+    };
+
+    var grids = '';
+    for (var i in items) {
+        var item = items[i];
+        var domain = item.entity_id.split('.')[0];
+        if (!domain_icons.hasOwnProperty(domain))
+            continue;
+
+        var attributes = item.attributes;
+        var icon = attributes['icon'];
+        if (icon && icon.startsWith('mdi:'))
+           icon = 'mdi mdi-' + icon.slice(4);
+        else
+            icon = 'mdi mdi-' + domain_icons[domain];
+        grids += '<div class="grid"><p>' + attributes.friendly_name  +  '</p>'
+        if (domain == 'sensor') {
+            var state = item.state;
+            grids += '<div style="font-size:50px">' + (states.hasOwnProperty(state) ? states[state] : state) + '</div>'
+        } else {
+            grids += '<i class="' + icon + '" style="font-size:50px"></i>'
+        }
+        grids += '</div> ';
+    }
+
+    document.body.innerHTML = grids;
+});
+
+    </script>
+</body>
+</html>
