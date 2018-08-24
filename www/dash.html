@@ -72,8 +72,11 @@ function haRequest(api, callback, body, headers) {
             url += '?api_password=' + parts[3]
     } else {
         url = location.protocol + '//' + location.host + '/api/' + api
+        if (search.startsWith('?'))
+            url += '?api_password=' + search.slice(1)
     }
 
+    console.log('haRequest: ' + url);
     httpRequest(url, function(text) {
         if (callback) callback(text ? JSON.parse(text) : null);
     }, body, headers);
