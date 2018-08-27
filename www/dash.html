@@ -198,15 +198,23 @@ haRequest("states", function(items) {
             else
                 icon = domain_icons[domain];
 
-            var disabled ;
+            var disabled, speed;
             if (state == 'off' || state == 'not_home') {
+                speed = null;
                 disabled =  'color:rgba(230,230,230,0.5)';
                 if (domain == 'binary_sensor')
                     icon = 'minus-circle-outline';
             } else {
                 disabled = '';
+                speed = attributes.hasOwnProperty('dashboard_static_text_attribute') ? attributes[attributes['dashboard_static_text_attribute']] : attributes['speed'];
             }
             grids += '<i class="mdi mdi-' + icon + '" style="font-size:50px;' + disabled + '"></i>';
+
+            if (speed != null) {
+                speed = speed.toLowerCase();
+                speed = states.hasOwnProperty(speed) ? states[speed] : speed.replace("level", "档位");
+                grids += '<div style="font-size:14px">' + speed + '</div>';
+            }
         }
         grids += '</div> ';
     }
