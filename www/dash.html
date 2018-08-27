@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <link href="https://cdn.bootcss.com/MaterialDesign-Webfont/2.4.85/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
-.grid {
-    background-color: #03a9f4;
+
+.binary_sensor, .climate, .cover, .device_tracker, .fan, .group, .light, .media_player, .sensor, .switch, .vacuum, .unavailable {
     float:left;
     width: 150px;
     height: 150px;
@@ -22,12 +22,44 @@
     display: -webkit-flex;*/
 }
 
-.sensor {
-    font-size: : 50pt;
+.climate:hover, .cover:hover, .fan:hover, .group:hover, .light:hover, .media_player:hover, .switch:hover, .vacuum:hover {
+    background-color: #4caf50;
 }
 
-.grid:hover {
-    background-color: green;
+.binary_sensor {
+    background-color: #00bcd4; /*#4caf50 green*/
+}
+
+.device_tracker {
+    background-color: #009688;
+}
+
+.climate, .fan {
+    background-color: #cddc39;
+}
+
+.cover, .media_player, .vacuum {
+    background-color: #ff9800;
+}
+
+.switch {
+    background-color: #ffc107;
+}
+
+.group {
+    background-color: #9c27b0;
+}
+
+.light {
+    background-color: #ff5722;
+}
+
+.sensor {
+    background-color: #03a9f4;
+}
+
+.unavailable {
+    background-color: #607d8b;
 }
 
     </style>
@@ -89,16 +121,15 @@ haRequest("states", function(items) {
     }
 
     var domain_icons = {
-        'binary_sensor': 'bootstrap',
+        'binary_sensor': 'bullseye',
         'climate': 'thermostat',
         'cover': 'window-closed',
-        'device_tracker': 'human',
+        'device_tracker': 'account',
         'fan': 'fan',
-        'group': 'account-group',
+        //'group': 'account-group',
         'light': 'ceiling-light',
         'media_player': 'play-circle-outline',
         'sensor': 'flower',
-        'sun': 'weather-sunset',
         'switch': 'light-switch',
         'vacuum': 'robot-vacuum',
     };
@@ -120,6 +151,8 @@ haRequest("states", function(items) {
         'unavailable': '不可用',
     };
 
+    items.sort(function(x, y) {return x.entity_id.localeCompare(y.entity_id)});
+
     var grids = '';
     for (var i in items) {
         var item = items[i];
@@ -128,17 +161,35 @@ haRequest("states", function(items) {
             continue;
 
         var attributes = item.attributes;
+        if (attributes['hidden'] == true)
+            continue;
+
         var icon = attributes['icon'];
         if (icon && icon.startsWith('mdi:'))
-           icon = 'mdi mdi-' + icon.slice(4);
+            icon = icon.slice(4);
         else
-            icon = 'mdi mdi-' + domain_icons[domain];
-        grids += '<div class="grid"><p>' + attributes.friendly_name  +  '</p>'
+            icon = domain_icons[domain];
+
+        var state = item.state;
+
+        grids += '<div class="' + (state == 'unavailable' ? 'unavailable' : domain) + '"><p>' + attributes.friendly_name  +  '</p>'
         if (domain == 'sensor') {
-            var state = item.state;
-            grids += '<div style="font-size:50px">' + (states.hasOwnProperty(state) ? states[state] : state) + '</div>'
+            if (states.hasOwnProperty(state))
+                state = states[state];
+
+            var nan = isNaN(state);
+            if (!nan)
+                state = parseFloat(state);
+            grids += '<div style="font-size:' + (nan ? 40 : 50) + 'px">' + state
+            var unit = attributes['unit_of_measurement'];
+            if (unit && state != '不可用')
+                grids += '<span style="font-size:10px">' + unit + '</span>'
+            grids += '</div>'
         } else {
-            grids += '<i class="' + icon + '" style="font-size:50px"></i>'
+            if (domain == 'binary_sensor')
+                icon = (state == 'on' || state == 'home') ? 'bullseye' : 'minus-circle-outline';
+            var disabled = (state == 'off' || state == 'not_home') ? '; color: rgba(230,230,230,0.5)' : ';';
+            grids += '<i class="mdi mdi-' + icon + '" style="font-size:50px' + disabled + '"></i>';
         }
         grids += '</div> ';
     }
