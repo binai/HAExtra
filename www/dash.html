@@ -24,10 +24,11 @@
 
 .climate:hover, .cover:hover, .fan:hover, .group:hover, .light:hover, .media_player:hover, .switch:hover, .vacuum:hover {
     background-color: #4caf50;
+    cursor: pointer;
 }
 
 .binary_sensor {
-    background-color: #00bcd4; /*#4caf50 green*/
+    background-color: #03a9f4; /*#4caf50 green*/
 }
 
 .device_tracker {
@@ -55,7 +56,7 @@
 }
 
 .sensor {
-    background-color: #03a9f4;
+    background-color: #00bcd4;
 }
 
 .unavailable {
@@ -127,7 +128,7 @@ haRequest("states", function(items) {
         'device_tracker': 'account',
         'fan': 'fan',
         //'group': 'account-group',
-        'light': 'ceiling-light',
+        'light': 'circle-outline',
         'media_player': 'play-circle-outline',
         'sensor': 'flower',
         'switch': 'light-switch',
@@ -136,7 +137,7 @@ haRequest("states", function(items) {
 
     var states = {
         'off': '关闭',
-        'o': '开启',
+        'on': '开启',
 
         'auto': '自动',
         'low': '低速',
@@ -147,6 +148,11 @@ haRequest("states", function(items) {
         'strong': '高速',
         'silent': '静音',
         'interval': '间歇',
+
+        'cool': '制冷',
+        'heat': '制热',
+        'dry': '除湿',
+        'fan': '送风',
 
         'unavailable': '不可用',
     };
@@ -164,32 +170,43 @@ haRequest("states", function(items) {
         if (attributes['hidden'] == true)
             continue;
 
-        var icon = attributes['icon'];
-        if (icon && icon.startsWith('mdi:'))
-            icon = icon.slice(4);
-        else
-            icon = domain_icons[domain];
-
         var state = item.state;
 
         grids += '<div class="' + (state == 'unavailable' ? 'unavailable' : domain) + '"><p>' + attributes.friendly_name  +  '</p>'
-        if (domain == 'sensor') {
+        if ((domain == 'sensor' && attributes['mdicon'] == null) || domain == 'climate') {
+            var unit;
             if (states.hasOwnProperty(state))
                 state = states[state];
+            if (domain == 'climate') {
+                unit = state;
+                state = attributes['current_temperature'];
+            } else {
+                unit = attributes['unit_of_measurement'];
+            }
 
             var nan = isNaN(state);
             if (!nan)
                 state = parseFloat(state);
             grids += '<div style="font-size:' + (nan ? 40 : 50) + 'px">' + state
-            var unit = attributes['unit_of_measurement'];
             if (unit && state != '不可用')
                 grids += '<span style="font-size:10px">' + unit + '</span>'
             grids += '</div>'
         } else {
-            if (domain == 'binary_sensor')
-                icon = (state == 'on' || state == 'home') ? 'bullseye' : 'minus-circle-outline';
-            var disabled = (state == 'off' || state == 'not_home') ? '; color: rgba(230,230,230,0.5)' : ';';
-            grids += '<i class="mdi mdi-' + icon + '" style="font-size:50px' + disabled + '"></i>';
+            var icon = attributes['icon'];
+            if (icon && icon.startsWith('mdi:'))
+                icon = icon.slice(4);
+            else
+                icon = domain_icons[domain];
+
+            var disabled ;
+            if (state == 'off' || state == 'not_home') {
+                disabled =  'color:rgba(230,230,230,0.5)';
+                if (domain == 'binary_sensor')
+                    icon = 'minus-circle-outline';
+            } else {
+                disabled = '';
+            }
+            grids += '<i class="mdi mdi-' + icon + '" style="font-size:50px;' + disabled + '"></i>';
         }
         grids += '</div> ';
     }
