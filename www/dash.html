@@ -171,6 +171,16 @@ haRequest("states", function(items) {
             continue;
 
         var state = item.state;
+        var disabled, extra;
+        if (state == 'off' || state == 'not_home' || state == 'unavailable') {
+            extra = null;
+            disabled =  'color:rgba(230,230,230,0.5)';
+            if (domain == 'binary_sensor')
+                icon = 'minus-circle-outline';
+        } else {
+            disabled = '';
+            extra = attributes.hasOwnProperty('dashboard_static_text_attribute') ? attributes[attributes['dashboard_static_text_attribute']] : attributes['speed'];
+        }
 
         grids += '<div class="' + (state == 'unavailable' ? 'unavailable' : domain) + '"><p>' + attributes.friendly_name  +  '</p>'
         if ((domain == 'sensor' && attributes['mdicon'] == null) || domain == 'climate') {
@@ -187,8 +197,8 @@ haRequest("states", function(items) {
             var nan = isNaN(state);
             if (!nan)
                 state = parseFloat(state);
-            grids += '<div style="font-size:' + (nan ? 40 : 50) + 'px">' + state
-            if (unit && state != '不可用')
+            grids += '<div style="font-size:' + (nan ? 40 : 50) + 'px;' + disabled + '">' + state
+            if (unit && disabled == '')
                 grids += '<span style="font-size:10px">' + unit + '</span>'
             grids += '</div>'
         } else {
@@ -198,23 +208,14 @@ haRequest("states", function(items) {
             else
                 icon = domain_icons[domain];
 
-            var disabled, speed;
-            if (state == 'off' || state == 'not_home') {
-                speed = null;
-                disabled =  'color:rgba(230,230,230,0.5)';
-                if (domain == 'binary_sensor')
-                    icon = 'minus-circle-outline';
-            } else {
-                disabled = '';
-                speed = attributes.hasOwnProperty('dashboard_static_text_attribute') ? attributes[attributes['dashboard_static_text_attribute']] : attributes['speed'];
-            }
             grids += '<i class="mdi mdi-' + icon + '" style="font-size:50px;' + disabled + '"></i>';
 
-            if (speed != null) {
-                speed = speed.toLowerCase();
-                speed = states.hasOwnProperty(speed) ? states[speed] : speed.replace("level", "档位");
-                grids += '<div style="font-size:14px">' + speed + '</div>';
-            }
+        }
+
+        if (extra != null) {
+            extra = extra.toLowerCase();
+            extra = states.hasOwnProperty(extra) ? states[extra] : extra.replace("level", "档位");
+            grids += '<div style="font-size:14px">' + extra + '</div>';
         }
         grids += '</div> ';
     }
