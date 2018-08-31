@@ -61,14 +61,10 @@ def haCall(cmd, data=None):
 #
 def guessAction(entity_id, intent_name, query):
     if not entity_id.startswith('sensor') and not entity_id.startswith('binary_sensor') and not entity_id.startswith('device_tracker'):
-        # 使用传入唤醒词截断
-        if _appName != '小爱精灵':
-            query = query.split(_appName)[-1]
-
         # 使用小米意图识别或做意图识别
-        if intent_name == 'open' or query.startswith('打开') or query.startswith('开'):
+        if intent_name == 'open' or query.startswith('打开') or query.startswith('开') or query.endswith('打开'):
             return '打开'
-        elif intent_name == 'close' or query.startswith('关'):
+        elif intent_name == 'close' or query.startswith('关') or query.endswith('关掉') or query.endswith('关闭') or query.endswith('关上'):
             return '关闭'
     return '查询'
 
@@ -120,7 +116,7 @@ def handleStates(intent_name, query, states, group, names):
 
         if names is not None:
             names.append(friendly_name)
-        if query.endswith(friendly_name):
+        if query.startswith(friendly_name) or query.endswith(friendly_name):
             action = guessAction(entity_id, intent_name, query)
             return friendly_name + handleState(entity_id, state['state'], action)
     return None
@@ -142,9 +138,16 @@ def handleRequest(body):
         return (True, "再见主人，" + _appName + "在这里等你哦！")
 
     #
-    query = body['query']
     slot_info = body['request'].get('slot_info')
     intent_name = slot_info.get('intent_name') if slot_info is not None else None
+
+    if intent_name == 'Mi_Welcome':
+        return (False, "您好主人，我能为你做什么呢？")
+
+    query = body['query']
+    # 使用传入唤醒词截断
+    if _appName != '小爱精灵':
+        query = query.split(_appName)[-1]
 
     #
     states = haCall('states')
@@ -162,7 +165,7 @@ def handleRequest(body):
         locale.setlocale(locale.LC_COLLATE, 'zh_CN.UTF8')
         return (True, ','.join(sorted(names, cmp=locale.strcoll)))
 
-    return (False, "您好主人，我能为你做什么呢？" if intent_name == 'Mi_Welcome' else _appName + "未找到设备，请再说一遍吧")
+    return (False, _appName + "未找到设备，请再说一遍吧")
 
 # Main process
 try:
