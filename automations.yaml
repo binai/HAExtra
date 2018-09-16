@@ -92,18 +92,19 @@
 #     data:
 #       message: 双击无线开关
 
-# # 无线开关长按
-# - alias: Xiaomi Switch Pressed
-#   trigger:
-#   - platform: event
-#     event_type: click
-#     event_data:
-#       entity_id: binary_sensor.switch_158d000201a73f
-#       click_type: long_click_press
-#   action:
-#   - service: hello_miai.send
-#     data:
-#       message: 长按无线开关
+# 无线开关长按
+- alias: Xiaomi Switch Pressed
+  trigger:
+  - platform: event
+    event_type: click
+    event_data:
+      entity_id: binary_sensor.switch_158d000201a73f
+      click_type: long_click_press
+  action:
+  - service: hello_miai.send
+    data_template:
+      message: >
+        阳台PM2.5为{{ states('sensor.balcony_pm25') }}，餐厅PM2.5为{{ states('sensor.aircat_pm25') }}，主卧PM2.5为{{ states('sensor.bedroom_pm25') }}。客厅二氧化碳浓度为{{ states('sensor.parlor_co2') }}，主卧二氧化碳浓度为{{ states('sensor.bedroom_co2') }}，次卧二氧化碳浓度为{{ states('sensor.parents_co2') }}
 
 # 阳台移门开合
 - alias: Balcony Door Toggled
@@ -111,18 +112,17 @@
   trigger:
   - platform: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
-    from: 'off'
-    to: 'on'
-  - platform: state
-    entity_id: binary_sensor.door_window_sensor_158d000228a52b
-    from: 'on'
-    to: 'off'
   condition:
   - condition: state
     entity_id: sun.sun
     state: below_horizon
   action:
-  - service_template: "{% if is_state('binary_sensor.door_window_sensor_158d000228a52b', 'on') %}light.turn_on{% else %}light.turn_off{% endif %}"
+  - service_template: >
+      {% if trigger.to_state.state == 'on' %}
+        light.turn_on
+      {% else %}
+        light.turn_off
+      {% endif %}
     entity_id: light.balcony_light
 
 # 阳台移门打开
@@ -136,6 +136,10 @@
     for:
       minutes: 5
   action:
+  - service: hello_miai.send
+    data_template:
+      message: >
+        阳台PM2.5为{% set PM25 = states.sensor.balcony_pm25.state | int %}{{ PM25 }}，{% if PM25 < 20 %}空气很好{% elif PM25 < 40 %}空气还行{% elif PM25 < 70 %}空气不好{% else %}空气污染，请关好门窗{% endif %}
   - service: climate.turn_off
     entity_id: climate.daikin2
   - service: climate.turn_off
@@ -164,6 +168,13 @@
     entity_id: fan.fresher
   - service: fan.turn_on
     entity_id: fan.diningroom_purifier
+  - condition: numeric_state
+    entity_id: sensor.parlor_co2
+    above: 900
+  - service: hello_miai.send
+    data_template:
+      message: >
+        室内二氧化碳浓度为{{ states.sensor.parlor_co2.state }}，空气很闷，请注意通风
 
 # 洗手间灯感应开
 - alias: Washroom Light On
@@ -485,8 +496,8 @@
     data:
       message: 外面空气很好，可以打开门窗
 
-# 客厅空气警告
-- alias: Parlor Air Warning
+# 室内空气警告
+- alias: Indoor Air Warning
   initial_state: true
   trigger:
   - platform: numeric_state
@@ -507,9 +518,13 @@
       entity_id: light.gateway_light_34ce0090901a
       rgb_color: ["{% if states('sensor.bedroom_co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.aircat_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.aircat_pm25') | int > 40 %}255{% else %}0{% endif %}"]
       brightness: 10
+  - service: hello_miai.send
+    data_template:
+      message: >
+        室内{% set PM25 = states.sensor.balcony_pm25.state | int %}{% if PM25 > 40 %}PM2.5为{{ PM25 }}，空气不好。{% endif %}{% set CO2 = states.sensor.parlor_co2.state | int %}{% if CO2 > 900 %}二氧化碳浓度为{{ CO2 }}，空气很闷。{% endif %}{% set HCHO = states.sensor.aircat_hcho.state | float %}{% if HCHO > 0.08 %}甲醛浓度为{{ HCHO }}，注意通风。{% endif %}
 
-# 客厅空气达标
-- alias: Parlor Air Restored
+# 室内空气达标
+- alias: Indoor Air Restored
   initial_state: true
   trigger:
   - platform: numeric_state
