@@ -7,7 +7,7 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-class AirCatData():
+class AirCatData(object):
     """Class for handling the data retrieval."""
 
     def __init__(self):
@@ -65,15 +65,10 @@ class AirCatData():
 
         end = data.rfind(b'\xff#END#')
         payload = data.rfind(b'{', 0, end)
-        if payload == -1:
-            payload = end
-        if payload < 28: # begin(17) + mac(6)+size(5) + payload(0~) + end(6)
-            _LOGGER.error('Received invalid %s', data)
-            return
 
-        if payload != end:
+        if payload >= 11:
+            mac = ''.join(['%02X' % (x if isinstance(x, int) else ord(x)) for x in data[payload-11:payload-5]])
             try:
-                mac = ''.join(['%02X' % (x if isinstance(x, int) else ord(x)) for x in data[payload-11:payload-5]])
                 jsonStr = data[payload:end].decode('utf-8')
                 attributes = json.loads(jsonStr)
                 self.devs[mac] = attributes
@@ -81,14 +76,58 @@ class AirCatData():
             except:
                 _LOGGER.error('Received invalid JSON: %s', data)
 
-        response = data[payload-28:payload-5] + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
-        #_LOGGER.debug('Response %s', response)
-        conn.sendall(response)
+        response = self.response(data, payload, end)
+        if response:
+            #print('Send response %s\n\n' % response)
+            conn.sendall(response)
+
+    def response(self, data, payload, end):
+        # begin(17) + mac(6)+size(5) + payload(0~) + end(6)
+        if payload == -1 and end >= 28 and data[end-1] != (125 if isinstance(data[end-1], int) else '}'):
+            _LOGGER.info('Received control message: %s', data)
+            payload = end
+
+        if payload >= 28:
+            prefix = data[payload-28:payload-5]
+        else:
+            _LOGGER.error('Received invalid prefix: %s', data)
+            #prefix = b'\xaaO\x01UA\xf19\x8f\x0b\x00\x00\x00\x00\x00\x00\x00\x00\xb0\xf8\x93\x1f\x14U'
+            return None
+
+        return prefix + b'\x00\x18\x00\x00\x02{"type":5,"status":1}\xff#END#'
+
+class AirCatBridge(AirCatData):
+    """Class for handling the data retrieval."""
+
+    def __init__(self):
+        """Initialize the data object."""
+        super(AirCatBridge, self).__init__()
+        self._phicomm = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._phicomm.settimeout(5)
+        self._phicomm.connect(('47.102.38.171', 9000))
+
+    def shutdown(self):
+        """Shutdown."""
+        super.shutdown()
+        if self._phicomm is not None:
+            self._phicomm.close()
+            self._phicomm = None
+
+    def response(self, data, payload, end):
+        print('Bridge send: %s' % data)
+        self._phicomm.sendall(data)
+        try:
+            response = self._phicomm.recv(4096)
+            print('Bridge receive: %s' % response)
+            return response
+        except:
+            print('Bridge receive: None!')
+            return super(AirCatBridge, self).response(data, payload, end)
 
 if __name__ == '__main__':
     _LOGGER.setLevel(logging.DEBUG)
     _LOGGER.addHandler(logging.StreamHandler())
-    aircat = AirCatData()
+    aircat = AirCatBridge()
     try:
         aircat.loop()
     except KeyboardInterrupt:
