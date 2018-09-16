@@ -767,6 +767,28 @@
      entity_id: fan.bedroom_purifier
      speed: low
 
+# 卧室空调风量
+- alias: Bedroom Climate Fan
+  initial_state: true
+  trigger:
+  - platform: time
+    at: '08:00:00'
+  - platform: time
+    at: '22:00:00'
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.balcony_temperature
+    above: 18
+  action:
+  - service: climate.set_fan_mode
+    data_template:
+      entity_id: climate.daikin3
+      fan_mode: "{% if is_state('sun.sun', 'above_horizon') %}自动{% else %}一级{% endif %}"
+  - service: climate.set_fan_mode
+    data_template:
+      entity_id: climate.daikin4
+      fan_mode: "{% if is_state('sun.sun', 'above_horizon') %}自动{% else %}一级{% endif %}"
+
 # 主卧温度高
 - alias: Bedroom Temperature High
   initial_state: false
