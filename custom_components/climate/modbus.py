@@ -287,6 +287,7 @@ class ModbusClimate(ClimateDevice):
     def try_reconnect(self):
         from pymodbus.client.sync import ModbusTcpClient as ModbusClient
         from pymodbus.transaction import ModbusRtuFramer as ModbusFramer
+        modbus.HUB._client.close()
         client = ModbusClient(host=modbus.HUB._client.host,
                               port=modbus.HUB._client.port,
                               framer=ModbusFramer,

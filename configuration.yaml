@@ -158,7 +158,7 @@ modbus:
 
 #
 device_tracker:
-- platform: padavan
+- platform: asuswrt
   host: Router
   username: admin
   password: !secret http_password
@@ -247,6 +247,7 @@ sensor:
   availability_topic: NodeMCU7/status
 - platform: caiyun
 - platform: aircat
+  scan_interval: 30
   #mac: ['B0F893249132', 'B0F893249132']
 - platform: template
   sensors:
