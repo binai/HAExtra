@@ -269,11 +269,11 @@ class AirCatSensor(Entity):
             return
 
         if AirCatSensor.times % AirCatSensor.interval == 0:
-            _LOGGER.debug("Begin update %d: %s %s", AirCatSensor.times,
-                self._mac, self._sensor_type)
+            #_LOGGER.debug("Begin update %d: %s %s", AirCatSensor.times,
+            #    self._mac, self._sensor_type)
             self._aircat.update()
-            _LOGGER.debug("Ended update %d: %s %s", AirCatSensor.times,
-                self._mac, self._sensor_type)
+            #_LOGGER.debug("Ended update %d: %s %s", AirCatSensor.times,
+            #    self._mac, self._sensor_type)
         AirCatSensor.times += 1
 
     def shutdown(self, event):
