@@ -144,7 +144,7 @@ writable = yes
 EOF
 /etc/init.d/samba restart
 
-cat <<EOF >> /root/.bashrc
+cat <<\EOF >> /root/.bashrc
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
