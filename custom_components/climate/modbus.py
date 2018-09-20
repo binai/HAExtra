@@ -286,16 +286,29 @@ class ModbusClimate(ClimateDevice):
         """Return true if the device is on."""
         return self.get_value(CONF_IS_ON)
 
-    def try_reconnect(self):
+    def reinitialize(self):
+        """Initialize USR module"""
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(5)
+        s.connect((modbus.HUB._client.host, modbus.HUB._client.port))
+        s.sendall(b'\x55\xAA\x55\x00\x25\x80\x03\xA8') # For USR initialize
+        s.close()
+
+    def reconnect(self):
         from pymodbus.client.sync import ModbusTcpClient as ModbusClient
         from pymodbus.transaction import ModbusRtuFramer as ModbusFramer
         modbus.HUB._client.close()
-        client = ModbusClient(host=modbus.HUB._client.host,
-                              port=modbus.HUB._client.port,
-                              framer=ModbusFramer,
-                              timeout=modbus.HUB._client.timeout)
-        _LOGGER.error("Reconnect: %s", client)
-        modbus.HUB._client = client
+
+        self.reinitialize()
+        sleep(1)
+
+        modbus.HUB._client = ModbusClient(
+            host=modbus.HUB._client.host,
+            port=modbus.HUB._client.port,
+            framer=ModbusFramer,
+            timeout=modbus.HUB._client.timeout)
+        _LOGGER.error("Reconnect: %s", modbus.HUB._client)
         modbus.HUB._client.connect()
 
     def update(self):
@@ -332,7 +345,7 @@ class ModbusClimate(ClimateDevice):
                 self._exception += 1
                 _LOGGER.error("Exception %d on %s %s", self._exception, self._name, prop)
                 if (self._exception < 5) or (self._exception % 10 == 0):
-                    self.try_reconnect()
+                    self.reinitialize()
                 return
 
             self._exception = 0
