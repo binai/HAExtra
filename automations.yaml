@@ -112,6 +112,12 @@
   trigger:
   - platform: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.door_window_sensor_158d000228a52b
+    from: 'on'
+    to: 'off'
   condition:
   - condition: state
     entity_id: sun.sun
@@ -462,6 +468,9 @@
   - condition: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
     state: 'on'
+  - condition: time
+    after: '06:00'
+    before: '23:59'
   action:
   - service: hello_miai.send
     data:
@@ -477,12 +486,15 @@
     for:
       minutes: 10
   condition:
+  - condition: time
+    after: '06:00'
+    before: '23:59'
   - condition: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
     state: 'off'
-  # - condition: numberic_state
-  #   entity_id: sensor.balcony_temperature
-  #   below: 32
+  - condition: numeric_state
+    entity_id: sensor.balcony_temperature
+    below: 30
   - condition: or
     conditions:
     - condition: numeric_state
@@ -518,6 +530,9 @@
       entity_id: light.gateway_light_34ce0090901a
       rgb_color: ["{% if states('sensor.bedroom_co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.aircat_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.aircat_pm25') | int > 40 %}255{% else %}0{% endif %}"]
       brightness: 10
+  - condition: time
+    after: '06:00'
+    before: '23:59'
   - service: hello_miai.send
     data_template:
       message: >
@@ -558,11 +573,11 @@
 
 # 客厅湿度超标
 - alias: Parlor Humidity Bad
-  initial_state: false
+  initial_state: true
   trigger:
   - platform: numeric_state
     entity_id: sensor.aircat_humidity
-    above: 68
+    above: 70
     for:
       minutes: 10
   action:
@@ -571,11 +586,11 @@
 
 # 客厅湿度恢复
 - alias: Parlor Humidity Good
-  initial_state: false
+  initial_state: true
   trigger:
   - platform: numeric_state
     entity_id: sensor.aircat_humidity
-    below: 65
+    below: 68
     for:
       minutes: 10
   action:

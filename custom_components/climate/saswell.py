@@ -110,7 +110,7 @@ class SaswellClimate(ClimateDevice):
     @property
     def temperature_unit(self):
         """Return the unit of measurement."""
-        return self.unit_of_measurement
+        return self._saswell._hass.config.units.temperature_unit
 
     @property
     def target_temperature_step(self):

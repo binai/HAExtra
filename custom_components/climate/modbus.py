@@ -147,10 +147,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         return True
 
     devices = []
+    unit = hass.config.units.temperature_unit
     for index in range(100):
         if not has_valid_register(mods, index):
             break
-        devices.append(ModbusClimate(name, operation_list, fan_list,
+        devices.append(ModbusClimate(name, unit, operation_list, fan_list,
                                      swing_list, mods, index))
 
     if not devices:
@@ -158,7 +159,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if CONF_REGISTER not in mods[prop]:
                 _LOGGER.error("Invalid config %s/%s: no register", name, prop)
                 return
-        devices.append(ModbusClimate(name, operation_list, fan_list,
+        devices.append(ModbusClimate(name, unit, operation_list, fan_list,
                                      swing_list, mods))
 
     add_devices(devices, True)
@@ -167,10 +168,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class ModbusClimate(ClimateDevice):
     """Representation of a Modbus climate device."""
 
-    def __init__(self, name, operation_list,
+    def __init__(self, name, unit, operation_list,
                  fan_list, swing_list, mods, index=-1):
         """Initialize the climate device."""
         self._name = name + str(index + 1) if index != -1 else name
+        self._unit = unit
         self._index = index
         self._mods = mods
         self._operation_list = operation_list
@@ -195,7 +197,7 @@ class ModbusClimate(ClimateDevice):
     @property
     def temperature_unit(self):
         """Return the unit of measurement."""
-        return self.unit_of_measurement
+        return self._unit
 
     @property
     def target_temperature_step(self):
