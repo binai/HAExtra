@@ -12,25 +12,15 @@ homeassistant:
   time_zone: Asia/Shanghai
   # Customization file
   customize: !include customize.yaml
-  # Custom UI
-  # customize_glob:
-  #   automation.*:
-  #     extra_data_template: >
-  #       var t = attributes.last_triggered;
-  #       if (t === null) {
-  #         return '尚未触发';
-  #       } else {
-  #         var tt = new Date(t);
-  #         return '上次触发：'+ (tt.getMonth()+1) + '月' + tt.getDate() + '日 ' + tt.getHours() + ':' + (tt.getMinutes() < 10 ? ('0' + tt.getMinutes()) : tt.getMinutes());
-  #       }
-  #     custom_ui_state_card: state-card-custom-ui
+  # Global Customization file
+  #customize_glob: !include customize_glob.yaml
 
 # Show links to resources in log and frontend
 #introduction:
 
 # Customizer
-customizer:
-  custom_ui: local
+# customizer:
+#   custom_ui: local
 
 # Enables the frontend
 frontend:
@@ -54,9 +44,6 @@ http:
   base_url: !secret http_base_url
   ssl_certificate: /root/.homeassistant/fullchain.cer
   ssl_key: /root/.homeassistant/privkey.pem
-  cors_allowed_origins:
-    - https://reformedreality.com
-    - http://reformedreality.com
 
 # Checks for available updates
 #updater:
@@ -336,11 +323,11 @@ switch:
       friendly_name: HiMedia
       command_on: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
       command_off: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
-- platform: broadlink
-  friendly_name: Remote Mini
-  host: RemoteMini
-  mac: 78:0F:77:47:AA:8F
-  type: rm_mini
+# - platform: broadlink
+#   friendly_name: Remote Mini
+#   host: RemoteMini
+#   mac: 78:0F:77:47:AA:8F
+#   type: rm_mini
 - platform: template
   switches:
     projector:

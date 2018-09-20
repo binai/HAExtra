@@ -30,15 +30,17 @@ CONF_MODEL = 'model'
 
 MODEL_FAN_V2 = 'zhimi.fan.v2'
 MODEL_FAN_V3 = 'zhimi.fan.v3'
+MODEL_FAN_SA1 = 'zhimi.fan.sa1'
+MODEL_FAN_ZA1 = 'zhimi.fan.za1'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_TOKEN): vol.All(cv.string, vol.Length(min=32, max=32)),
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_MODEL): vol.In([MODEL_FAN_V2, MODEL_FAN_V3]),
+    vol.Optional(CONF_MODEL): vol.In([MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]),
 })
 
-REQUIREMENTS = ['python-miio>=0.4.0']
+REQUIREMENTS = ['python-miio>=0.4.1']
 
 ATTR_MODEL = 'model'
 ATTR_BRIGHTNESS = 'brightness'
@@ -63,14 +65,11 @@ ATTR_BUTTON_PRESSED = 'button_pressed'
 ATTR_SPEED_LEVEL = 'speed_level'
 
 AVAILABLE_ATTRIBUTES_FAN = {
-    ATTR_TEMPERATURE: 'temperature',
-    ATTR_HUMIDITY: 'humidity',
     ATTR_ANGLE: 'angle',
     ATTR_SPEED: 'speed',
     ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
 
     ATTR_AC_POWER: 'ac_power',
-    ATTR_BATTERY: 'battery',
     ATTR_OSCILLATE: 'oscillate',
     ATTR_DIRECT_SPEED: 'direct_speed',
     ATTR_NATURAL_SPEED: 'natural_speed',
@@ -78,8 +77,12 @@ AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_BUZZER: 'buzzer',
     ATTR_LED_BRIGHTNESS: 'led_brightness',
     ATTR_USE_TIME: 'use_time',
+
+    # Additional properties of version 2 and 3
+    ATTR_TEMPERATURE: 'temperature',
+    ATTR_HUMIDITY: 'humidity',
+    ATTR_BATTERY: 'battery',
     ATTR_BATTERY_CHARGE: 'battery_charge',
-    # FIXME: Improve python-miio here
     #ATTR_BUTTON_PRESSED: 'button_pressed',
 
     # Additional properties of version 2
@@ -117,7 +120,6 @@ FEATURE_SET_LED_BRIGHTNESS = 8
 FEATURE_SET_OSCILLATION_ANGLE = 16
 FEATURE_SET_NATURAL_MODE = 32
 
-# FIXME: Align buzzer, child lock, led method (set_method(bool) vs. set_method_{on,off})
 FEATURE_FLAGS_GENERIC = (FEATURE_SET_BUZZER |
                          FEATURE_SET_CHILD_LOCK)
 
@@ -194,7 +196,7 @@ async def async_setup_platform(hass, config, async_add_devices,
         except DeviceException:
             raise PlatformNotReady
 
-    if model in [MODEL_FAN_V2, MODEL_FAN_V3]:
+    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]:
         from miio import Fan
         fan = Fan(host, token, model=model)
         device = XiaomiFan(name, fan, model, unique_id)

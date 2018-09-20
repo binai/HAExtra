@@ -54,7 +54,6 @@ fan.parents_purifier:
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail
 fan.purifier:
-  custom_ui_state_card: state-card-custom-ui
   friendly_name: 书房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:weather-hail

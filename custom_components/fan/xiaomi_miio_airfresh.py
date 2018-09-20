@@ -206,7 +206,7 @@ class AirFreshStatus:
     @property
     def motor_speed(self) -> int:
         """Speed of the motor."""
-        return self.data["motor1_speed"]
+        return self.data["motor_speed"]
 
     def __repr__(self) -> str:
         s = "<AirFreshStatus power=%s, " \
@@ -232,7 +232,7 @@ class AirFreshStatus:
              self.buzzer,
              self.child_lock,
              self.filter_hours_used,
-             self.motor1_speed)
+             self.motor_speed)
         return s
 
     def __json__(self):
@@ -261,7 +261,7 @@ class AirFresh(Device):
     def status(self) -> AirFreshStatus:
         """Retrieve properties."""
 
-        properties = ["power", "mode", "aqi", "co2", "led_level", "temp_dec", "humidity", "buzzer", "child_lock", "f1_hour_used", "motor1_speed"]
+        properties = ["power", "mode", "aqi", "co2", "led_level", "temp_dec", "humidity", "buzzer", "child_lock", "f1_hour_used", "motor_speed"]
 
         # A single request is limited to 16 properties. Therefore the
         # properties are divided into multiple requests
@@ -274,7 +274,7 @@ class AirFresh(Device):
         properties_count = len(properties)
         values_count = len(values)
         if properties_count != values_count:
-            _LOGGER.debug(
+            _LOGGER.error(
                 "Count (%s) of requested properties does not match the "
                 "count (%s) of received values.",
                 properties_count, values_count)
@@ -579,7 +579,7 @@ class XiaomiAirFresh(XiaomiGenericDevice):
         try:
             state = await self.hass.async_add_job(
                 self._device.status)
-            _LOGGER.debug("Got new state: %s", state)
+            #_LOGGER.debug("Got new state: %s", state)
 
             self._available = True
             self._state = state.is_on
