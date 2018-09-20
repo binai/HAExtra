@@ -46,10 +46,10 @@ frontend:
 config:
 
 http:
-  api_password: !secret http_password
+  #api_password: !secret http_password
   trusted_networks:
   - 127.0.0.1
-  - 192.168.0.0/16
+  - 192.168.1.0/24
   - 101.132.66.191
   base_url: !secret http_base_url
   ssl_certificate: /root/.homeassistant/fullchain.cer
