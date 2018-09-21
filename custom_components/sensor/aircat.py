@@ -230,6 +230,13 @@ class AirCatSensor(Entity):
         return self._unit
 
     @property
+    def device_class(self):
+        """Return the class of this device, from component DEVICE_CLASSES."""
+        if self._sensor_type == SENSOR_TEMPERATURE or self._sensor_type == SENSOR_HUMIDITY:
+            return self._sensor_type
+        return None
+
+    @property
     def available(self):
         """Return if the sensor data are available."""
         return self.attributes is not None

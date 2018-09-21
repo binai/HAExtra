@@ -78,9 +78,9 @@ logbook:
 
 logger:
   default: warning
-  logs:
+  #logs:
     #homeassistant.components.homekit: debug
-    custom_components.sensor.aircat: debug
+    #custom_components.sensor.aircat: debug
 
 # Enables a map showing the location of tracked devices
 #map:

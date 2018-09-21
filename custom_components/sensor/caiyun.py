@@ -146,6 +146,13 @@ class CaiYunSensor(Entity):
         return self._unit
 
     @property
+    def device_class(self):
+        """Return the class of this device, from component DEVICE_CLASSES."""
+        if self._type == 'temperature' or self._type == 'humidity':
+            return self._type
+        return None
+
+    @property
     def available(self):
         return self._type in self._caiyun.data
 
