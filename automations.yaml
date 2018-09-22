@@ -536,7 +536,7 @@
   - service: hello_miai.send
     data_template:
       message: >
-        室内{% set PM25 = states.sensor.aircat_pm25.state | int %}{% if PM25 >= 40 %}PM2.5为{{ PM25 }}，空气不好。{% endif %}{% set CO2 = states.sensor.parlor_co2.state | int %}{% if CO2 >= 900 %}二氧化碳浓度为{{ CO2 }}，空气很闷。{% endif %}{% set HCHO = states.sensor.aircat_hcho.state | float %}{% if HCHO > 0.08 %}甲醛浓度为{{ HCHO }}，注意通风。{% endif %}
+        {% set PM25 = states.sensor.aircat_pm25.state | int %}{% if PM25 >= 40 %}PM2.5为{{ PM25 }}，空气不好。{% endif %}{% set CO2 = states.sensor.parlor_co2.state | int %}{% if CO2 >= 900 %}二氧化碳浓度为{{ CO2 }}，空气很闷。{% endif %}{% set HCHO = states.sensor.aircat_hcho.state | float %}{% if HCHO > 0.2 %}甲醛浓度为{{ HCHO }}，注意通风。{% endif %}
 
 # 室内空气达标
 - alias: Indoor Air Restored
