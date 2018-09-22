@@ -1,51 +1,23 @@
-MAIN = 'aligenie'
-
 import json
 import logging
-import voluptuous as vol
 
-from homeassistant.helpers import config_validation as cv
 from homeassistant.components.http import HomeAssistantView
-from homeassistant.const import (
-    HTTP_BAD_REQUEST, MAJOR_VERSION, MINOR_VERSION)
+from homeassistant.const import HTTP_BAD_REQUEST
 from homeassistant.auth.const import ACCESS_TOKEN_EXPIRATION
 import homeassistant.auth.models as models
 from typing import Optional
 from datetime import timedelta
-
 from homeassistant.helpers.state import AsyncTrackStates
 
-from urllib.request import urlopen
-
-EXPIRE_HOURS = 'expire_hours'
-DOMAIN = 'aligenie'
-
-CONFIG_SCHEMA = vol.Schema({
-    DOMAIN: vol.Schema({
-        vol.Optional(EXPIRE_HOURS, default=168): cv.positive_int
-    })
-}, extra=vol.ALLOW_EXTRA)
-
 _LOGGER = logging.getLogger(__name__)
-_aliases = None
-_places = None
-_auth = None
-_expire_hours = None
 
-async def async_create_refresh_token77(
-        user: models.User, client_id: Optional[str] = None) \
-        -> models.RefreshToken:
-    """Create a new token for a user."""
-    global _auth
-    _LOGGER.info('access token expiration: %d hours', _expire_hours)
-    refresh_token = models.RefreshToken(user=user,
-                                        client_id=client_id,
-                                        access_token_expiration = timedelta(hours=_expire_hours))
-    user.refresh_tokens[refresh_token.id] = refresh_token
-    _auth._store._async_schedule_save()
-    return refresh_token
+MAIN = 'aligenie'
+DOMAIN = 'aligenie'
+EXPIRE_HOURS = 168 # 7天过期
+CHECK_ALIAS = False # 仅显示有效的天猫精灵设备名称（初次为了验证名称是否正确，请打开此开关）
+_hass = None
 
-async def async_create_refresh_token78(
+async def async_create_refresh_token(
         user: models.User, client_id: Optional[str] = None,
         client_name: Optional[str] = None,
         client_icon: Optional[str] = None,
@@ -53,8 +25,8 @@ async def async_create_refresh_token78(
         access_token_expiration: timedelta = ACCESS_TOKEN_EXPIRATION) \
         -> models.RefreshToken:
     if access_token_expiration == ACCESS_TOKEN_EXPIRATION:
-        access_token_expiration = timedelta(hours=_expire_hours)
-    _LOGGER.info('access token expiration: %d hours', _expire_hours)
+        access_token_expiration = timedelta(hours=EXPIRE_HOURS)
+    _LOGGER.info('Access token expiration: %d hours', EXPIRE_HOURS)
     """Create a new token for a user."""
     kwargs = {
         'user': user,
@@ -70,26 +42,17 @@ async def async_create_refresh_token78(
     refresh_token = models.RefreshToken(**kwargs)
     user.refresh_tokens[refresh_token.id] = refresh_token
 
-    _auth._store._async_schedule_save()
+    _hass.auth._store._async_schedule_save()
     return refresh_token
 
 async def async_setup(hass, config):
-    global _auth
-    global _expire_hours
-
-    conf = config[DOMAIN]
-    _expire_hours = conf.get(EXPIRE_HOURS)
-    if _expire_hours is not None:
-        _auth = hass.auth
-        if MAJOR_VERSION == 0 and MINOR_VERSION <= 77:
-            _auth._store.async_create_refresh_token = async_create_refresh_token77
-        else:
-            _auth._store.async_create_refresh_token = async_create_refresh_token78
-        hass.http.register_view(AliGenieGateView)
-
+    global _hass
+    _hass = hass
+    hass.auth._store.async_create_refresh_token = async_create_refresh_token
+    hass.http.register_view(AliGenieView)
     return True
 
-class AliGenieGateView(HomeAssistantView):
+class AliGenieView(HomeAssistantView):
     """View to handle Configuration requests."""
 
     url = '/aligenie'
@@ -98,16 +61,16 @@ class AliGenieGateView(HomeAssistantView):
 
     async def post(self, request):
         """Update state of entity."""
-        hass = request.app['hass']
         try:
             data = await request.json()
-            response = await handleRequest(request, data)
+            response = await handleRequest(data)
         except ValueError:
             return self.json_message(
                 "Invalid JSON specified.", HTTP_BAD_REQUEST)
         return self.json(response)
 
 def errorResult(errorCode, messsage=None):
+    """Generate error result"""
     messages = {
         'INVALIDATE_CONTROL_ORDER':    'invalidate control order',
         'SERVICE_ERROR': 'service error',
@@ -119,28 +82,23 @@ def errorResult(errorCode, messsage=None):
     }
     return {'errorCode': errorCode, 'message': messsage if messsage else messages[errorCode]}
 
-async def handleRequest(request, data):
+async def handleRequest(data):
+    """Handle request"""
     header = data['header']
     payload = data['payload']
     properties = None
     name = header['name']
-    _LOGGER.info("recevied data: %s", data)
+    _LOGGER.info("Handle Request: %s", data)
 
-    # copied from async_validate_auth_header
-    hass = request.app['hass']
-    refresh_token = await hass.auth.async_validate_access_token(payload['accessToken'])
-    token_valid = False
-    if refresh_token is not None:
-        token_valid = True
-        request['hass_user'] = refresh_token.user
-
+    token = await _hass.auth.async_validate_access_token(payload['accessToken'])
+    if token is not None:
         namespace = header['namespace']
         if namespace == 'AliGenie.Iot.Device.Discovery':
-            result = discoveryDevice(request)
+            result = discoveryDevice()
         elif namespace == 'AliGenie.Iot.Device.Control':
-            result = await controlDevice(request, name, payload)
+            result = await controlDevice(name, payload)
         elif namespace == 'AliGenie.Iot.Device.Query':
-            result = queryDevice(request, name, payload)
+            result = queryDevice(name, payload)
             if not 'errorCode' in result:
                 properties = result
                 result = {}
@@ -162,14 +120,22 @@ async def handleRequest(request, data):
     #_LOGGER.info("respnose: %s", response)
     return response
 
-def discoveryDevice(request):
-    items = request.app['hass'].states.async_all()
-    groups_ttributes = groupsAttributes(items)
+def discoveryDevice():
+    # 因为天猫精灵不会经常调用发现协议，每次发现后释放以节约内存
+    from urllib.request import urlopen
+    places = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/placelist').read().decode('utf-8'))['data']
+    if CHECK_ALIAS:
+        aliases = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/aliaslist').read().decode('utf-8'))['data']
+        aliases.append({'key': '电视', 'value': ['电视机']})
+    else:
+        aliases = None
+
+    states = _hass.states.async_all()
+    groups_ttributes = groupsAttributes(states)
 
     devices = []
-    getPlacesAndAlias()
-    for item in items:
-        attributes = item.attributes
+    for state in states:
+        attributes = state.attributes
 
         if attributes.get('hidden'):
             continue
@@ -178,20 +144,20 @@ def discoveryDevice(request):
         if friendly_name is None:
             continue
 
-        entity_id = item.entity_id
+        entity_id = state.entity_id
         deviceType = guessDeviceType(entity_id, attributes)
         if deviceType is None:
             continue
 
-        deviceName = guessDeviceName(entity_id, attributes)
+        deviceName = guessDeviceName(entity_id, attributes, places, aliases)
         if deviceName is None:
             continue
 
-        zone = guessZone(entity_id, attributes, groups_ttributes)
+        zone = guessZone(entity_id, attributes, groups_ttributes, places)
         if zone is None:
             continue
 
-        prop,action = guessPropertyAndAction(entity_id, attributes, item.state)
+        prop,action = guessPropertyAndAction(entity_id, attributes, state.state)
         if prop is None:
             continue
 
@@ -232,7 +198,7 @@ def discoveryDevice(request):
             #_LOGGER.info(json.dumps(sensor, indent=2, ensure_ascii=False))
     return {'devices': devices}
 
-async def controlDevice(request, name, payload):
+async def controlDevice(name, payload):
     entity_id = payload['deviceId']
     service = getControlService(name)
     domain = entity_id[:entity_id.find('.')]
@@ -240,16 +206,16 @@ async def controlDevice(request, name, payload):
     if domain == 'cover':
         service = 'close_cover' if service == 'turn_off' else 'open_cover'
 
-    hass = request.app['hass']
-    with AsyncTrackStates(hass) as changed_states:
-        result = await hass.services.async_call(domain, service, data, True)
+    with AsyncTrackStates(_hass) as changed_states:
+        result = await _hass.services.async_call(domain, service, data, True)
+
     return {} if result else errorResult('IOT_DEVICE_OFFLINE')
 
-def queryDevice(request, name, payload):
+def queryDevice(name, payload):
     deviceId = payload['deviceId']
 
     if payload['deviceType'] == 'sensor':
-        items = request.app['hass'].states.async_all()
+        items = _hass.states.async_all()
 
         entity_ids = None
         for item in items:
@@ -270,8 +236,8 @@ def queryDevice(request, name, payload):
                     properties.append(prop)
             return properties
     else:
-        item = request.app['hass'].states.get(deviceId)
-        return {'name':'powerstate', 'value':item.state}
+        state = _hass.states.get(deviceId)
+        return {'name':'powerstate', 'value':state.state}
 
     return errorResult('IOT_DEVICE_OFFLINE')
 
@@ -352,35 +318,23 @@ def guessDeviceType(entity_id, attributes):
     # Map from domain
     return INCLUDE_DOMAINS[domain] if domain in INCLUDE_DOMAINS else None
 
-def getPlacesAndAlias():
-    global _places
-    global _aliases
-    if _places is None:
-        _places = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/placelist').read().decode('utf-8'))['data']
-
-    return # Ignore alias checking to speed up
-
-    if aliases is None:
-        _aliases = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/aliaslist').read().decode('utf-8'))['data']
-        _aliases.append({'key': '电视', 'value': ['电视机']})
-
-def guessDeviceName(entity_id, attributes):
+def guessDeviceName(entity_id, attributes, places, aliases):
     if 'hagenie_deviceName' in attributes:
         return attributes['hagenie_deviceName']
 
     # Remove place prefix
     name = attributes['friendly_name']
-    for place in _places:
+    for place in places:
         if name.startswith(place):
             name = name[len(place):]
             break
 
-    if _aliases is None or entity_id.startswith('sensor'):
+    if aliases is None or entity_id.startswith('sensor'):
         return name
 
     # Name validation
-    for alias in _aliases:
-        if name == _aliases['key'] or name in _aliases['value']:
+    for alias in aliases:
+        if name == aliases['key'] or name in aliases['value']:
             return name
 
     _LOGGER.error('%s is not a valid name in https://open.bot.tmall.com/oauth/api/aliaslist', name)
@@ -397,13 +351,13 @@ def groupsAttributes(items):
     return groups_attributes
 
 # https://open.bot.tmall.com/oauth/api/placelist
-def guessZone(entity_id, attributes, groups_attributes):
+def guessZone(entity_id, attributes, groups_attributes, places):
     if 'hagenie_zone' in attributes:
         return attributes['hagenie_zone']
 
     # Guess with friendly_name prefix
     name = attributes['friendly_name']
-    for place in _places:
+    for place in places:
         if name.startswith(place):
             return place
 

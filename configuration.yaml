@@ -343,12 +343,11 @@ switch:
 
 #
 light:
-- platform: yeelight
-  devices:
-    Lamp:
-      name: Lamp
-      transition: 1000
-
+#- platform: yeelight
+#  devices:
+#    Lamp:
+#      name: Lamp
+#      transition: 1000
 - platform: mqtt
   name: Hallway Spotlight
   state_topic: Hassmart1/relay/0
