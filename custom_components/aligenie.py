@@ -56,6 +56,7 @@ class AliGenieView(HomeAssistantView):
 
     url = '/aligenie'
     name = 'aligenie'
+    requires_auth = False
 
     async def post(self, request):
         """Update state of entity."""
@@ -90,18 +91,22 @@ async def handleRequest(data):
     name = header['name']
     _LOGGER.info("Handle Request: %s", data)
 
-    namespace = header['namespace']
-    if namespace == 'AliGenie.Iot.Device.Discovery':
-        result = discoveryDevice()
-    elif namespace == 'AliGenie.Iot.Device.Control':
-        result = await controlDevice(name, payload)
-    elif namespace == 'AliGenie.Iot.Device.Query':
-        result = queryDevice(name, payload)
-        if not 'errorCode' in result:
-            properties = result
-            result = {}
+    token = await _hass.auth.async_validate_access_token(payload['accessToken'])
+    if token is not None:
+        namespace = header['namespace']
+        if namespace == 'AliGenie.Iot.Device.Discovery':
+            result = discoveryDevice()
+        elif namespace == 'AliGenie.Iot.Device.Control':
+            result = await controlDevice(name, payload)
+        elif namespace == 'AliGenie.Iot.Device.Query':
+            result = queryDevice(name, payload)
+            if not 'errorCode' in result:
+                properties = result
+                result = {}
+        else:
+            result = errorResult('SERVICE_ERROR')
     else:
-        result = errorResult('SERVICE_ERROR')
+        result = errorResult('ACCESS_TOKEN_INVALIDATE')
 
     # Check error and fill response name
     header['name'] = ('Error' if 'errorCode' in result else name) + 'Response'
