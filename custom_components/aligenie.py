@@ -118,7 +118,7 @@ async def handleRequest(data):
     response = {'header': header, 'payload': result}
     if properties:
         response['properties'] = properties
-    #_LOGGER.info("respnose: %s", response)
+    _LOGGER.info("Respnose: %s", response)
     return response
 
 def discoveryDevice():
@@ -216,30 +216,30 @@ def queryDevice(name, payload):
     deviceId = payload['deviceId']
 
     if payload['deviceType'] == 'sensor':
+
         states = _hass.states.async_all()
 
-        entity_ids = None
+        entity_ids = []
         for state in states:
             attributes = state.attributes
             if state.entity_id.startswith('group.') and (attributes['friendly_name'] == deviceId or attributes.get('hagenie_zone') == deviceId):
                 entity_ids = attributes.get('entity_id')
                 break
 
-        if entity_ids:
-            properties = [{'name':'powerstate', 'value':'on'}]
-            for state in states:
-                entity_id = state.entity_id
-                attributes = state.attributes
-                if entity_id.startswith('sensor.') and (entity_id in entity_ids or attributes['friendly_name'].startswith(deviceId) or attributes.get('hagenie_zone') == deviceId):
-                    prop,action = guessPropertyAndAction(entity_id, attributes, state.state)
-                    if prop is None:
-                        continue
-                    properties.append(prop)
-            return properties
+        properties = [{'name':'powerstate', 'value':'on'}]
+        for state in states:
+            entity_id = state.entity_id
+            attributes = state.attributes
+            if entity_id.startswith('sensor.') and (entity_id in entity_ids or attributes['friendly_name'].startswith(deviceId) or attributes.get('hagenie_zone') == deviceId):
+                prop,action = guessPropertyAndAction(entity_id, attributes, state.state)
+                if prop is None:
+                    continue
+                properties.append(prop)
+        return properties
     else:
         state = _hass.states.get(deviceId)
-        return {'name':'powerstate', 'value':state.state}
-
+        if state is not None or state.state != 'unavailable':
+            return {'name':'powerstate', 'value':state.state}
     return errorResult('IOT_DEVICE_OFFLINE')
 
 def getControlService(action):
