@@ -119,8 +119,7 @@ async def handleState(entity_id, state, action):
     with AsyncTrackStates(_hass) as changed_states:
         result = await _hass.services.async_call(domain, service, data, True)
 
-    _LOGGER.error('XX: %s-->%s', action, result)
-    return action + "成功" if type(result) is list else "不成功"
+    return action + ("成功" if result else "不成功")
 
 #
 async def handleStates(intent_name, query, states, group, names):
