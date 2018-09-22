@@ -1,34 +1,19 @@
 MAIN = 'aligenie'
 
-import asyncio
 import json
 import logging
-
-import aiohttp
-import async_timeout
-
 import voluptuous as vol
-from homeassistant.helpers import config_validation as cv
 
-from homeassistant.bootstrap import DATA_LOGGING
+from homeassistant.helpers import config_validation as cv
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.const import (
-    EVENT_HOMEASSISTANT_STOP, EVENT_TIME_CHANGED, HTTP_BAD_REQUEST,
-    HTTP_CREATED, HTTP_NOT_FOUND, MATCH_ALL, URL_API, URL_API_COMPONENTS,
-    URL_API_CONFIG, URL_API_DISCOVERY_INFO, URL_API_ERROR_LOG, URL_API_EVENTS,
-    URL_API_SERVICES, URL_API_STATES, URL_API_STATES_ENTITY, URL_API_STREAM,
-    URL_API_TEMPLATE, MAJOR_VERSION, MINOR_VERSION, __version__)
+    HTTP_BAD_REQUEST, MAJOR_VERSION, MINOR_VERSION)
 from homeassistant.auth.const import ACCESS_TOKEN_EXPIRATION
 import homeassistant.auth.models as models
 from typing import Optional
 from datetime import timedelta
 
-import homeassistant.core as ha
-from homeassistant.exceptions import TemplateError
-from homeassistant.helpers import template
-from homeassistant.helpers.service import async_get_all_descriptions
 from homeassistant.helpers.state import AsyncTrackStates
-from homeassistant.helpers.json import JSONEncoder
 
 from urllib.request import urlopen
 
@@ -42,7 +27,8 @@ CONFIG_SCHEMA = vol.Schema({
 }, extra=vol.ALLOW_EXTRA)
 
 _LOGGER = logging.getLogger(__name__)
-places = []
+_aliases = None
+_places = None
 _auth = None
 _expire_hours = None
 
@@ -51,7 +37,7 @@ async def async_create_refresh_token77(
         -> models.RefreshToken:
     """Create a new token for a user."""
     global _auth
-    _LOGGER.info('access token expiration: %d hours', _expire_hours)
+    #_LOGGER.info('access token expiration: %d hours', _expire_hours)
     refresh_token = models.RefreshToken(user=user,
                                         client_id=client_id,
                                         access_token_expiration = timedelta(hours=_expire_hours))
@@ -68,7 +54,7 @@ async def async_create_refresh_token78(
         -> models.RefreshToken:
     if access_token_expiration == ACCESS_TOKEN_EXPIRATION:
         access_token_expiration = timedelta(hours=_expire_hours)
-    _LOGGER.info('access token expiration: %d hours', _expire_hours)
+    #_LOGGER.info('access token expiration: %d hours', _expire_hours)
     """Create a new token for a user."""
     kwargs = {
         'user': user,
@@ -101,9 +87,6 @@ async def async_setup(hass, config):
             _auth._store.async_create_refresh_token = async_create_refresh_token78
         hass.http.register_view(AliGenieGateView)
 
-    places = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/placelist').read().decode('utf-8'))['data']
-    # aliases = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/aliaslist').read().decode('utf-8'))['data']
-    # aliases.append({'key': '电视', 'value': ['电视机']})
     return True
 
 class AliGenieGateView(HomeAssistantView):
@@ -124,7 +107,6 @@ class AliGenieGateView(HomeAssistantView):
                 "Invalid JSON specified.", HTTP_BAD_REQUEST)
         return self.json(response)
 
-
 def errorResult(errorCode, messsage=None):
     messages = {
         'INVALIDATE_CONTROL_ORDER':    'invalidate control order',
@@ -137,14 +119,12 @@ def errorResult(errorCode, messsage=None):
     }
     return {'errorCode': errorCode, 'message': messsage if messsage else messages[errorCode]}
 
-
-#
 async def handleRequest(request, data):
     header = data['header']
     payload = data['payload']
     properties = None
     name = header['name']
-    _LOGGER.info("recevied data: %s", data)
+    #_LOGGER.info("recevied data: %s", data)
 
     # copied from async_validate_auth_header
     hass = request.app['hass']
@@ -179,22 +159,15 @@ async def handleRequest(request, data):
     response = {'header': header, 'payload': result}
     if properties:
         response['properties'] = properties
-    _LOGGER.info("respnose: %s", response)
+    #_LOGGER.info("respnose: %s", response)
     return response
 
-#
 def discoveryDevice(request):
     items = request.app['hass'].states.async_all()
-    # if _checkAlias:
-    #     aliases = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/aliaslist').read().decode('utf-8'))['data']
-    #     aliases.append({'key': '电视', 'value': ['电视机']})
-    # else:
-    #     aliases = None
-    #     log('Ignore alias checking to speed up!')
-    aliases = None
     groups_ttributes = groupsAttributes(items)
 
     devices = []
+    getPlacesAndAlias()
     for item in items:
         attributes = item.attributes
 
@@ -210,11 +183,11 @@ def discoveryDevice(request):
         if deviceType is None:
             continue
 
-        deviceName = guessDeviceName(entity_id, attributes, places, aliases)
+        deviceName = guessDeviceName(entity_id, attributes)
         if deviceName is None:
             continue
 
-        zone = guessZone(entity_id, attributes, places, groups_ttributes)
+        zone = guessZone(entity_id, attributes, groups_ttributes)
         if zone is None:
             continue
 
@@ -234,7 +207,7 @@ def discoveryDevice(request):
                         sensor['model'] += ' ' + friendly_name
                         # SHIT, length limition in deviceId: sensor['deviceId'] += '_' + entity_id
                     else:
-                        _LOGGER.info('SKIP: ' + entity_id)
+                        #_LOGGER.info('SKIP: ' + entity_id)
                     break
             if deviceType is None:
                 continue
@@ -251,11 +224,14 @@ def discoveryDevice(request):
             'icon': 'https://home-assistant.io/demo/favicon-192x192.png',
             'properties': [prop],
             'actions': ['TurnOn', 'TurnOff', 'Query', action] if action == 'QueryPowerState' else ['Query', action],
-            'extensions':{'extension1':'','extension2':''}
+            #'extensions':{'extension1':'','extension2':''}
             })
+
+    #for sensor in devices:
+        #if sensor['deviceType'] == 'sensor':
+            #_LOGGER.info(json.dumps(sensor, indent=2, ensure_ascii=False))
     return {'devices': devices}
 
-#
 async def controlDevice(request, name, payload):
     entity_id = payload['deviceId']
     service = getControlService(name)
@@ -269,7 +245,6 @@ async def controlDevice(request, name, payload):
         result = await hass.services.async_call(domain, service, data, True)
     return {} if result else errorResult('IOT_DEVICE_OFFLINE')
 
-#
 def queryDevice(request, name, payload):
     deviceId = payload['deviceId']
 
@@ -296,10 +271,9 @@ def queryDevice(request, name, payload):
             return properties
     else:
         item = request.app['hass'].states.get(deviceId)
-        if isinstance(item, State):
-            return {'name':'powerstate', 'value':item.state}
-    return errorResult('IOT_DEVICE_OFFLINE')
+        return {'name':'powerstate', 'value':item.state}
 
+    return errorResult('IOT_DEVICE_OFFLINE')
 
 def getControlService(action):
     i = 0
@@ -378,32 +352,40 @@ def guessDeviceType(entity_id, attributes):
     # Map from domain
     return INCLUDE_DOMAINS[domain] if domain in INCLUDE_DOMAINS else None
 
+def getPlacesAndAlias():
+    global _places
+    global _aliases
+    if _places is None:
+        _places = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/placelist').read().decode('utf-8'))['data']
 
-# https://open.bot.tmall.com/oauth/api/aliaslist
-def guessDeviceName(entity_id, attributes, places, aliases):
+    return # Ignore alias checking to speed up
+
+    if aliases is None:
+        _aliases = json.loads(urlopen('https://open.bot.tmall.com/oauth/api/aliaslist').read().decode('utf-8'))['data']
+        _aliases.append({'key': '电视', 'value': ['电视机']})
+
+def guessDeviceName(entity_id, attributes):
     if 'hagenie_deviceName' in attributes:
         return attributes['hagenie_deviceName']
 
     # Remove place prefix
     name = attributes['friendly_name']
-    for place in places:
+    for place in _places:
         if name.startswith(place):
             name = name[len(place):]
             break
 
-    if aliases is None or entity_id.startswith('sensor'):
+    if _aliases is None or entity_id.startswith('sensor'):
         return name
 
-
     # Name validation
-    for alias in aliases:
-        if name == alias['key'] or name in alias['value']:
+    for alias in _aliases:
+        if name == _aliases['key'] or name in _aliases['value']:
             return name
 
+    _LOGGER.error('%s is not a valid name in https://open.bot.tmall.com/oauth/api/aliaslist', name)
     return None
 
-
-#
 def groupsAttributes(items):
     groups_attributes = []
     for item in items:
@@ -414,15 +396,14 @@ def groupsAttributes(items):
                 groups_attributes.append(group_attributes)
     return groups_attributes
 
-
 # https://open.bot.tmall.com/oauth/api/placelist
-def guessZone(entity_id, attributes, places, groups_attributes):
+def guessZone(entity_id, attributes, groups_attributes):
     if 'hagenie_zone' in attributes:
         return attributes['hagenie_zone']
 
     # Guess with friendly_name prefix
     name = attributes['friendly_name']
-    for place in places:
+    for place in _places:
         if name.startswith(place):
             return place
 
@@ -436,7 +417,6 @@ def guessZone(entity_id, attributes, places, groups_attributes):
 
     return None
 
-#
 def guessPropertyAndAction(entity_id, attributes, state):
     # http://doc-bot.tmall.com/docs/doc.htm?treeId=393&articleId=108264&docType=1
     # http://doc-bot.tmall.com/docs/doc.htm?treeId=393&articleId=108268&docType=1
