@@ -2,7 +2,6 @@ import json
 import logging
 
 from homeassistant.components.http import HomeAssistantView
-from homeassistant.const import HTTP_BAD_REQUEST
 from homeassistant.auth.const import ACCESS_TOKEN_EXPIRATION
 import homeassistant.auth.models as models
 from typing import Optional
@@ -57,16 +56,17 @@ class AliGenieView(HomeAssistantView):
 
     url = '/aligenie'
     name = 'aligenie'
-    requires_auth = False
 
     async def post(self, request):
         """Update state of entity."""
         try:
             data = await request.json()
             response = await handleRequest(data)
-        except ValueError:
-            return self.json_message(
-                "Invalid JSON specified.", HTTP_BAD_REQUEST)
+        except:
+            import traceback
+            _LOGGER.error(traceback.format_exc())
+            response = {'header': {'name': 'errorResult'}, 'payload': errorResult('SERVICE_ERROR', 'service exception')}
+
         return self.json(response)
 
 def errorResult(errorCode, messsage=None):
@@ -90,22 +90,18 @@ async def handleRequest(data):
     name = header['name']
     _LOGGER.info("Handle Request: %s", data)
 
-    token = await _hass.auth.async_validate_access_token(payload['accessToken'])
-    if token is not None:
-        namespace = header['namespace']
-        if namespace == 'AliGenie.Iot.Device.Discovery':
-            result = discoveryDevice()
-        elif namespace == 'AliGenie.Iot.Device.Control':
-            result = await controlDevice(name, payload)
-        elif namespace == 'AliGenie.Iot.Device.Query':
-            result = queryDevice(name, payload)
-            if not 'errorCode' in result:
-                properties = result
-                result = {}
-        else:
-            result = errorResult('SERVICE_ERROR')
+    namespace = header['namespace']
+    if namespace == 'AliGenie.Iot.Device.Discovery':
+        result = discoveryDevice()
+    elif namespace == 'AliGenie.Iot.Device.Control':
+        result = await controlDevice(name, payload)
+    elif namespace == 'AliGenie.Iot.Device.Query':
+        result = queryDevice(name, payload)
+        if not 'errorCode' in result:
+            properties = result
+            result = {}
     else:
-        result = errorResult('ACCESS_TOKEN_INVALIDATE')
+        result = errorResult('SERVICE_ERROR')
 
     # Check error and fill response name
     header['name'] = ('Error' if 'errorCode' in result else name) + 'Response'
@@ -215,22 +211,22 @@ def queryDevice(name, payload):
     deviceId = payload['deviceId']
 
     if payload['deviceType'] == 'sensor':
-        items = _hass.states.async_all()
+        states = _hass.states.async_all()
 
         entity_ids = None
-        for item in items:
-            attributes = item.attributes
-            if item.entity_id.startswith('group.') and (attributes['friendly_name'] == deviceId or attributes.get('hagenie_zone') == deviceId):
+        for state in states:
+            attributes = state.attributes
+            if state.entity_id.startswith('group.') and (attributes['friendly_name'] == deviceId or attributes.get('hagenie_zone') == deviceId):
                 entity_ids = attributes.get('entity_id')
                 break
 
         if entity_ids:
             properties = [{'name':'powerstate', 'value':'on'}]
-            for item in items:
-                entity_id = item.entity_id
-                attributes = item.attributes
+            for state in states:
+                entity_id = state.entity_id
+                attributes = state.attributes
                 if entity_id.startswith('sensor.') and (entity_id in entity_ids or attributes['friendly_name'].startswith(deviceId) or attributes.get('hagenie_zone') == deviceId):
-                    prop,action = guessPropertyAndAction(entity_id, attributes, item.state)
+                    prop,action = guessPropertyAndAction(entity_id, attributes, state.state)
                     if prop is None:
                         continue
                     properties.append(prop)
@@ -340,12 +336,12 @@ def guessDeviceName(entity_id, attributes, places, aliases):
     _LOGGER.error('%s is not a valid name in https://open.bot.tmall.com/oauth/api/aliaslist', name)
     return None
 
-def groupsAttributes(items):
+def groupsAttributes(states):
     groups_attributes = []
-    for item in items:
-        group_entity_id = item.entity_id
+    for state in states:
+        group_entity_id = state.entity_id
         if group_entity_id.startswith('group.') and not group_entity_id.startswith('group.all_') and group_entity_id != 'group.default_view':
-            group_attributes = item.attributes
+            group_attributes = state.attributes
             if 'entity_id' in group_attributes:
                 groups_attributes.append(group_attributes)
     return groups_attributes

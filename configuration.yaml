@@ -40,7 +40,6 @@ http:
   trusted_networks:
   - 127.0.0.1
   - 192.168.1.0/24
-  - 101.132.66.191
   base_url: !secret http_base_url
   ssl_certificate: /root/.homeassistant/fullchain.cer
   ssl_key: /root/.homeassistant/privkey.pem
@@ -78,9 +77,11 @@ logbook:
 
 logger:
   default: warning
-  #logs:
+  logs:
     #homeassistant.components.homekit: debug
     #custom_components.sensor.aircat: debug
+    custom_components.aligenie: debug
+    custom_components.miai: debug
 
 # Enables a map showing the location of tracked devices
 #map:
@@ -131,6 +132,8 @@ homekit:
 
 #
 aligenie:
+
+miai:
 
 group: !include groups.yaml
 automation: !include automations.yaml
