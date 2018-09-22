@@ -37,7 +37,7 @@ async def async_create_refresh_token77(
         -> models.RefreshToken:
     """Create a new token for a user."""
     global _auth
-    #_LOGGER.info('access token expiration: %d hours', _expire_hours)
+    _LOGGER.info('access token expiration: %d hours', _expire_hours)
     refresh_token = models.RefreshToken(user=user,
                                         client_id=client_id,
                                         access_token_expiration = timedelta(hours=_expire_hours))
@@ -54,7 +54,7 @@ async def async_create_refresh_token78(
         -> models.RefreshToken:
     if access_token_expiration == ACCESS_TOKEN_EXPIRATION:
         access_token_expiration = timedelta(hours=_expire_hours)
-    #_LOGGER.info('access token expiration: %d hours', _expire_hours)
+    _LOGGER.info('access token expiration: %d hours', _expire_hours)
     """Create a new token for a user."""
     kwargs = {
         'user': user,
@@ -124,7 +124,7 @@ async def handleRequest(request, data):
     payload = data['payload']
     properties = None
     name = header['name']
-    #_LOGGER.info("recevied data: %s", data)
+    _LOGGER.info("recevied data: %s", data)
 
     # copied from async_validate_auth_header
     hass = request.app['hass']
@@ -207,7 +207,7 @@ def discoveryDevice(request):
                         sensor['model'] += ' ' + friendly_name
                         # SHIT, length limition in deviceId: sensor['deviceId'] += '_' + entity_id
                     else:
-                        #_LOGGER.info('SKIP: ' + entity_id)
+                        _LOGGER.info('SKIP: ' + entity_id)
                     break
             if deviceType is None:
                 continue
