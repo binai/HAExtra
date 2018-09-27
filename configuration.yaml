@@ -641,7 +641,7 @@ media_player:
 #   login_id: '00000000-3c08-4dfe-85e9-307cddc945b6'
 
 #
-panel_iframe:
+#panel_iframe:
   # nodemcu:
   #   title: 室内
   #   icon: mdi:chart-line
@@ -650,10 +650,10 @@ panel_iframe:
   #   title: 阳台
   #   icon: mdi:chart-areaspline
   #   url: !secret nodemcu2_url
-  dashboard:
-    title: 面板
-    icon: mdi:microsoft
-    url: !secret dashboard_url
+  # dashboard:
+  #   title: 面板
+  #   icon: mdi:microsoft
+  #   url: !secret dashboard_url
 
 #
 hello_miai:
