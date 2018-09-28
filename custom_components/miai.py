@@ -71,7 +71,7 @@ class MiAiView(HomeAssistantView):
         return self.json(response)
 
 #
-_appName = '小爱精灵'
+_appName = '我家'
 def guessAction(entity_id, intent_name, query):
     if not entity_id.startswith('sensor') and not entity_id.startswith('binary_sensor') and not entity_id.startswith('device_tracker'):
         # 使用小米意图识别或做意图识别
