@@ -152,3 +152,10 @@ alias rmqtt='systemctl stop mosquitto; sleep 2; rm -rf /var/lib/mosquitto/mosqui
 alias upha='systemctl stop homeassistant; pip3 install homeassistant --upgrade; systemctl start homeassistant'
 alias reha='systemctl restart homeassistant'
 EOF
+
+mkdir /media/sda1
+cat <<\EOF > /etc/fstab
+/dev/sda1 /media/sda1 hfsplus ro,sync,noexec,nodev,noatime,nodiratime 0 0
+EOF
+
+apt-get install samba
