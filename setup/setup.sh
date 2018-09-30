@@ -37,6 +37,10 @@ python3 -m pip install --upgrade pip # Logout after install
 
 # Armbian
 apt-get install python3-pip python3-dev libffi-dev python3-setuptools
+echo "Asia/Shanghai" > /etc/timezone && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+rm /etc/resolvconf/resolv.conf.d/head && touch /etc/resolvconf/resolv.conf.d/head && rm /etc/resolvconf/resolv.conf.d/base && touch /etc/resolvconf/resolv.conf.d/base && systemctl restart network-manager.service
+#systemctl stop lircd.service lircd-setup.service lircd.socket lircd-uinput.service lircmd.service
+#apt remove -y lirc && apt autoremove -y
 
 # Home Assistant
 pip3 install homeassistant
