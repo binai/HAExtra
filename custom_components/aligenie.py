@@ -12,7 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 
 MAIN = 'aligenie'
 DOMAIN = 'aligenie'
-EXPIRE_HOURS = 168 # 7天过期
+EXPIRE_HOURS = 8760 # 365天过期
 CHECK_ALIAS = False # 仅显示有效的天猫精灵设备名称（初次为了验证名称是否正确，请打开此开关）
 _hass = None
 
