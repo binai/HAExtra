@@ -67,17 +67,15 @@
       message: 叮咚，叮咚，有人在家吗
 
 # 无线开关单击
-# - alias: Xiaomi Switch Clicked
-#   trigger:
-#   - platform: event
-#     event_type: click
-#     event_data:
-#       entity_id: binary_sensor.switch_158d000201a73f
-#       click_type: single
-#   action:
-#   - service: hello_miai.send
-#     data:
-#       message: 快过来
+- alias: Xiaomi Switch Clicked
+  trigger:
+  - platform: event
+    event_type: click
+    event_data:
+      entity_id: binary_sensor.switch_158d000201a73f
+      click_type: single
+  action:
+  - service: shell_command.genie_dashboard
 
 # 无线开关双击
 # - alias: Xiaomi Switch DBClicked
@@ -470,7 +468,7 @@
     state: 'on'
   - condition: time
     after: '06:00'
-    before: '23:59'
+    before: '22:30'
   action:
   - service: hello_miai.send
     data:
@@ -487,8 +485,8 @@
       minutes: 10
   condition:
   - condition: time
-    after: '06:00'
-    before: '23:59'
+    after: '07:00'
+    before: '22:00'
   - condition: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
     state: 'off'
@@ -502,7 +500,7 @@
       above: 20
     - condition: numeric_state
       entity_id: sensor.parlor_co2
-      above: 700
+      above: 800
   action:
   - service: hello_miai.send
     data:
@@ -528,7 +526,8 @@
   - service: light.turn_on
     data_template:
       entity_id: light.gateway_light_34ce0090901a
-      rgb_color: ["{% if states('sensor.bedroom_co2') | int > 900 %}128{% else %}0{% endif %}","{% if states('sensor.aircat_hcho') | float > 0.08 %}255{% else %}0{% endif %}","{% if states('sensor.aircat_pm25') | int > 40 %}255{% else %}0{% endif %}"]
+      color_name: >
+        {% if states('sensor.parlor_co2') | int > 900 %}red{% elif states('sensor.bedroom_co2') | int > 900 %}purple{% elif states('sensor.aircat_hcho') | float > 0.08 %}green{% elif states('sensor.aircat_pm25') | int > 40 %}blue{% endif %}
       brightness: 10
   - condition: time
     after: '06:00'
@@ -1000,3 +999,32 @@
   action:
   - service: cover.open_cover
     entity_id: cover.study_cover
+
+# 天猫精灵唤醒
+- alias: Genie Wake Up
+  initial_state: true
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: time
+    after: '06:00'
+    before: '23:59'
+  action:
+  - service: mqtt.publish
+    data:
+      topic: Genie/WAKE
+      payload: 'ON'
+
+# 天猫精灵休眠
+- alias: Genie Sleep Down
+  initial_state: true
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.motion_sensor_158d0001d66ce9
+    from: 'on'
+    to: 'off'
+  action:
+  - service: shell_command.genie_power

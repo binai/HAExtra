@@ -14,6 +14,10 @@ homeassistant:
   customize: !include customize.yaml
   # Global Customization file
   #customize_glob: !include customize_glob.yaml
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+    - type: legacy_api_password
 
 # Show links to resources in log and frontend
 #introduction:
@@ -36,7 +40,7 @@ frontend:
 config:
 
 http:
-  #api_password: !secret http_password
+  api_password: !secret http_password
   trusted_networks:
   - 127.0.0.1
   - 192.168.1.0/24
@@ -150,15 +154,16 @@ modbus:
   port: 8899
 
 #
-device_tracker:
-- platform: asuswrt
-  host: Router
-  username: admin
-  password: !secret http_password
-  interval_seconds: 120
-  new_device_defaults:
-    track_new_devices: false
-    hide_if_away: true
+#TODO
+# device_tracker:
+# - platform: asuswrt
+#   host: Router
+#   username: admin
+#   password: !secret http_password
+#   interval_seconds: 120
+#   new_device_defaults:
+#     track_new_devices: false
+#     hide_if_away: true
 
 #
 binary_sensor:
@@ -279,6 +284,7 @@ sensor:
 
 #
 switch:
+#TODO
 - platform: wake_on_lan
   name: Storage
   mac_address: 00-11-32-6B-75-F7
@@ -329,6 +335,7 @@ switch:
       friendly_name: HiMedia
       command_on: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
       command_off: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+#TODO
 # - platform: broadlink
 #   friendly_name: Remote Mini
 #   host: RemoteMini
@@ -346,6 +353,7 @@ switch:
 
 #
 light:
+#TODO
 #- platform: yeelight
 #  devices:
 #    Lamp:
@@ -451,6 +459,8 @@ light:
 #
 shell_command:
   turn_off_storage: 'ssh root@Storage shutdown -h now'
+  genie_power: 'adb connect Genie; adb -s Genie shell input keyevent 26'
+  genie_dashboard: 'adb connect Genie; adb -s Genie shell am start -n de.rhuber.homedash/org.wallpanelproject.android.WelcomeActivity'
   #clear_mosquitto: 'systemctl stop mosquitto; sleep 2; rm -rf /var/lib/mosquitto/mosquitto.db; systemctl start mosquitto'
   #upgrade_homeassistant: 'systemctl stop homeassistant; pip3 install homeassistant --upgrade; systemctl start homeassistant'
 
@@ -549,55 +559,56 @@ fan:
   - low
   - medium
   - high
-- platform: template
-  fans:
-    wall_fan:
-      friendly_name: "Wall Fan"
-      value_template: "{{ states('input_boolean.wall_fan_state') }}"
-      speed_template: "{{ states('input_select.wall_fan_speed') }}"
-      direction_template: "{% if is_state('input_boolean.wall_fan_direction', 'on') %}forward{% else %}reverse{% endif %}"
-      oscillating_template: "{% if is_state('input_boolean.wall_fan_osc', 'on') %}True{% else %}False{% endif %}"
-      turn_on:
-      - condition: template
-        value_template: "{{ is_state('input_boolean.wall_fan_state', 'off') }}"
-      - service: switch.broadlink_send_packet_remotemini
-        data:
-          packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.wall_fan_state
-      turn_off:
-      - condition: template
-        value_template: "{{ is_state('input_boolean.wall_fan_state', 'on') }}"
-      - service: switch.broadlink_send_packet_remotemini
-        data:
-          packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.wall_fan_state
-      set_speed:
-      - condition: template
-        value_template: "{{ not is_state('input_select.wall_fan_speed', speed) }}"
-      - service: switch.broadlink_send_packet_remotemini
-        data:
-          packet: 'JgDCACkOKg4OKSoNKg4qDg4pDikOKQ4qKQ4q6SoOKQ4OKSoOKg4pDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6yoOKQ4OKSoOKg0qDg4pDioNKg4pKg4p7CkOKg0PKSkOKg4pDg4pDioOKQ4pKg4p6yoNKg4OKSkOKg4pDg4pDioOKQ4pKQ4q6yoNKg4OKSkOKg4pDg4pDikOKg4pKQ4qAA0FAAAAAAAA'
-      - service: input_select.select_next
-        data:
-          entity_id: input_select.wall_fan_speed
-      set_oscillating:
-      - service: switch.broadlink_send_packet_remotemini
-        data:
-          packet: 'JgDqACkOKg0PKSkOKQ4OKQ4qKQ4OKQ4pDikPAAEDKg4pDg4pKQ4qDg4pDikpDg8pDikOKQ4AAQQpDioODikpDikODykOKSkODikOKQ4qDgABBCkOKQ4OKSoNKg4OKQ4pKg4OKQ4pDikOAAEHKg0qDg4pKQ4pDg4pDykpDg4pDikOKQ4AAQgqDSoODikpDioODikOKSkODikPKQ4pDgABByoNKg4OKSkOKg4OKQ4pKg0OKQ4qDikOAAEHKQ4qDQ8oKg4pDg4pDykpDg4pDikOKQ4AAQcqDikODikpDioODikOKSkODykOKQ4pDgANBQAAAAAAAAAAAAAAAAAA'
-      - service: input_boolean.toggle
-        data:
-          entity_id: input_boolean.wall_fan_osc
-      set_direction:
-      - service: switch.broadlink_send_packet_remotemini
-        data_template:
-          packet: "{% if direction == 'forward' %}'JgDyACwLLAwQJywLLAwsCxApDigQJw8oLAwr5ywMLAsQJywMLAssDBAnECcQKA8oKQ4s5ywMKwwQJyoOLAssDBAnDykQJw8oLAwr6CsMLAwQJywLLAwsCxEnECcPKA8pKwws6SwMLAsRJysMLAwrDBAoECcQJxAnLAws6SwLLAwQJywMKwwsDBAnECcQJxAoKQ4s6SsMLAsRJysMLAwrDBAnECcRJxAnKQ4s6SsMLAsQJywMKwwsDBAnDygQJxAoKwwr6isMLAsQKCsMKwwsDBAnECcQJxAnLAwr6iwLLAwQKCoMLAwrDBAnECcQKA4pKQ4sAA0FAAAAAAAA'{% else %}'JgDqACkOKQ8NKikPKQ4qDg0qDSoOKigPKQ8NAAEGKA8pDw0qKQ8oDykPDSoNKw0qKQ8oDw0AAQcoDykPDSoqDigPKQ8NKg8pECcrDSgPDQABBisNKQ8NKikOKQ8pDw8oECcQKCsMKw0PAAEFLAwqDQ8pKwwrDSoNDykQJxAnKw0qDQ8AAQYrDCsNECcrDCsNKg0PKRAnECcsDCoNDwABBSwMKA8NKiwMKA8pDw0qECcQJywMKA8NAAEIKg0pDg4qKg0pDygPDSoQJxAoKwwpDg8AAQYsDCoNDygsDCoNKg0PKRAnECcrDCsNDwANBQAAAAAAAAAAAAAAAAAA'{% endif %}"
-      - service: input_boolean.toggle
-        data:
-          entity_id: input_boolean.wall_fan_direction
+#TODO
+# - platform: template
+#   fans:
+#     wall_fan:
+#       friendly_name: "Wall Fan"
+#       value_template: "{{ states('input_boolean.wall_fan_state') }}"
+#       speed_template: "{{ states('input_select.wall_fan_speed') }}"
+#       direction_template: "{% if is_state('input_boolean.wall_fan_direction', 'on') %}forward{% else %}reverse{% endif %}"
+#       oscillating_template: "{% if is_state('input_boolean.wall_fan_osc', 'on') %}True{% else %}False{% endif %}"
+#       turn_on:
+#       - condition: template
+#         value_template: "{{ is_state('input_boolean.wall_fan_state', 'off') }}"
+#       - service: switch.broadlink_send_packet_remotemini
+#         data:
+#           packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
+#       - service: input_boolean.turn_on
+#         data:
+#           entity_id: input_boolean.wall_fan_state
+#       turn_off:
+#       - condition: template
+#         value_template: "{{ is_state('input_boolean.wall_fan_state', 'on') }}"
+#       - service: switch.broadlink_send_packet_remotemini
+#         data:
+#           packet: 'JgDCACkOKg4OKCoOKQ4OKQ4pDioOKQ4pDikp6SkOKg0OKSoOKQ4OKQ4pDikOKQ8pDSop6CoOKQ4OKSkOKg4OKQ4pDikOKQ4pDikq6CoOKQ4OKSkOKQ4PKQ4pDikOKQ4pDikq6ykOKg0OKSoNKg4OKQ4pDikOKQ4qDSop7CoNKg4OKSkOKQ4OKQ4qDSoOKQ4pDikq6ykOKg4OKSkOKg0PKQ0qDikOKQ4pDikq6ykOKg4OKSkOKQ4PKQ4pDikOKQ4pDikqAA0FAAAAAAAA'
+#       - service: input_boolean.turn_off
+#         data:
+#           entity_id: input_boolean.wall_fan_state
+#       set_speed:
+#       - condition: template
+#         value_template: "{{ not is_state('input_select.wall_fan_speed', speed) }}"
+#       - service: switch.broadlink_send_packet_remotemini
+#         data:
+#           packet: 'JgDCACkOKg4OKSoNKg4qDg4pDikOKQ4qKQ4q6SoOKQ4OKSoOKg4pDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6SoOKQ4OKSoOKg0qDg4pDioOKQ4pKg4q6yoOKQ4OKSoOKg0qDg4pDioNKg4pKg4p7CkOKg0PKSkOKg4pDg4pDioOKQ4pKg4p6yoNKg4OKSkOKg4pDg4pDioOKQ4pKQ4q6yoNKg4OKSkOKg4pDg4pDikOKg4pKQ4qAA0FAAAAAAAA'
+#       - service: input_select.select_next
+#         data:
+#           entity_id: input_select.wall_fan_speed
+#       set_oscillating:
+#       - service: switch.broadlink_send_packet_remotemini
+#         data:
+#           packet: 'JgDqACkOKg0PKSkOKQ4OKQ4qKQ4OKQ4pDikPAAEDKg4pDg4pKQ4qDg4pDikpDg8pDikOKQ4AAQQpDioODikpDikODykOKSkODikOKQ4qDgABBCkOKQ4OKSoNKg4OKQ4pKg4OKQ4pDikOAAEHKg0qDg4pKQ4pDg4pDykpDg4pDikOKQ4AAQgqDSoODikpDioODikOKSkODikPKQ4pDgABByoNKg4OKSkOKg4OKQ4pKg0OKQ4qDikOAAEHKQ4qDQ8oKg4pDg4pDykpDg4pDikOKQ4AAQcqDikODikpDioODikOKSkODykOKQ4pDgANBQAAAAAAAAAAAAAAAAAA'
+#       - service: input_boolean.toggle
+#         data:
+#           entity_id: input_boolean.wall_fan_osc
+#       set_direction:
+#       - service: switch.broadlink_send_packet_remotemini
+#         data_template:
+#           packet: "{% if direction == 'forward' %}'JgDyACwLLAwQJywLLAwsCxApDigQJw8oLAwr5ywMLAsQJywMLAssDBAnECcQKA8oKQ4s5ywMKwwQJyoOLAssDBAnDykQJw8oLAwr6CsMLAwQJywLLAwsCxEnECcPKA8pKwws6SwMLAsRJysMLAwrDBAoECcQJxAnLAws6SwLLAwQJywMKwwsDBAnECcQJxAoKQ4s6SsMLAsRJysMLAwrDBAnECcRJxAnKQ4s6SsMLAsQJywMKwwsDBAnDygQJxAoKwwr6isMLAsQKCsMKwwsDBAnECcQJxAnLAwr6iwLLAwQKCoMLAwrDBAnECcQKA4pKQ4sAA0FAAAAAAAA'{% else %}'JgDqACkOKQ8NKikPKQ4qDg0qDSoOKigPKQ8NAAEGKA8pDw0qKQ8oDykPDSoNKw0qKQ8oDw0AAQcoDykPDSoqDigPKQ8NKg8pECcrDSgPDQABBisNKQ8NKikOKQ8pDw8oECcQKCsMKw0PAAEFLAwqDQ8pKwwrDSoNDykQJxAnKw0qDQ8AAQYrDCsNECcrDCsNKg0PKRAnECcsDCoNDwABBSwMKA8NKiwMKA8pDw0qECcQJywMKA8NAAEIKg0pDg4qKg0pDygPDSoQJxAoKwwpDg8AAQYsDCoNDygsDCoNKg0PKRAnECcrDCsNDwANBQAAAAAAAAAAAAAAAAAA'{% endif %}"
+#       - service: input_boolean.toggle
+#         data:
+#           entity_id: input_boolean.wall_fan_direction
 
 #
 climate:
@@ -628,20 +639,21 @@ cover:
         command_close: 'sgD8AJ0xGAwMGBcNFw0XDQsYGAwYDAwZFwwMGAwYDBgXDQwXDBkMGBcNCxkXDBgMDBkMGAwYGAwMGBcNFw0MGAsZCxgYDQsYDBgXDRcNDBgMGBcNFwABIZ4xFw0MGBcNFwwYDA0YGAwYDAwYGAwMGAwYDBgXDQsYDBgMGBgMDBgXDRcNDBgMGAwYFw0MGBcMGAwMGAwYDBgXDQwYDBgXDRcMDBgMGBgMFwABI50yFw0LGBgMGAwXDQwYFw0XDQwYFw0MGAwYDBcYDAwYDBgMGBgMDBgXDRcNCxkLGAwYGA4MFxgMGAwMGAwYDBgXDQwYDBgXDBgNCxgMGBcNFwAF3AAAAAAAAAAAAAAAAA=='
 
 #
-media_player:
-- platform: braviatv
-  host: X9300d
-  name: X9300d
-- platform: braviatv
-  host: X9400e
-  name: X9400e
+#TODO
+# media_player:
+# - platform: braviatv
+#   host: X9300d
+#   name: X9300d
+# - platform: braviatv
+#   host: X9400e
+#   name: X9400e
 
 # apple_tv:
 # - host: AppleTV
 #   login_id: '00000000-3c08-4dfe-85e9-307cddc945b6'
 
 #
-#panel_iframe:
+panel_iframe:
   # nodemcu:
   #   title: 室内
   #   icon: mdi:chart-line
@@ -650,10 +662,10 @@ media_player:
   #   title: 阳台
   #   icon: mdi:chart-areaspline
   #   url: !secret nodemcu2_url
-  # dashboard:
-  #   title: 面板
-  #   icon: mdi:microsoft
-  #   url: !secret dashboard_url
+  dashboard:
+    title: 面板
+    icon: mdi:microsoft
+    url: !secret dashboard_url
 
 #
 hello_miai:
@@ -665,11 +677,12 @@ input_text:
     name: MiAI
     initial: 我是小爱
 
-input_boolean:
-  wall_fan_state:
-  wall_fan_osc:
-  wall_fan_direction:
+#TODO
+# input_boolean:
+#   wall_fan_state:
+#   wall_fan_osc:
+#   wall_fan_direction:
 
-input_select:
-  wall_fan_speed:
-    options: [low, medium, high]
+# input_select:
+#   wall_fan_speed:
+#     options: [low, medium, high]
