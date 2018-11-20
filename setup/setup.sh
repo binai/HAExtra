@@ -9,8 +9,10 @@ sudo mkdir /root/.ssh
 mkdir ~/.ssh
 sudo reboot
 
+#ssh root@hassbian "mkdir ~/.ssh"
+#ssh admin@hassbian "mkdir ~/.ssh"
 #scp ~/.ssh/authorized_keys root@hassbian:~/.ssh/
-#scp ~/.ssh/authorized_keys pi@hassbian:~/.ssh/
+#scp ~/.ssh/authorized_keys admin@hassbian:~/.ssh/
 #ssh root@hassbian
 
 # Rename pi->admin
@@ -29,35 +31,36 @@ apt-get upgrade -y
 #apt-get autoclean
 #apt-get clean
 
-# Raspbian
-apt-get install python3 python3-pip
-
-# Install PIP 18
-python3 -m pip install --upgrade pip # Logout after install
-
-# Armbian
-apt-get install python3-pip python3-dev libffi-dev python3-setuptools
-echo "Asia/Shanghai" > /etc/timezone && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-rm /etc/resolvconf/resolv.conf.d/head && touch /etc/resolvconf/resolv.conf.d/head && rm /etc/resolvconf/resolv.conf.d/base && touch /etc/resolvconf/resolv.conf.d/base && systemctl restart network-manager.service
-#systemctl stop lircd.service lircd-setup.service lircd.socket lircd-uinput.service lircmd.service
-#apt remove -y lirc && apt autoremove -y
-
-# Home Assistant
-pip3 install homeassistant
-
-# HomeKit
-apt-get install libavahi-compat-libdnssd-dev
-#pip3 install pycryptodome #https://github.com/home-assistant/home-assistant/issues/12675
-
 # Mosquitto
 apt-get install mosquitto mosquitto-clients
-#cat /etc/mosquitto/mosquitto.conf #allow_anonymous true
+#echo "allow_anonymous true" >> /etc/mosquitto/mosquitto.conf
 #systemctl stop mosquitto
 #sleep 2
 #rm -rf /var/lib/mosquitto/mosquitto.db
 #systemctl start mosquitto
 #sleep 2
 #mosquitto_sub -v -t '#'
+
+# For HomeKit
+apt-get install libavahi-compat-libdnssd-dev
+
+# For Raspbian
+apt-get install python3 python3-pip
+
+# Install PIP 18
+#python3 -m pip install --upgrade pip # Logout after install
+
+# For Armbian
+echo "Asia/Shanghai" > /etc/timezone && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+apt-get install python3-pip python3-dev libffi-dev python3-setuptools
+#Fix 8.8.8.8 DNS rm /etc/resolvconf/resolv.conf.d/head && touch /etc/resolvconf/resolv.conf.d/head && rm /etc/resolvconf/resolv.conf.d/base && touch /etc/resolvconf/resolv.conf.d/base && systemctl restart network-manager.service
+#systemctl stop lircd.service lircd-setup.service lircd.socket lircd-uinput.service lircmd.service
+#apt remove -y lirc && apt autoremove -y
+
+# Home Assistant
+pip3 install wheel
+pip3 install homeassistant
+#pip3 install pycryptodome #https://github.com/home-assistant/home-assistant/issues/12675
 
 # Auto start
 cat <<EOF > /etc/systemd/system/homeassistant.service
@@ -67,7 +70,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=root
+User=admin
 ExecStart=/usr/local/bin/hass
 
 [Install]
@@ -83,7 +86,7 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=root
+User=admin
 ExecStart=/usr/local/bin/appdaemon
 
 [Install]
@@ -97,6 +100,8 @@ systemctl start homeassistant
 
 systemctl enable appdaemon
 systemctl start appdaemon
+
+# Switch to admin
 
 # Debug
 hass
