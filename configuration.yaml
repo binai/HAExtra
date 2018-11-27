@@ -312,11 +312,11 @@ switch:
   command_topic: NodeMCU3/relay/0/set
   availability_topic: NodeMCU3/status
   value_template: "{% if value == '关闭' %}OFF{% else %}ON{% endif %}"
-- platform: broadlink
-  host: Outlet
-  mac: 34:EA:34:B8:36:AC
-  friendly_name: Outlet
-  type: spmini2
+#- platform: broadlink
+#  host: Outlet
+#  mac: 34:EA:34:B8:36:AC
+#  friendly_name: Outlet
+#  type: spmini2
 - platform: broadlink
   friendly_name: Remote Pro
   host: RemotePro
@@ -484,12 +484,17 @@ fan:
   host: Purifier
   model: zhimi.airpurifier.m1
   token: FE2D793B34DCE57F32BF50B2E6B00874
-# - platform: xiaomi_miio_fan
-#   name: Fan
-#   host: Fan
-#   model: zhimi.fan.v3
-#   token: 62df0c2f98752f87aa3c6258bf862c9b
-- platform: xiaomi_miio_airfresh
+#- platform: xiaomi_miio
+#  name: PurifierPro
+#  host: PurifierPro
+#  model: zhimi.airpurifier.v6
+#  token: FE2D793B34DCE57F32BF50B2E6B00800
+#- platform: xiaomi_miio
+#  name: Fan
+#  host: Fan
+#  model: zhimi.fan.v3
+#  token: 62df0c2f98752f87aa3c6258bf862c9b
+- platform: xiaomi_miio
   name: Fresher
   host: Fresher
   model: zhimi.airfresh.va2

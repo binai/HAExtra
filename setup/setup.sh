@@ -48,7 +48,9 @@ apt-get install libavahi-compat-libdnssd-dev
 apt-get install python3 python3-pip
 
 # Install PIP 18
-#python3 -m pip install --upgrade pip # Logout after install
+##python3 -m pip install --upgrade pip # Logout after install
+#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+#python3 get-pip.py --force-reinstall
 
 # For Armbian
 echo "Asia/Shanghai" > /etc/timezone && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
