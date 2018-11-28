@@ -226,12 +226,6 @@
   - platform: state
     entity_id: binary_sensor.motion_sensor_158d0001d66ce9
     to: 'on'
-  - platform: state
-    entity_id: device_tracker.yphone
-    to: 'home'
-  - platform: state
-    entity_id: device_tracker.zphone
-    to: 'home'
   condition:
   - condition: time
     after: '06:00'
@@ -262,9 +256,6 @@
     before: '18:00'
   - condition: state
     entity_id: binary_sensor.motion_sensor_158d0001d66ce9
-    state: 'off'
-  - condition: state
-    entity_id: binary_sensor.motion_sensor_158d0001f4a238
     state: 'off'
   - condition: state
     entity_id: device_tracker.yphone
