@@ -73,8 +73,8 @@ history:
 
 #
 recorder:
-  purge_keep_days: 2
-  db_url: sqlite:////tmp/home-assistant.db
+#  purge_keep_days: 2
+#  db_url: sqlite:////tmp/home-assistant.db
 
 # View all events in a logbook
 logbook:
@@ -647,7 +647,7 @@ climate:
 #
 cover:
   - platform: broadlink
-    host: RemotePro
+    host: Remote
     mac: 34:EA:34:58:73:5D
     covers:
       study_cover:

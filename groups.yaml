@@ -133,12 +133,12 @@ Kids:
   #- fan.kids_purifier
   #- sensor.kids_co2
 
-Office:
-  entities:
-  - sensor.aircat2_temperature
-  - sensor.aircat2_humidity
-  - sensor.aircat2_pm25
-  - sensor.aircat2_hcho
+#Office:
+#  entities:
+#  - sensor.aircat2_temperature
+#  - sensor.aircat2_humidity
+#  - sensor.aircat2_pm25
+#  - sensor.aircat2_hcho
 
 Outside:
   entities:
