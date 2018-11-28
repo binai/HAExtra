@@ -38,15 +38,11 @@ fan.fresher:
   hagenie_deviceType: VMC
   icon: mdi:leaf
 fan.purifier:
-  friendly_name: 儿童房净化器
-  hagenie_deviceType: airpurifier
-  icon: mdi:cupcake
-fan.purifier2:
   friendly_name: 书房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:cupcake
 fan.purifier4:
-  friendly_name: 闲置净化器
+  friendly_name: 儿童房净化器
   hagenie_deviceType: airpurifier
   icon: mdi:cupcake
 fan.purifier5:

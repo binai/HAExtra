@@ -95,14 +95,14 @@ Study:
   - light.study_light
   - light.ceiling_light
   - cover.study_cover
-  - fan.purifier2
+  - fan.purifier
   - switch.projector
   - switch.speaker
   - switch.mitsubishi
   - vacuum.vacuum
-  - sensor.purifier2_temperature
-  - sensor.purifier2_humidity
-  - sensor.purifier2_pm25
+  - sensor.purifier_temperature
+  - sensor.purifier_humidity
+  - sensor.purifier_pm25
   - sensor.study_lightness
 
 Bedroom:
@@ -125,13 +125,8 @@ Kids:
   - light.lamp
   - climate.daikin4
   - fan.fan
-  - fan.purifier
-  - sensor.purifier_temperature
-  - sensor.purifier_humidity
-  - sensor.purifier_pm25
-  - sensor.purifier_lightness
-  #- fan.purifier4
-  #- sensor.kids_co2
+  - fan.purifier4
+  - sensor.kids_co2
 
 #Office:
 #  entities:

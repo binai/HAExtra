@@ -498,11 +498,11 @@ fan:
   host: Purifier
   model: zhimi.airpurifier.m1
   token: FE2D793B34DCE57F32BF50B2E6B00874
-- platform: xiaomi_miio
-  name: Purifier2
-  host: Purifier2
-  model: zhimi.airpurifier.v6
-  token: 40aaf8a828797657328319e0c6cf761a
+# - platform: xiaomi_miio
+#   name: Purifier2
+#   host: Purifier2
+#   model: zhimi.airpurifier.v6
+#   token: 40aaf8a828797657328319e0c6cf761a
 #- platform: xiaomi_miio
 #  name: Fan
 #  host: Fan
