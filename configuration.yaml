@@ -514,7 +514,7 @@ fan:
   model: zhimi.airfresh.va2
   token: bb1ee8999ee6bc7ce075a424bca664c3
 - platform: mqtt
-  name: Kids Purifier
+  name: Purifier4
   state_topic: NodeMCU4/relay/0
   command_topic: NodeMCU4/relay/0/set
   availability_topic: NodeMCU4/status
@@ -528,7 +528,7 @@ fan:
   - low
   - high
 - platform: mqtt
-  name: Diningroom Purifier
+  name: Purifier5
   state_topic: NodeMCU5/relay/0
   command_topic: NodeMCU5/relay/0/set
   availability_topic: NodeMCU5/status
@@ -545,7 +545,7 @@ fan:
   - medium
   - high
 - platform: mqtt
-  name: Parents Purifier
+  name: Purifier6
   state_topic: NodeMCU6/relay/0
   command_topic: NodeMCU6/relay/0/set
   availability_topic: NodeMCU6/status
@@ -562,7 +562,7 @@ fan:
   - medium
   - high
 - platform: mqtt
-  name: Bedroom Purifier
+  name: Purifier7
   state_topic: NodeMCU7/relay/0
   command_topic: NodeMCU7/relay/0/set
   availability_topic: NodeMCU7/status

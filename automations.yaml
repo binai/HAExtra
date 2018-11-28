@@ -152,7 +152,7 @@
     entity_id: sensor.aircat_pm25
     below: 30
   - service: fan.turn_off
-    entity_id: fan.diningroom_purifier
+    entity_id: fan.purifier5
   - condition: numeric_state
     entity_id: sensor.fresher_co2
     below: 700
@@ -171,7 +171,7 @@
   - service: fan.turn_on
     entity_id: fan.fresher
   - service: fan.turn_on
-    entity_id: fan.diningroom_purifier
+    entity_id: fan.purifier5
   - condition: numeric_state
     entity_id: sensor.fresher_co2
     above: 900
@@ -598,10 +598,10 @@
       minutes: 5
   action:
   - service: fan.turn_on
-    entity_id: fan.diningroom_purifier
+    entity_id: fan.purifier5
   - service: fan.set_speed
     data_template:
-      entity_id: fan.diningroom_purifier
+      entity_id: fan.purifier5
       speed: "{% if states('sensor.aircat_pm25') | int > 40 %}high{% else %}medium{% endif %}"
   - condition: numeric_state
     entity_id: sensor.fresher_pm25
@@ -631,7 +631,7 @@
   action:
   - service: fan.set_speed
     data:
-      entity_id: fan.diningroom_purifier
+      entity_id: fan.purifier5
       speed: low
   - condition: numeric_state
     entity_id: sensor.fresher_co2
@@ -708,10 +708,10 @@
     after: '18:00'
     before: '22:00'
   - service: fan.turn_on
-    entity_id: fan.parents_purifier
+    entity_id: fan.purifier6
   - service: fan.set_speed
     data_template:
-     entity_id: fan.parents_purifier
+     entity_id: fan.purifier6
      speed: "{% if states('sensor.purifier_pm25') | int > 50 %}high{% else %}medium{% endif %}"
 
 # 书房空气好
@@ -784,17 +784,17 @@
       minutes: 5
   action:
   - service: fan.turn_on
-    entity_id: fan.bedroom_purifier
+    entity_id: fan.purifier7
   - service: fan.set_speed
     data_template:
-     entity_id: fan.bedroom_purifier
+     entity_id: fan.purifier7
      speed: medium
   - condition: time
     after: '8:00'
     before: '22:00'
   - service: fan.set_speed
     data_template:
-     entity_id: fan.bedroom_purifier
+     entity_id: fan.purifier7
      speed: "{% if states('sensor.bedroom_pm25') | int > 50 %}high{% else %}medium{% endif %}"
 
 # 主卧空气好
@@ -809,7 +809,7 @@
   action:
   - service: fan.set_speed
     data:
-     entity_id: fan.bedroom_purifier
+     entity_id: fan.purifier7
      speed: low
 
 # 卧室空调风量

@@ -32,7 +32,7 @@ layout:
 
     - climate.daikin2, climate.daikin1, climate.daikin3, climate.daikin4
     - climate.saswell, climate.saswell2, fan.fresher, fan.purifier
-    - fan.diningroom_purifier, fan.bedroom_purifier, fan.parents_purifier, fan.kids_purifier
+    - fan.purifier5, fan.purifier7, fan.purifier6, fan.purifier4
     - switch.mitsubishi, switch.outlet, fan.wall_fan, switch.washroom_fan
 #fan.fan
     - media_player.x9400e, media_player.x9300d, switch.projector, switch.storage
