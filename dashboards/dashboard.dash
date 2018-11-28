@@ -28,7 +28,7 @@ layout:
     - light.study_light, light.ceiling_light, light.balcony_light, light.washroom_light
     - light.parlor_spotlight, light.diningroom_spotlight, light.hallway_spotlight, light.passage_spotlight
     - light.passage_backlight, light.gateway_light_34ce0090901a, vacuum.vacuum, cover.study_cover
-#light.lamp    
+#light.lamp
 
     - climate.daikin2, climate.daikin1, climate.daikin3, climate.daikin4
     - climate.saswell, climate.saswell2, fan.fresher, fan.purifier
@@ -38,9 +38,9 @@ layout:
     - media_player.x9400e, media_player.x9300d, switch.projector, switch.storage
 
     - switch.speaker, sensor.study_lightness, sensor.parents_co2, sensor.kids_co2
-    - sensor.parlor_temperature, sensor.parlor_humidity, sensor.parlor_pm25, sensor.parlor_co2
+    - sensor.fresher_temperature, sensor.fresher_humidity, sensor.fresher_pm25, sensor.fresher_co2
     - sensor.aircat_temperature, sensor.aircat_humidity, sensor.aircat_pm25, sensor.aircat_hcho
-    - sensor.study_temperature, sensor.study_humidity, sensor.study_pm25, sensor.illumination_34ce0090901a
+    - sensor.purifier_temperature, sensor.purifier_humidity, sensor.purifier_pm25, sensor.illumination_34ce0090901a
 #    - sensor.aircat2_temperature, sensor.aircat2_humidity, sensor.aircat2_pm25, sensor.aircat2_hcho
 
     - binary_sensor.door_window_sensor_158d0001f3e5be, binary_sensor.door_window_sensor_158d000228a52b, binary_sensor.motion_sensor_158d0001d66ce9, binary_sensor.motion_sensor_158d0001f4a238

@@ -17,7 +17,7 @@ default_view:
   - group.study
   - group.office
   - group.outside
-  - sensor.parlor_co2
+  - sensor.fresher_co2
   - sensor.bedroom_co2
   - sensor.bedroom_temperature
   - sensor.bedroom_humidity
@@ -66,10 +66,10 @@ Parlor:
   - climate.saswell
   - fan.wall_fan
   - fan.fresher
-  - sensor.parlor_temperature
-  - sensor.parlor_humidity
-  - sensor.parlor_pm25
-  #- sensor.parlor_co2
+  - sensor.fresher_temperature
+  - sensor.fresher_humidity
+  - sensor.fresher_pm25
+  #- sensor.fresher_co2
 
 Passage:
   entities:
@@ -92,38 +92,44 @@ Study:
   entities:
   - light.study_light
   - light.ceiling_light
-  - light.lamp
   - cover.study_cover
-  - fan.purifier
+  - fan.purifier2
   - switch.projector
   - switch.speaker
   - switch.mitsubishi
   - vacuum.vacuum
-  - sensor.study_temperature
-  - sensor.study_humidity
-  - sensor.study_pm25
+  - sensor.purifier2_temperature
+  - sensor.purifier2_humidity
+  - sensor.purifier2_pm25
   - sensor.study_lightness
 
 Bedroom:
   entities:
   - media_player.x9300d
   - climate.daikin3
-  - climate.daikin4
-  - fan.fan
   - fan.bedroom_purifier
-  - fan.parents_purifier
-  - fan.kids_purifier
-  # - sensor.aircat3_temperature
-  # - sensor.aircat3_humidity
-  # - sensor.aircat3_pm25
-  # - sensor.aircat3_hcho
   # - sensor.bedroom_temperature
   # - sensor.bedroom_humidity
   # - sensor.bedroom_pm25
   # - sensor.bedroom_co2
   - sensor.bedroom_hcho
+
+Parents:
+  - fan.parents_purifier
   - sensor.parents_co2
-  - sensor.kids_co2
+
+Kids:
+  entities:
+  - light.lamp
+  - climate.daikin4
+  - fan.fan
+  - fan.purifier
+  - sensor.purifier_temperature
+  - sensor.purifier_humidity
+  - sensor.purifier_pm25
+  - sensor.purifier_lightness
+  #- fan.kids_purifier
+  #- sensor.kids_co2
 
 Office:
   entities:

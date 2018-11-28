@@ -249,36 +249,50 @@ sensor:
   #mac: ['B0F893249132', 'B0F893249132']
 - platform: template
   sensors:
-    study_temperature:
+    purifier_temperature:
       device_class: temperature
-      friendly_name: Study Temperature
+      friendly_name: Purifier Temperature
       value_template: "{{ states.fan.purifier.attributes.temperature }}"
       unit_of_measurement: °C
-    study_humidity:
+    purifier_humidity:
       device_class: humidity
-      friendly_name: Study Humidity
+      friendly_name: Purifier Humidity
       value_template: "{{ states.fan.purifier.attributes.humidity }}"
       unit_of_measurement: '%'
-    study_pm25:
-      friendly_name: Study PM2.5
+    purifier_pm25:
+      friendly_name: Purifier PM2.5
       value_template: "{{ states.fan.purifier.attributes.aqi }}"
       unit_of_measurement: 'μg/m³'
-    parlor_temperature:
+    purifier2_temperature:
       device_class: temperature
-      friendly_name: Parlor Temperature
+      friendly_name: Purifierw Temperature
+      value_template: "{{ states.fan.purifier2.attributes.temperature }}"
+      unit_of_measurement: °C
+    purifier2_humidity:
+      device_class: humidity
+      friendly_name: Purifier2 Humidity
+      value_template: "{{ states.fan.purifier2.attributes.humidity }}"
+      unit_of_measurement: '%'
+    purifier2_pm25:
+      friendly_name: Purifier2 PM2.5
+      value_template: "{{ states.fan.purifier2.attributes.aqi }}"
+      unit_of_measurement: 'μg/m³'
+    fresher_temperature:
+      device_class: temperature
+      friendly_name: Fresher Temperature
       value_template: "{{ states.fan.fresher.attributes.temperature }}"
       unit_of_measurement: °C
-    parlor_humidity:
+    fresher_humidity:
       device_class: humidity
-      friendly_name: Parlor Humidity
+      friendly_name: Fresher Humidity
       value_template: "{{ states.fan.fresher.attributes.humidity }}"
       unit_of_measurement: '%'
-    parlor_pm25:
-      friendly_name: Parlor PM2.5
+    fresher_pm25:
+      friendly_name: Fresher PM2.5
       value_template: "{{ states.fan.fresher.attributes.aqi }}"
       unit_of_measurement: 'μg/m³'
-    parlor_co2:
-      friendly_name: Parlor CO2
+    fresher_co2:
+      friendly_name: Fresher CO2
       value_template: "{{ states.fan.fresher.attributes.co2 }}"
       unit_of_measurement: 'ppm'
 
@@ -484,11 +498,11 @@ fan:
   host: Purifier
   model: zhimi.airpurifier.m1
   token: FE2D793B34DCE57F32BF50B2E6B00874
-#- platform: xiaomi_miio
-#  name: PurifierPro
-#  host: PurifierPro
-#  model: zhimi.airpurifier.v6
-#  token: FE2D793B34DCE57F32BF50B2E6B00800
+- platform: xiaomi_miio
+ name: Purifier2
+ host: Purifier2
+ model: zhimi.airpurifier.v6
+ token: 40aaf8a828797657328319e0c6cf761a
 #- platform: xiaomi_miio
 #  name: Fan
 #  host: Fan

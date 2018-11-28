@@ -22,7 +22,7 @@ turn_on_projector:
   - service: light.turn_off
     entity_id: light.study_light
   - condition: numeric_state
-    entity_id: sensor.study_temperature
+    entity_id: sensor.purifier2_temperature
     above: 28
   - service: switch.turn_on
     entity_id: switch.mitsubishi

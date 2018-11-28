@@ -33,11 +33,11 @@ customizer.customizer:
 fan.bedroom_purifier:
   friendly_name: 主卧净化器
   hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
+  icon: mdi:cupcake
 fan.diningroom_purifier:
   friendly_name: 餐厅净化器
   hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
+  icon: mdi:cupcake
 fan.fan:
   dashboard_static_text_attribute: speed_level
   friendly_name: 落地扇
@@ -48,15 +48,19 @@ fan.fresher:
 fan.kids_purifier:
   friendly_name: 儿童房净化器
   hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
+  icon: mdi:cupcake
 fan.parents_purifier:
   friendly_name: 次卧净化器
   hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
+  icon: mdi:cupcake
 fan.purifier:
+  friendly_name: 儿童房净化器
+  hagenie_deviceType: airpurifier
+  icon: mdi:cupcake
+fan.purifier2:
   friendly_name: 书房净化器
   hagenie_deviceType: airpurifier
-  icon: mdi:weather-hail
+  icon: mdi:cupcake
 fan.wall_fan:
   friendly_name: 客厅壁扇
   icon: mdi:fan
@@ -89,7 +93,7 @@ group.automations:
 group.balcony:
   friendly_name: 阳台
 group.bedroom:
-  friendly_name: 卧室
+  friendly_name: 主卧
 group.controls:
   friendly_name: 控制
 group.default_view:
@@ -100,12 +104,16 @@ group.hallway:
   friendly_name: 玄关
 group.kitchen:
   friendly_name: 厨房
+group.kids:
+  friendly_name: 儿童房
 group.office:
   friendly_name: 工位
   hagenie_zone: 工作间
 group.outside:
   friendly_name: 室外
   hagenie_zone: 门口
+group.parents:
+  friendly_name: 次卧
 group.parlor:
   friendly_name: 客厅
 group.passage:
@@ -132,7 +140,8 @@ light.balcony_light:
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
 light.ceiling_light:
-  friendly_name: 天花灯
+  friendly_name: 晾衣灯
+  hagenie_deviceName: 天花灯
   icon: mdi:ceiling-light
 light.diningroom_light:
   friendly_name: 餐厅灯
@@ -169,7 +178,7 @@ light.parlor_spotlight:
   friendly_name: 客厅筒灯
   icon: mdi:spotlight
 light.passage_backlight:
-  friendly_name: 过道背景灯
+  friendly_name: 过道暗藏灯
   icon: mdi:spotlight-beam
 light.passage_light:
   friendly_name: 过道灯
@@ -270,15 +279,15 @@ sensor.kids_co2:
 sensor.parents_co2:
   friendly_name: 次卧二氧化碳
   icon: mdi:periodic-table-co2
-sensor.parlor_co2:
+sensor.fresher_co2:
   friendly_name: 客厅二氧化碳
   icon: mdi:periodic-table-co2
-sensor.parlor_humidity:
+sensor.fresher_humidity:
   friendly_name: 客厅湿度
-sensor.parlor_pm25:
+sensor.fresher_pm25:
   friendly_name: 客厅颗粒物
   icon: mdi:blur
-sensor.parlor_temperature:
+sensor.fresher_temperature:
   friendly_name: 客厅温度
 sensor.aircat2_hcho:
   friendly_name: 工位甲醛
@@ -304,16 +313,24 @@ sensor.aircat_pm25:
   friendly_name: 餐厅颗粒物
 sensor.aircat_temperature:
   friendly_name: 餐厅温度
-sensor.study_humidity:
+sensor.purifier_humidity:
+  friendly_name: 儿童房湿度
+  icon: mdi:water-percent
+sensor.purifier_pm25:
+  friendly_name: 儿童房颗粒物
+  icon: mdi:blur
+sensor.purifier_temperature:
+  friendly_name: 儿童房温度
+sensor.purifier2_humidity:
   friendly_name: 书房湿度
   icon: mdi:water-percent
-sensor.study_lightness:
-  friendly_name: 书房亮度
-sensor.study_pm25:
+sensor.purifier2_pm25:
   friendly_name: 书房颗粒物
   icon: mdi:blur
-sensor.study_temperature:
+sensor.purifier2_temperature:
   friendly_name: 书房温度
+sensor.study_lightness:
+  friendly_name: 书房亮度
 sun.sun:
   friendly_name: 日照
 switch.benq:
@@ -326,12 +343,6 @@ switch.mitsubishi:
   friendly_name: 书房空调
   hagenie_deviceType: aircondition
   icon: mdi:air-conditioner
-switch.nodemcu3a:
-  friendly_name: 儿童房净化器开关
-switch.nodemcu3b:
-  friendly_name: 儿童房净化器离子
-switch.nodemcu3c:
-  friendly_name: 儿童房净化器风速
 switch.outlet:
   friendly_name: 除湿机
   hagenie_deviceType: dehumidifier
@@ -363,7 +374,7 @@ switch.storage:
   friendly_name: 网络存储
   hagenie_deviceName: 网关
   hagenie_deviceType: gateway
-  icon: mdi:harddisk
+  icon: mdi:nas
 switch.washroom_fan:
   friendly_name: 洗手间排气扇
   hagenie_deviceName: 顶扇

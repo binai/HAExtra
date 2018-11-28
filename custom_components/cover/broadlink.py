@@ -1,6 +1,3 @@
-"""
-窗帘 BY 菲佣 1.3
-"""
 
 import asyncio
 import binascii

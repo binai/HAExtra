@@ -20,9 +20,9 @@ weather:
     units: "&deg;C"
 
 layout:
-    - sensor.balcony_temperature, sensor.balcony_humidity, sensor.balcony_pm25, weather(1x2), sensor.parlor_temperature, sensor.parlor_humidity, sensor.parlor_pm25, sensor.parlor_co2
+    - sensor.balcony_temperature, sensor.balcony_humidity, sensor.balcony_pm25, weather(1x2), sensor.fresher_temperature, sensor.fresher_humidity, sensor.fresher_pm25, sensor.fresher_co2
     - sensor.bedroom_temperature, sensor.bedroom_humidity, sensor.bedroom_pm25, sensor.aircat_temperature, sensor.aircat_humidity, sensor.aircat_pm25, sensor.aircat_hcho
-    - sensor.bedroom_co2, sensor.bedroom_hcho, clock(2x1), sensor.study_temperature, sensor.study_humidity, sensor.study_pm25, sensor.illumination_34ce0090901a
+    - sensor.bedroom_co2, sensor.bedroom_hcho, clock(2x1), sensor.purifier_temperature, sensor.purifier_humidity, sensor.purifier_pm25, sensor.illumination_34ce0090901a
 
     - binary_sensor.door_window_sensor_158d0001f3e5be, binary_sensor.door_window_sensor_158d000228a52b, binary_sensor.motion_sensor_158d0001d66ce9, binary_sensor.motion_sensor_158d0001f4a238, climate.daikin2, climate.daikin1, climate.daikin3, climate.daikin4
     - light.parlor_light, light.diningroom_light, light.hallway_light, light.passage_light, climate.saswell, climate.saswell2, fan.fresher, fan.purifier
