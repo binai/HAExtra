@@ -698,21 +698,21 @@
   initial_state: true
   trigger:
   - platform: numeric_state
-    entity_id: sensor.purifier_pm25
+    entity_id: sensor.purifier2_pm25
     above: 35
     for:
       minutes: 5
   action:
   - service: fan.turn_on
-    entity_id: fan.purifier
+    entity_id: fan.purifier2
   - service: fan.set_speed
     data_template:
-     entity_id: fan.purifier
+     entity_id: fan.purifier2
      speed: "{% if is_state('switch.projector', 'on') %}auto{% else %}favorite{% endif %}"
   - service: fan.xiaomi_miio_set_favorite_level
     data_template:
-     entity_id: fan.purifier
-     level: "{% if states('sensor.purifier_pm25') | int > 50 %}9{% else %}6{% endif %}"
+     entity_id: fan.purifier2
+     level: "{% if states('sensor.purifier2_pm25') | int > 50 %}9{% else %}6{% endif %}"
   - condition: time
     after: '18:00'
     before: '22:00'
@@ -728,6 +728,50 @@
   initial_state: true
   trigger:
   - platform: numeric_state
+    entity_id: sensor.purifier2_pm25
+    below: 25
+    for:
+      minutes: 5
+  action:
+  - service: fan.set_speed
+    data:
+     entity_id: fan.purifier2
+     speed: auto
+  - service: fan.set_speed
+    data:
+     entity_id: fan.parents2_purifier
+     speed: low
+
+# 儿童房空气差
+- alias: Kids PM2.5 Bad
+  initial_state: true
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.purifier_pm25
+    above: 35
+    for:
+      minutes: 5
+  condition:
+  - condition: time
+    after: '8:00'
+    before: '22:00'
+  action:
+  - service: fan.turn_on
+    entity_id: fan.purifier
+  - service: fan.set_speed
+    data_template:
+     entity_id: fan.purifier
+     speed: favorite
+  - service: fan.xiaomi_miio_set_favorite_level
+    data_template:
+     entity_id: fan.purifier
+     level: "{% if states('sensor.purifier_pm25') | int > 50 %}9{% else %}6{% endif %}"
+
+# 儿童房空气好
+- alias: Kids PM2.5 Good
+  initial_state: true
+  trigger:
+  - platform: numeric_state
     entity_id: sensor.purifier_pm25
     below: 25
     for:
@@ -737,10 +781,6 @@
     data:
      entity_id: fan.purifier
      speed: auto
-  - service: fan.set_speed
-    data:
-     entity_id: fan.parents_purifier
-     speed: low
 
 # 主卧空气差
 - alias: Bedroom PM2.5 Bad
