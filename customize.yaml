@@ -124,8 +124,6 @@ input_boolean.wall_fan_osc:
   friendly_name: 壁扇摇头
 input_boolean.wall_fan_state:
   friendly_name: 壁扇状态
-input_select.purify2_speed:
-  friendly_name: 儿童房净化器风速
 input_select.wall_fan_speed:
   friendly_name: 壁扇风速
 input_text.miai:
@@ -309,22 +307,14 @@ sensor.kids_co2:
 sensor.parents_co2:
   friendly_name: 次卧二氧化碳
   icon: mdi:periodic-table-co2
-sensor.purifier2_humidity:
-  friendly_name: 书房湿度
-  icon: mdi:water-percent
-sensor.purifier2_pm25:
-  friendly_name: 书房颗粒物
-  icon: mdi:blur
-sensor.purifier2_temperature:
-  friendly_name: 书房温度
 sensor.purifier_humidity:
-  friendly_name: 儿童房湿度
+  friendly_name: 书房房湿度
   icon: mdi:water-percent
 sensor.purifier_pm25:
-  friendly_name: 儿童房颗粒物
+  friendly_name: 书房房颗粒物
   icon: mdi:blur
 sensor.purifier_temperature:
-  friendly_name: 儿童房温度
+  friendly_name: 书房房温度
 sensor.study_lightness:
   friendly_name: 书房亮度
 sun.sun:

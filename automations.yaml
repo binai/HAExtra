@@ -26,22 +26,22 @@
 #       ringtone_id: 10001
 #       ringtone_vol:100
 
+#过道无线开关单击
+- alias: Passage Switch Clicked
+  trigger:
+  - platform: event
+    event_type: click
+    event_data:
+      entity_id: binary_sensor.switch_158d0001e59b33
+      click_type: single
+  action:
+  - service: hello_miai.send
+    data_template:
+      message: >
+        阳台PM2.5为{{ states('sensor.balcony_pm25') }}，餐厅PM2.5为{{ states('sensor.aircat_pm25') }}，主卧PM2.5为{{ states('sensor.bedroom_pm25') }}。客厅二氧化碳浓度为{{ states('sensor.fresher_co2') }}，主卧二氧化碳浓度为{{ states('sensor.bedroom_co2') }}，次卧二氧化碳浓度为{{ states('sensor.parents_co2') }}
 
-# 门铃开关单击
-# - alias: Entrance Switch Clicked
-#   trigger:
-#   - platform: event
-#     event_type: click
-#     event_data:
-#       entity_id: binary_sensor.switch_158d0001e59b33
-#       click_type: single
-#   action:
-#   - service: hello_miai.send
-#     data:
-#       message: 叮咚，叮咚，有人按门铃啦
-
-# 门铃开关双击
-- alias: Entrance Switch DBClicked
+# 过道无线开关双击
+- alias: Passage Switch DBClicked
   trigger:
   - platform: event
     event_type: click
@@ -51,10 +51,10 @@
   action:
   - service: hello_miai.send
     data:
-      message: 叮咚，叮咚，快开门啊
+      message: 双击过道无线开关
 
-# 门铃开关长按
-- alias: Entrance Switch Pressed
+# 过道无线开关长按
+- alias: Passage Switch Pressed
   trigger:
   - platform: event
     event_type: click
@@ -62,12 +62,30 @@
       entity_id: binary_sensor.switch_158d0001e59b33
       click_type: long_click_press
   action:
+  - service: automation.toggle
+    entity_id: automation.passage_light_on_day
+  - service: automation.toggle
+    entity_id: automation.passage_light_off_day
+  - service: automation.toggle
+    entity_id: automation.passage_light_off_brighten
+  - service: automation.toggle
+    entity_id: automation.passage_light_on_night
+  - service: automation.toggle
+    entity_id: automation.passage_light_off_night
+  - service: automation.toggle
+    entity_id: automation.passage_backlight_reaction
   - service: hello_miai.send
     data:
-      message: 叮咚，叮咚，有人在家吗
+      message: "过道灯自动感应功能已{% if is_state('automation.passage_backlight_reaction', 'on') %}启用{% else %}停用，所有灯光将在10秒后关闭{% endif %}"
+  - condition: state
+    entity_id: automation.passage_backlight_reaction
+    state: 'off'
+  - wait: 10
+  - service: homeassistant.turn_off
+    entity_id: group.all_lights
 
-# 无线开关单击
-- alias: Xiaomi Switch Clicked
+# 书房无线开关单击
+- alias: Study Switch Clicked
   trigger:
   - platform: event
     event_type: click
@@ -75,23 +93,25 @@
       entity_id: binary_sensor.switch_158d000201a73f
       click_type: single
   action:
-  - service: shell_command.genie_dashboard
+  - service: hello_miai.send
+    data:
+      message: 单击书房无线开关
 
-# 无线开关双击
-# - alias: Xiaomi Switch DBClicked
-#   trigger:
-#   - platform: event
-#     event_type: click
-#     event_data:
-#       entity_id: binary_sensor.switch_158d000201a73f
-#       click_type: double
-#   action:
-#   - service: hello_miai.send
-#     data:
-#       message: 双击无线开关
+# 书房无线开关双击
+- alias: Study Switch DBClicked
+  trigger:
+  - platform: event
+    event_type: click
+    event_data:
+      entity_id: binary_sensor.switch_158d000201a73f
+      click_type: double
+  action:
+  - service: hello_miai.send
+    data:
+      message: 双击书房无线开关
 
-# 无线开关长按
-- alias: Xiaomi Switch Pressed
+# 书房无线开关长按
+- alias: Study Switch Pressed
   trigger:
   - platform: event
     event_type: click
@@ -100,9 +120,8 @@
       click_type: long_click_press
   action:
   - service: hello_miai.send
-    data_template:
-      message: >
-        阳台PM2.5为{{ states('sensor.balcony_pm25') }}，餐厅PM2.5为{{ states('sensor.aircat_pm25') }}，主卧PM2.5为{{ states('sensor.bedroom_pm25') }}。客厅二氧化碳浓度为{{ states('sensor.fresher_co2') }}，主卧二氧化碳浓度为{{ states('sensor.bedroom_co2') }}，次卧二氧化碳浓度为{{ states('sensor.parents_co2') }}
+    data:
+      message: 长按书房无线开关
 
 # 阳台移门开合
 - alias: Balcony Door Toggled
@@ -140,10 +159,6 @@
     for:
       minutes: 5
   action:
-  - service: hello_miai.send
-    data_template:
-      message: >
-        阳台PM2.5为{% set PM25 = states.sensor.balcony_pm25.state | int %}{{ PM25 }}，{% if PM25 < 20 %}空气很好{% elif PM25 < 40 %}空气还行{% elif PM25 < 70 %}空气不好{% else %}空气污染，请关好门窗{% endif %}
   - service: climate.turn_off
     entity_id: climate.daikin2
   - service: climate.turn_off
@@ -207,7 +222,7 @@
   initial_state: false
   trigger:
   - platform: time
-    minutes: '/3'
+    minutes: '/2'
     seconds: 00
   condition:
   - condition: state
@@ -453,17 +468,24 @@
     above: 50
     for:
       minutes: 5
+  - platform: state
+    entity_id: binary_sensor.door_window_sensor_158d000228a52b
+    from: 'off'
+    to: 'on'
+    for:
+      seconds: 10
   condition:
   - condition: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
     state: 'on'
   - condition: time
     after: '06:00'
-    before: '22:30'
+    before: '23:00'
   action:
   - service: hello_miai.send
-    data:
-      message: 外面空气很差，请关好门窗
+    data_template:
+      message: >
+        阳台PM2.5为{% set PM25 = states.sensor.balcony_pm25.state | int %}{{ PM25 }}，{% if PM25 < 20 %}空气很好{% elif PM25 < 40 %}空气还行{% elif PM25 < 70 %}空气不好{% else %}空气污染，请关好门窗{% endif %}
 
 # 阳台空气好
 - alias: Balcony PM2.5 Good
@@ -483,6 +505,7 @@
     state: 'off'
   - condition: numeric_state
     entity_id: sensor.balcony_temperature
+    abode: 15
     below: 30
   - condition: or
     conditions:
@@ -495,7 +518,7 @@
   action:
   - service: hello_miai.send
     data:
-      message: 外面空气很好，可以打开门窗
+      message: 外面空气很好，建议打开门窗
 
 # 室内空气警告
 - alias: Indoor Air Warning
