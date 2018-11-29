@@ -93,8 +93,9 @@ Washroom:
 Study:
   entities:
   - light.study_light
-  - light.ceiling_light
-  - cover.study_cover
+  - light.airer_light
+  - cover.study
+  - cover.airer
   - fan.purifier
   - switch.projector
   - switch.speaker

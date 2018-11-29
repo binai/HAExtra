@@ -172,7 +172,7 @@ light.parlor_spotlight:
   friendly_name: 客厅筒灯
   icon: mdi:spotlight
 light.passage_backlight:
-  friendly_name: 过道暗藏灯
+  friendly_name: 过道背景灯
   icon: mdi:spotlight-beam
 light.passage_light:
   friendly_name: 过道灯
@@ -338,6 +338,8 @@ switch.projector:
   hagenie_deviceName: 电视
   hagenie_deviceType: television
   icon: mdi:projector-screen
+switch.projector_power:
+  friendly_name: 投影仪电源
 switch.speaker:
   config:
     extra_badge:

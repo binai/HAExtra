@@ -80,7 +80,7 @@
   - condition: state
     entity_id: automation.passage_backlight_reaction
     state: 'off'
-  - wait: 10
+  - delay: '00:00:10'
   - service: homeassistant.turn_off
     entity_id: group.all_lights
 
@@ -93,9 +93,11 @@
       entity_id: binary_sensor.switch_158d000201a73f
       click_type: single
   action:
+  - service: switch.turn_on
+    entity_id: switch.projector
   - service: hello_miai.send
     data:
-      message: 单击书房无线开关
+      message: 正在打开投影仪
 
 # 书房无线开关双击
 - alias: Study Switch DBClicked
@@ -119,9 +121,11 @@
       entity_id: binary_sensor.switch_158d000201a73f
       click_type: long_click_press
   action:
+  - service: switch.turn_off
+    entity_id: switch.projector
   - service: hello_miai.send
     data:
-      message: 长按书房无线开关
+      message: 正在关闭投影仪
 
 # 阳台移门开合
 - alias: Balcony Door Toggled
@@ -508,7 +512,7 @@
     state: 'off'
   - condition: numeric_state
     entity_id: sensor.balcony_temperature
-    abode: 10
+    above: 10
     below: 30
   - condition: or
     conditions:
@@ -1001,7 +1005,7 @@
     before: '16:00'
   action:
   - service: cover.close_cover
-    entity_id: cover.study_cover
+    entity_id: cover.study
 
 # 书房亮度正常
 - alias: Study Lightness Normal
@@ -1011,11 +1015,11 @@
     at: '16:00:00'
   condition:
   - condition: state
-    entity_id: cover.study_cover
+    entity_id: cover.study
     state: closed
   - condition: state
     entity_id: switch.projector
     state: 'off'
   action:
   - service: cover.open_cover
-    entity_id: cover.study_cover
+    entity_id: cover.study

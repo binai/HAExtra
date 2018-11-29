@@ -1,6 +1,6 @@
 homeassistant:
   # Name of the location where Home Assistant is running
-  name: 智能家庭
+  name: 物联智能
   # Location required to calculate the time the sun rises and sets
   latitude: 30.23927
   longitude: 120.05633
@@ -44,6 +44,7 @@ http:
   trusted_networks:
   - 127.0.0.1
   - 192.168.1.0/24
+  - 192.168.2.0/24
   base_url: !secret http_base_url
   ssl_certificate: ~/.homeassistant/fullchain.cer
   ssl_key: ~/.homeassistant/privkey.pem
@@ -81,11 +82,11 @@ logbook:
 
 logger:
   default: warning
-  logs:
+  #logs:
     #homeassistant.components.homekit: debug
     #custom_components.sensor.aircat: debug
-    custom_components.aligenie: debug
-    custom_components.miai: debug
+    #custom_components.aligenie: debug
+    #custom_components.miai: debug
 
 # Enables a map showing the location of tracked devices
 #map:
@@ -137,8 +138,10 @@ homekit:
 #
 aligenie:
 
+#
 miai:
 
+#
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -263,20 +266,7 @@ sensor:
       friendly_name: Purifier PM2.5
       value_template: "{{ states.fan.purifier.attributes.aqi }}"
       unit_of_measurement: 'μg/m³'
-    purifier2_temperature:
-      device_class: temperature
-      friendly_name: Purifierw Temperature
-      value_template: "{{ states.fan.purifier2.attributes.temperature }}"
-      unit_of_measurement: °C
-    purifier2_humidity:
-      device_class: humidity
-      friendly_name: Purifier2 Humidity
-      value_template: "{{ states.fan.purifier2.attributes.humidity }}"
-      unit_of_measurement: '%'
-    purifier2_pm25:
-      friendly_name: Purifier2 PM2.5
-      value_template: "{{ states.fan.purifier2.attributes.aqi }}"
-      unit_of_measurement: 'μg/m³'
+
     fresher_temperature:
       device_class: temperature
       friendly_name: Fresher Temperature
@@ -310,16 +300,11 @@ switch:
   state_topic: Hassmart6/relay/1
   command_topic: Hassmart6/relay/1/set
   availability_topic: Hassmart6/status
-# - platform: mqtt
-#   name: Study Power
-#   state_topic: Hassmart5/relay/3
-#   command_topic: Hassmart5/relay/3/set
-#   availability_topic: Hassmart5/status
-# - platform: mqtt
-#   name: Projector Power
-#   state_topic: Sonoff3/relay/1
-#   command_topic: Sonoff3/relay/1/set
-#   availability_topic: Sonoff3/status
+- platform: mqtt
+  name: Projector Power
+  state_topic: Sonoff3/relay/1
+  command_topic: Sonoff3/relay/1/set
+  availability_topic: Sonoff3/status
 - platform: mqtt
   name: Speaker
   state_topic: NodeMCU3/relay/0
@@ -349,6 +334,11 @@ switch:
       friendly_name: HiMedia
       command_on: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
       command_off: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
+    airer_light:
+      friendly_name: Airer Light
+      command_on: ''
+      command_off: ''
+
 #TODO
 # - platform: broadlink
 #   friendly_name: Remote2
@@ -359,7 +349,7 @@ switch:
   switches:
     projector:
       friendly_name: Projector
-      value_template: "{{ is_state('device_tracker.himedia', 'home') }}"
+      value_template: "{{ is_state('switch.projector_power', 'on') }}"
       turn_on:
         service: script.turn_on_projector
       turn_off:
@@ -459,11 +449,11 @@ light:
   state_topic: Sonoff1/relay/1
   command_topic: Sonoff1/relay/1/set
   availability_topic: Sonoff1/status
-- platform: mqtt
-  name: Ceiling Light
-  state_topic: Sonoff2/relay/0
-  command_topic: Sonoff2/relay/0/set
-  availability_topic: Sonoff2/status
+# - platform: mqtt
+#   name: Ceiling Light
+#   state_topic: Sonoff2/relay/0
+#   command_topic: Sonoff2/relay/0/set
+#   availability_topic: Sonoff2/status
 - platform: mqtt
   name: Study Light
   state_topic: Sonoff3/relay/0
@@ -473,8 +463,8 @@ light:
 #
 shell_command:
   turn_off_storage: 'ssh root@Storage shutdown -h now'
-  genie_power: 'adb connect Genie; adb -s Genie shell input keyevent 26'
-  genie_dashboard: 'adb connect Genie; adb -s Genie shell am start -n de.rhuber.homedash/org.wallpanelproject.android.WelcomeActivity'
+  #genie_power: 'adb connect Genie; adb -s Genie shell input keyevent 26'
+  #genie_dashboard: 'adb connect Genie; adb -s Genie shell am start -n de.rhuber.homedash/org.wallpanelproject.android.WelcomeActivity'
   #clear_mosquitto: 'systemctl stop mosquitto; sleep 2; rm -rf /var/lib/mosquitto/mosquitto.db; systemctl start mosquitto'
   #upgrade_homeassistant: 'systemctl stop homeassistant; pip3 install homeassistant --upgrade; systemctl start homeassistant'
 
@@ -650,12 +640,18 @@ cover:
     host: Remote
     mac: 34:EA:34:58:73:5D
     covers:
-      study_cover:
+      study:
         name: 书房窗帘
         travel_time: 13
         command_open: 'sgD8AJ8wGAwNFxgMGAwYDAwYFwwYDQwYGAsNFw0XDRcYDAwYDBgNFxkMDBgYDBgMDBcNFw0XGQsNFxgMGAwMGAwYDBgXDQwYDBcNFxgMDRcMGAwXGAABIZ4xGQwNFxgMGAwYDAwXGAwYDQwXGAwNFw0XDBgYDAwYDBgMGBgMDBcYDBgMDRcMGAwYGAwMGBgMGAwMFw0XDRcYDA0XDBgMGBgMDBkMFw0XGAABIZ4xFwwNFxgMGAwYDAwYGAwYDAwYGAwMFw0XDRcYDAwYDBgNFxgMDBgYDRgMDBgMFw0YGAsNFxgMGAwMGAwYDBcYDQwYDBcNFxgMDBgMGAwYFwAF3AAAAAAAAAAAAAAAAA=='
         command_stop: 'sgD8AJ4xGAwMGBcMGAwYDAwYGAwYDAwYGAwMGAwZDBcYDAwYDBkLGBgMDBgYDBcNDBgMFw0YFw0MFxgMGAwMGAwYDBgXDQwYFw0MFxgMDRcYDAwYFwABIZ8xGAwMGBcNFw0XDQwXGAwYDQwYFwwNFwwYDBgXDQwYDBgMGBcMDRcYDBgMDBgMGAwYGAwMGBcNFwwNFwwYDBgZDAwYFw0MGBcNDBcYDAwYGAABIJ4xGAwMGBgMGAwXDQwXGAwYDQwYFwwNFwwYDBgYDAwYDRgMGBcNDBcYDBgMDBgMGAwYGAwMGBcNFw0MGAsYDBgYDAwYGAwMGBcNDBcYDAwYGAAF3AAAAAAAAAAAAAAAAA=='
         command_close: 'sgD8AJ0xGAwMGBcNFw0XDQsYGAwYDAwZFwwMGAwYDBgXDQwXDBkMGBcNCxkXDBgMDBkMGAwYGAwMGBcNFw0MGAsZCxgYDQsYDBgXDRcNDBgMGBcNFwABIZ4xFw0MGBcNFwwYDA0YGAwYDAwYGAwMGAwYDBgXDQsYDBgMGBgMDBgXDRcNDBgMGAwYFw0MGBcMGAwMGAwYDBgXDQwYDBgXDRcMDBgMGBgMFwABI50yFw0LGBgMGAwXDQwYFw0XDQwYFw0MGAwYDBcYDAwYDBgMGBgMDBgXDRcNCxkLGAwYGA4MFxgMGAwMGAwYDBgXDQwYDBgXDBgNCxgMGBcNFwAF3AAAAAAAAAAAAAAAAA=='
+      airer:
+        name: 晾衣架
+        travel_time: 13
+        command_open: ''
+        command_stop: ''
+        command_close: ''
 
 #
 #TODO
