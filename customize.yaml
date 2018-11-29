@@ -30,6 +30,7 @@ climate.saswell2:
   hagenie_deviceType: heater
 cover.airer:
   friendly_name: 晾衣架
+  icon: mdi:hanger
   hagenie_deviceType: hanger
 cover.study_cover:
   friendly_name: 书房窗帘

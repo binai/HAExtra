@@ -334,10 +334,10 @@ switch:
       friendly_name: HiMedia
       command_on: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
       command_off: 'JgBgAAABJ5QSExITExITExI4EhMSExITEjgSOBI4EjgTEhM4EjgSOBI4EhMSOBI4EjgTEhM4EhMSExI4EhMSExITEjgSExM3EwAFGQABJksSAAxWAAEnSxIADFYAASZLEgANBQAAAAAAAAAA'
-    airer_light:
-      friendly_name: Airer Light
-      command_on: ''
-      command_off: ''
+    # airer_light:
+    #   friendly_name: Airer Light
+    #   command_on: ''
+    #   command_off: ''
 
 #TODO
 # - platform: broadlink
