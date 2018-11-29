@@ -37,8 +37,7 @@
   action:
   - service: hello_miai.send
     data_template:
-      message: >
-        阳台PM2.5为{{ states('sensor.balcony_pm25') }}，餐厅PM2.5为{{ states('sensor.aircat_pm25') }}，主卧PM2.5为{{ states('sensor.bedroom_pm25') }}。客厅二氧化碳浓度为{{ states('sensor.fresher_co2') }}，主卧二氧化碳浓度为{{ states('sensor.bedroom_co2') }}，次卧二氧化碳浓度为{{ states('sensor.parents_co2') }}
+      message: "阳台PM2.5为{{ states('sensor.balcony_pm25') }}，餐厅PM2.5为{{ states('sensor.aircat_pm25') }}，主卧PM2.5为{{ states('sensor.bedroom_pm25') }}。客厅二氧化碳浓度为{{ states('sensor.fresher_co2') }}，主卧二氧化碳浓度为{{ states('sensor.bedroom_co2') }}，次卧二氧化碳浓度为{{ states('sensor.parents_co2') }}"
 
 # 过道无线开关双击
 - alias: Passage Switch DBClicked
@@ -75,9 +74,8 @@
   - service: automation.toggle
     entity_id: automation.passage_backlight_reaction
   - service: hello_miai.send
-    data:
-      message: >
-        过道灯自动感应功能已{% if is_state('automation.passage_backlight_reaction', 'on') %}启用{% else %}停用，所有灯光将在10秒后关闭{% endif %}
+    data_template:
+      message: "过道灯自动感应功能已{% if is_state('automation.passage_backlight_reaction', 'on') %}启用{% else %}停用，所有灯光将在10秒后关闭{% endif %}"
   - condition: state
     entity_id: automation.passage_backlight_reaction
     state: 'off'
@@ -197,8 +195,7 @@
     above: 900
   - service: hello_miai.send
     data_template:
-      message: >
-        室内二氧化碳浓度为{{ states.sensor.fresher_co2.state }}，空气很闷，请注意通风
+      message: "室内二氧化碳浓度为{{ states.sensor.fresher_co2.state }}，空气很闷，请注意通风"
 
 # 洗手间灯感应开
 - alias: Washroom Light On
@@ -492,8 +489,7 @@
   action:
   - service: hello_miai.send
     data_template:
-      message: >
-        阳台PM2.5为{% set PM25 = states.sensor.balcony_pm25.state | int %}{{ PM25 }}，{% if PM25 < 20 %}空气很好{% elif PM25 < 40 %}空气还行{% elif PM25 < 70 %}空气不好{% else %}空气污染，请关好门窗{% endif %}
+      message: "阳台PM2.5为{% set PM25 = states.sensor.balcony_pm25.state | int %}{{ PM25 }}，{% if PM25 < 20 %}空气很好{% elif PM25 < 40 %}空气还行{% elif PM25 < 70 %}空气不好{% else %}空气污染，请关好门窗{% endif %}"
 
 # 阳台空气好
 - alias: Balcony PM2.5 Good
@@ -548,16 +544,14 @@
   - service: light.turn_on
     data_template:
       entity_id: light.gateway_light_34ce0090901a
-      color_name: >
-        {% if states('sensor.fresher_co2') | int > 900 %}red{% elif states('sensor.bedroom_co2') | int > 900 %}purple{% elif states('sensor.aircat_hcho') | float > 0.08 %}green{% elif states('sensor.aircat_pm25') | int > 40 %}blue{% endif %}
+      color_name: "{% if states('sensor.fresher_co2') | int > 900 %}red{% elif states('sensor.bedroom_co2') | int > 900 %}purple{% elif states('sensor.aircat_hcho') | float > 0.08 %}green{% elif states('sensor.aircat_pm25') | int > 40 %}blue{% endif %}"
       brightness: 10
   - condition: time
     after: '06:00'
     before: '23:59'
   - service: hello_miai.send
     data_template:
-      message: >
-        {% set PM25 = states.sensor.aircat_pm25.state | int %}{% if PM25 >= 40 %}PM2.5为{{ PM25 }}，空气不好。{% endif %}{% set CO2 = states.sensor.fresher_co2.state | int %}{% if CO2 >= 900 %}二氧化碳浓度为{{ CO2 }}，空气很闷。{% endif %}{% set HCHO = states.sensor.aircat_hcho.state | float %}{% if HCHO > 0.2 %}甲醛浓度为{{ HCHO }}，注意通风。{% endif %}
+      message: "{% set PM25 = states.sensor.aircat_pm25.state | int %}{% if PM25 >= 40 %}PM2.5为{{ PM25 }}，空气不好。{% endif %}{% set CO2 = states.sensor.fresher_co2.state | int %}{% if CO2 >= 900 %}二氧化碳浓度为{{ CO2 }}，空气很闷。{% endif %}{% set HCHO = states.sensor.aircat_hcho.state | float %}{% if HCHO > 0.2 %}甲醛浓度为{{ HCHO }}，注意通风。{% endif %}"
 
 # 室内空气达标
 - alias: Indoor Air Restored
