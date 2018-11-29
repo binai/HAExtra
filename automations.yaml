@@ -76,7 +76,8 @@
     entity_id: automation.passage_backlight_reaction
   - service: hello_miai.send
     data:
-      message: "过道灯自动感应功能已{% if is_state('automation.passage_backlight_reaction', 'on') %}启用{% else %}停用，所有灯光将在10秒后关闭{% endif %}"
+      message: >
+        过道灯自动感应功能已{% if is_state('automation.passage_backlight_reaction', 'on') %}启用{% else %}停用，所有灯光将在10秒后关闭{% endif %}
   - condition: state
     entity_id: automation.passage_backlight_reaction
     state: 'off'
