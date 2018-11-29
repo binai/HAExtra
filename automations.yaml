@@ -241,14 +241,17 @@
   - platform: state
     entity_id: binary_sensor.motion_sensor_158d0001d66ce9
     to: 'on'
-  condition:
+  action:
+  - service: mqtt.publish
+    data:
+      topic: Genie/WAKE
+      payload: 'ON'
   - condition: time
     after: '06:00'
     before: '18:00'
   - condition: numeric_state
     entity_id: sensor.illumination_34ce0090901a
     below: 300
-  action:
   - service: light.turn_on
     entity_id: light.passage_light
 
@@ -505,7 +508,7 @@
     state: 'off'
   - condition: numeric_state
     entity_id: sensor.balcony_temperature
-    abode: 15
+    abode: 10
     below: 30
   - condition: or
     conditions:
@@ -518,7 +521,7 @@
   action:
   - service: hello_miai.send
     data:
-      message: 外面空气很好，建议打开门窗
+      message: 外面空气很好，可以打开门窗
 
 # 室内空气警告
 - alias: Indoor Air Warning
@@ -983,7 +986,7 @@
   initial_state: true
   trigger:
   - platform: time
-    at: '13:10:00'
+    at: '12:30:00'
   - platform: numeric_state
     entity_id: sensor.study_lightness
     above: 180
@@ -994,7 +997,7 @@
     entity_id: sensor.study_lightness
     above: 180
   - condition: time
-    after: '13:00'
+    after: '12:00'
     before: '16:00'
   action:
   - service: cover.close_cover
@@ -1008,37 +1011,11 @@
     at: '16:00:00'
   condition:
   - condition: state
+    entity_id: cover.study_cover
+    state: closed
+  - condition: state
     entity_id: switch.projector
     state: 'off'
   action:
   - service: cover.open_cover
     entity_id: cover.study_cover
-
-# 天猫精灵唤醒
-- alias: Genie Wake Up
-  initial_state: true
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.motion_sensor_158d0001d66ce9
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: time
-    after: '06:00'
-    before: '23:59'
-  action:
-  - service: mqtt.publish
-    data:
-      topic: Genie/WAKE
-      payload: 'ON'
-
-# 天猫精灵休眠
-- alias: Genie Sleep Down
-  initial_state: true
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.motion_sensor_158d0001d66ce9
-    from: 'on'
-    to: 'off'
-  action:
-  - service: shell_command.genie_power
