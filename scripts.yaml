@@ -11,7 +11,7 @@ turn_on_projector:
   - service: switch.turn_on
     entity_id: switch.himedia
   - service: cover.close_cover
-    entity_id: cover.study
+    entity_id: cover.study_cover
   - service: cover.close_cover
     entity_id: cover.airer
   - service: fan.turn_on
@@ -41,7 +41,7 @@ turn_off_projector:
   - service: switch.turn_off
     entity_id: switch.himedia
   - service: cover.open_cover
-    entity_id: cover.study
+    entity_id: cover.study_cover
   - service: switch.turn_off
     entity_id: switch.benq
   - service: switch.turn_off

@@ -27,7 +27,7 @@ layout:
     - light.parlor_light, light.diningroom_light, light.hallway_light, light.passage_light
     - light.study_light, light.airer_light, light.balcony_light, light.washroom_light
     - light.parlor_spotlight, light.diningroom_spotlight, light.hallway_spotlight, light.passage_spotlight
-    - light.passage_backlight, light.gateway_light_34ce0090901a, vacuum.vacuum, cover.study
+    - light.passage_backlight, light.gateway_light_34ce0090901a, vacuum.vacuum, cover.study_cover
 #light.lamp
 
     - climate.daikin2, climate.daikin1, climate.daikin3, climate.daikin4

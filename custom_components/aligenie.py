@@ -264,7 +264,9 @@ DEVICE_TYPES = [
     'bottlewarmer',#: '暖奶器',
     'soymilkmaker',#: '豆浆机',
     'kettle',#: '电热水壶',
-    'watercooler',#: '饮水机',
+    'waterdispenser',#: '饮水机',
+    'camera',#: '摄像头',
+    'router',#: '路由器',
     'cooker',#: '电饭煲',
     'waterheater',#: '热水器',
     'oven',#: '烤箱',
@@ -277,10 +279,19 @@ DEVICE_TYPES = [
     'aromamachine',#: '香薰机',
     'window',#: '窗',
     'kitchenventilator',#: '抽油烟机',
-    'fingerprintlock',#: '指纹锁'
-    'telecontroller',#: '万能遥控器'
-    'dishwasher',#: '洗碗机'
-    'dehumidifier',#: '除湿机'
+    'fingerprintlock',#: '指纹锁',
+    'telecontroller',#: '万能遥控器',
+    'dishwasher',#: '洗碗机',
+    'dehumidifier',#: '除湿机',
+    'dryer',#: '干衣机',
+    'wall-hung-boiler',#: '壁挂炉',
+    'microwaveoven',#: '微波炉',
+    'heater',#: '取暖器',
+    'mosquito-dispeller',#: '驱蚊器',
+    'treadmill',#: '跑步机',
+    'smart-gating',#: '智能门控(门锁)',
+    'smart-band',#: '智能手环',
+    'hanger',#: '晾衣架',
 ]
 
 INCLUDE_DOMAINS = {
@@ -291,6 +302,7 @@ INCLUDE_DOMAINS = {
     'remote': 'telecontroller',
     'switch': 'switch',
     'vacuum': 'roboticvacuum',
+    'cover': 'curtain',
     }
 
 EXCLUDE_DOMAINS = [

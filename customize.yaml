@@ -28,6 +28,11 @@ climate.saswell2:
   friendly_name: 餐厅地暖
   hagenie_deviceName: 取暖器
   hagenie_deviceType: heater
+cover.airer:
+  friendly_name: 晾衣架
+  hagenie_deviceType: hanger
+cover.study_cover:
+  friendly_name: 书房窗帘
 customizer.customizer:
   friendly_name: 定制界面
 fan.fan:
@@ -133,7 +138,7 @@ light.balcony_light:
   friendly_name: 阳台灯
   hagenie_deviceName: 吸顶灯
   icon: mdi:ceiling-light
-light.ceiling_light:
+light.airer_light:
   friendly_name: 晾衣灯
   hagenie_deviceName: 天花灯
   icon: mdi:ceiling-light

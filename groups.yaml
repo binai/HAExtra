@@ -94,7 +94,7 @@ Study:
   entities:
   - light.study_light
   - light.airer_light
-  - cover.study
+  - cover.study_cover
   - cover.airer
   - fan.purifier
   - switch.projector
