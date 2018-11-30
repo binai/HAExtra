@@ -106,7 +106,7 @@ homekit:
     - switch.benq
     - switch.himedia
     # - switch.study_power
-    # - switch.projector_power
+    - switch.projector_power
     - light.study_light2
     - light.study_light3
     - light.parlor_light2
