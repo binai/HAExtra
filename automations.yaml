@@ -92,11 +92,10 @@
       entity_id: binary_sensor.switch_158d000201a73f
       click_type: single
   action:
-  - service: switch.turn_on
-    entity_id: switch.projector
-  - service: hello_miai.send
+  - service: mqtt.publish
     data:
-      message: 正在打开投影仪
+      topic: NodeMCU3/relay/0/set
+      payload: toggle
 
 # 书房无线开关双击
 - alias: Study Switch DBClicked
@@ -120,11 +119,11 @@
       entity_id: binary_sensor.switch_158d000201a73f
       click_type: long_click_press
   action:
-  - service: switch.turn_off
-    entity_id: switch.projector
   - service: hello_miai.send
-    data:
-      message: 正在关闭投影仪
+    data_template:
+      message: "正在{% if is_state('switch.projector', 'on') %}关闭{% else %}打开{% endif %}投影仪"
+  - service: switch.toggle
+    entity_id: switch.projector
 
 # 阳台移门开合
 - alias: Balcony Door Toggled
@@ -478,7 +477,7 @@
     from: 'off'
     to: 'on'
     for:
-      seconds: 10
+      seconds: 30
   condition:
   - condition: state
     entity_id: binary_sensor.door_window_sensor_158d000228a52b
