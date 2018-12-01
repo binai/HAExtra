@@ -64,7 +64,7 @@ apt-get install python3-pip python3-dev libffi-dev python3-setuptools
 #apt remove -y lirc && apt autoremove -y
 
 # Home Assistant
-pip3 install wheel netdisco xmltodict aiohttp_cors
+pip3 install wheel netdisco xmltodict aiohttp_cors hass_frontend
 pip3 install homeassistant
 #pip3 install pycryptodome #https://github.com/home-assistant/home-assistant/issues/12675
 
