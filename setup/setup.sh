@@ -45,7 +45,7 @@ apt-get install mosquitto mosquitto-clients
 apt-get install libavahi-compat-libdnssd-dev
 
 # For Raspbian
-apt-get install python3 python3-pip
+apt-get install python3 python3-pip python3-yaml
 
 #update pip
 #https://bootstrap.pypa.io/get-pip.py
