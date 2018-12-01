@@ -47,6 +47,10 @@ apt-get install libavahi-compat-libdnssd-dev
 # For Raspbian
 apt-get install python3 python3-pip
 
+#update pip
+#https://bootstrap.pypa.io/get-pip.py
+python3 -m pip install --upgrade pip setuptools wheel
+
 # Install PIP 18
 ##python3 -m pip install --upgrade pip # Logout after install
 #curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
